@@ -1,0 +1,43 @@
+# Mac OS X Finder and whatnot
+.DS_Store
+
+# XCode (and ancestors) per-user config (very noisy, and not relevant)
+*.mode1
+*.mode1v3
+*.mode2v3
+*.perspective
+*.perspectivev3
+*.pbxuser
+
+
+# Generated files
+VersionX-revision.h
+
+# Other source repository archive directories (protects when importing)
+.hg
+.svn
+CVS
+
+# Any Log files
+*.log
+
+# automatic backup files
+*~.nib
+*.swp
+*~
+*(Autosaved).rtfd/
+
+#Xcode 4
+xcuserdata
+project.xcworkspace
+
+# TestFlight
+build.output
+pkg
+
+# NodeJS
+npm-debug.log
+node_modules
+
+#Bower
+bower_components
