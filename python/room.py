@@ -1,35 +1,25 @@
 from itertools import tee, chain
+from point import Point
+
+
+def pairwise(iterable):
+   """s -> (s0,s1), (s1,s2), (s2, s3), ..."""
+   a, b = tee(iterable)
+   next(b, None)
+   return zip(a, b)
 
 def circular_pairwise(iterable):
    """s -> (s0,s1), (s1,s2), (s2, s3), ... (sn, s0) """
-   a, b = tee(iterable)
-   next(b, None)
-   return chain(zip(a, b), [(iterable[-1], iterable[0])])
-
-
-class Point():
-   def __init__(self, a, b = None):
-      a, b = b is None and (a[0], a[1]) or (a, b)
-      self.x = a
-      self.y = b
-
-   def __eq__(self, other):
-      return other.x == self.x and other.y == self.y
-
-   def __str__(self):
-      return "P({}, {})".format(self.x, self.y)
-
-   def __repl__(self):
-      return self.str()
+   return chain(pairwise(iterable), [(iterable[-1], iterable[0])])
 
 class Room():
    def __init__(self, points):
-      self.points = Room.sanitize_polypoints(points)
+      self.points = Room.prepare_points(points)
 
-   def sanitize_polypoints(polypoints):
-      return [Point( round(point[0], 1), round(point[1], 1) ) for point in polypoints]
+   def prepare_points(polypoints):
+      return [Point(point[0], point[1]) for point in polypoints]
 
-   def compare_line_and_point(a, b, c):
+   def _compare_line_and_point(a, b, c):
       tmpA = Point(b.x - a.x, b.y - a.y)
       tmpC = Point(c.x - a.x, c.y - a.y)
 
@@ -62,7 +52,7 @@ class Room():
             # The point satisfies the first precondition to intersect the
             # considered segment (it's y is valid)            
 
-            comparison = Room.compare_line_and_point(a, b, point)
+            comparison = Room._compare_line_and_point(a, b, point)
             # The point is on the same line, hence to know if it is actually
             # over the segment, we compare the segment bounding box to the
             # point location. If it is over the segment, it is inside the polygon
@@ -96,102 +86,102 @@ class Room():
 
 import unittest
 class RoomTest(unittest.TestCase):
-
    def test_room_creation(self):
-      original_points = [(0.33, 0), (0, 10.19), (10.33, 10), (10.5, 0.898)]
+      original_points = [(0.3333333, 0.123123), (0.2222333, 10.19), (10.33334, 10.78530), (10.51111, 0.898999)]
       room = Room(original_points)
 
       # points have been saved?
       self.assertTrue(room.points)
 
-      # test coordinates sanitization (floating point imprecision doesn't seem
-      # to cause any problems)
-      self.assertEqual(room.points, [Point(0.3, 0), Point(0, 10.2), Point(10.3, 10), Point(10.5, 0.9)])
-
    def test_point_to_right_of_line(self):
-      self.assertTrue(Room.compare_line_and_point( Point(10, 0), Point(0, 10), Point(9.9, 9.9)) > 0 )
-      self.assertTrue(Room.compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 2)) > 0 )
-      self.assertTrue(Room.compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 8)) > 0 )
-      self.assertTrue(Room.compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 8.99999)) > 0 )
+      self.assertTrue(Room._compare_line_and_point( Point(10, 0), Point(0, 10), Point(9.9, 9.9)) > 0 )
+      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 2)) > 0 )
+      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 8)) > 0 )
+      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 8.999)) > 0 )
 
       # Diagonal line
-      self.assertFalse(Room.compare_line_and_point( Point(1, 1), Point(9, 9), Point(1, 2)) > 0 )
-      self.assertFalse(Room.compare_line_and_point( Point(0, 0), Point(9, 9), Point(1, 8)) > 0 )
-      self.assertFalse(Room.compare_line_and_point( Point(9, 9), Point(5, 5), Point(1, 6)) > 0 )
+      self.assertFalse(Room._compare_line_and_point( Point(1, 1), Point(9, 9), Point(1, 2)) > 0 )
+      self.assertFalse(Room._compare_line_and_point( Point(0, 0), Point(9, 9), Point(1, 8)) > 0 )
+      self.assertFalse(Room._compare_line_and_point( Point(9, 9), Point(5, 5), Point(1, 6)) > 0 )
 
       # Horizontal line with point aligned
-      self.assertTrue(Room.compare_line_and_point( Point(0, 0), Point(10, 0), Point(4, 0)) == 0 )
+      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(10, 0), Point(4, 0)) == 0 )
 
       # vertical line with point aligned
-      self.assertTrue(Room.compare_line_and_point( Point(0, 0), Point(0, 10), Point(0, 5)) == 0 )
+      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(0, 10), Point(0, 5)) == 0 )
 
 
    def test_room_contains_point(self):
       room = Room([(0,0),(10,0),(10,10),(0,10)])
 
-      def room_contains(room, p1, p2):
-            self.assertTrue( room.contains_point(p1, p2), "Failed for {}, {}".format(p1, p2) )
+      def room_contains(room, x, y):
+            self.assertTrue( room.contains_point(x, y), "Room should contain {}, {}".format(x, y) )
 
-      # Points definetely inside
+      def room_not_contains(room, x, y):
+            self.assertFalse( room.contains_point(x, y), "Room should not contain {}, {}".format(x, y) )
+
+      # Points inside
       for x, y in circular_pairwise(range(1,10)):
          room_contains(room, x, y)
 
-      # Inside
-      room_contains(room, 0.1, 0.001)
-      room_contains(room, 9.99, 9.7) 
-      room_contains(room, 5, 9.99)   
-      room_contains(room, 0.1, 8)    
+      expected_truth = [
+         # Inside, but near borders
+         (0.1, 0.001),
+         (9.99, 9.7), 
+         (5, 9.99),   
+         (0.1, 8),    
 
-      # Close to the border
-      room_contains(room, 0.001, 0.001)
-      room_contains(room, 9.999, 9.999)
+         # Close to the border
+         (0.001, 0.001),
+         (9.999, 9.999),
 
-      print("points outside")
-      # Points definetely outside
-      self.assertFalse( room.contains_point(5, -4)    )
-      self.assertFalse( room.contains_point(5, 11)    )
-      self.assertFalse( room.contains_point(10.001, 10.001)  )
-      self.assertFalse( room.contains_point(-2, 5) )   
+         # Points precisely on the border
+         (5, 0),     
+         (10, 5),    
+         (5, 10),    
+         (0, 5),     
+         (0, 0),   
+         (10, 0),  
+         (10, 10), 
+         (0, 10)  
+      ]
 
-      print("Points on the border are considered inside ")
-      room_contains(room, 5, 0)     
-      room_contains(room, 10, 5)    
-      room_contains(room, 5, 10)    
-      room_contains(room, 0, 5)     
-      # Points precisely over the border
-      room_contains(room, 0, 0)   
-      room_contains(room, 10, 0)  
-      room_contains(room, 10, 10) 
-      room_contains(room, 0, 10)  
+      for x, y in expected_truth:
+         room_contains(room, x, y)
+
+      # Points outside
+      expected_lie = [
+         (5, -4),
+         (5, 11),  
+         (10.001, 10.001),  
+         (-2, 5)
+      ]
+
+      for x, y in expected_lie:
+         room_not_contains(room, x, y)
 
       room2 = Room([(10,0), (0, 10), (-10, 0), (0, -10)])
+      
+      expected_truth = [
+         # Close to the vertices
+         (9.9, 0), (0, 9.9), (-9.9, 0), (0, -9.9),  
+         # Close to the center
+         (0.001, 0.001), (3, 3), (-4.8, -4.8), (4.1, 3.8),
 
-      # Close to the vertices
-      room_contains(room2, 9.9, 0)  
-      room_contains(room2, 0, 9.9)  
-      room_contains(room2, -9.9, 0) 
-      room_contains(room2, 0, -9.9)  
-      # Close to the center
-      room_contains(room2, 0.001, 0.001)
-      room_contains(room2, 3, 3)
-      room_contains(room2, -4.8, -4.8)
-      room_contains(room2, 4.1, 3.8)
+         # Points precisely over the border
+         (10, 0), (0, 10), (-10, 0), (0, -10)      
+      ]
 
-      print("points outside")
-      # Points definetely outside
-      self.assertFalse( room2.contains_point(9.9, 9.9)   )
-      self.assertFalse( room2.contains_point(10.2, 0)     )
-      self.assertFalse( room2.contains_point(0, -10.1)    )
-      self.assertFalse( room2.contains_point(10.001, 10.001)   )
-      self.assertFalse( room2.contains_point(33, 12)     )
+      for x, y in expected_truth:
+         room_contains(room2, x, y)
 
-      print("Points on the border are considered inside ")
-      # Points precisely over the border
-      room_contains(room2, 10, 0)      
-      room_contains(room2, 0, 10)     
-      room_contains(room2, -10, 0)    
-      room_contains(room2, 0, -10)      
+      expected_lie = [
+         # Points definetely outside
+         (9.9, 9.9), (10.2, 0), (0, -10.1), (10.001, 10.001), (33, 12)
+      ]
 
+      for x, y in expected_lie:
+         room_not_contains(room2, x, y)
 
 if __name__ == '__main__':
    unittest.main()
