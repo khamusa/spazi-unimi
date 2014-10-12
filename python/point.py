@@ -16,6 +16,22 @@ class Point():
    def __repr__(self):
       return self.str()
 
+   def traslated(self, x_amount, y_amount):
+      """Returns a new point representing the current point translated"""
+      return Point(self.x + x_amount, self.y + y_amount)
+
+   def reflected_y(self):
+      """Returns a new point, with y coordinate reflected_y"""
+      return Point(self.x, -self.y)
+
+   def rotated_clockwise(self):
+      """Returns a new point, rotated 90 grades clockwise, with origin as reference"""
+      return Point(self.y, -self.x)
+
+   def cross_product(self, other):
+      """Returns an integer obtained as the cross product of the two points"""
+      return self.x * other.y - self.y * other.x
+
 
 if __name__ == '__main__':
    unittest.main()
