@@ -31,14 +31,3 @@ class Point():
    def cross_product(self, other):
       """Returns an integer obtained as the cross product of the two points"""
       return self.x * other.y - self.y * other.x
-
-
-if __name__ == '__main__':
-   unittest.main()
-
-import unittest
-class PointTest(unittest.TestCase):
-   def test_point_creation(self):
-      # Test rounding function actually being applied
-      self.assertTrue( 3.333 == Point(3.33333, 1).x )
-      self.assertTrue( 3.333 == Point(1, 3.3333333).y )
