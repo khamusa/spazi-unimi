@@ -1,6 +1,7 @@
 from point import Point
 from myitertools import circular_pairwise
 
+# TODO: separate tests
 class Room():
    def __init__(self, points):
       self.points = Room.prepare_points(points)
@@ -184,6 +185,32 @@ class RoomTest(unittest.TestCase):
 
       for x, y in expected_lie:
          room_not_contains(room2, x, y)
+
+
+      room3 = Room([(0,0),(10,0),(10,5),(5,5),(5,10),(0,10)])
+      
+      expected_truth = [
+         # Close to the vertices
+         (1, 2), (0.1, 0.1), (9.9, 0.1), (0.1, 9.9),  
+         # Close to the center
+         (2, 3), (4, 5), (8, 2), (1, 7),
+
+         # Points precisely over the vertices
+         (0,0),(10,0),(10,5),(5,5),(5,10),(0,10)    
+      ]
+
+      for x, y in expected_truth:
+         room_contains(room3, x, y)
+
+      expected_lie = [
+         # Points definetely outside
+         (10.1, 0.3), (-0.1, 1), (2, 10.1), (-0.1, -0.1), (1, -0.1),
+         (6,6), (5.1, 5.1)
+      ]
+
+      for x, y in expected_lie:
+         room_not_contains(room3, x, y)
+
 
 if __name__ == '__main__':
    unittest.main()
