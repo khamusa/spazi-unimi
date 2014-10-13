@@ -27,17 +27,4 @@ CVS
 *~
 *(Autosaved).rtfd/
 
-#Xcode 4
-xcuserdata
-project.xcworkspace
-
-# TestFlight
-build.output
-pkg
-
-# NodeJS
-npm-debug.log
-node_modules
-
-#Bower
-bower_components
+__pycache__
