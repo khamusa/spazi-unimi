@@ -6,6 +6,12 @@ class Room():
    def __init__(self, points):
       self.points = Room.prepare_points(points)
 
+   def __str__(self):
+      return "Stanza(" + ", ".join(str(p) for p in (self.points)) + ")"
+
+   def __repr__(self):
+      return str(self)
+
    def prepare_points(polypoints):
       return [Point(point[0], point[1]) for point in polypoints]
 
