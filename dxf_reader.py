@@ -25,20 +25,26 @@ class DxfReader():
 
       self.rooms = [
             Room(ent.points) for ent in self._grabber.entities \
-            if type(ent) in [LWPolyline, Polyline] and ent.is_closed and ent.layer in self.valid_poly_layers
-            
+            if type(ent) in [LWPolyline, Polyline] and ent.is_closed and ent.layer in self.valid_poly_layers]
+
       # TODO: Controllare se ci sono casi di Mtext che restituiscano una lista
       # di testi alla chiamata di plain_text()
-      self.texts = (RoomText(ent.plain_text(), Point(ent.insert) )            \
+      texts = (RoomText(ent.plain_text(), Point(ent.insert) )            \
             for ent in self._grabber.entities if type(ent) in [MText, Text]
             )
+
+      for t in texts:
+           for r in self.rooms:
+                if r.containsText( t ):
+                     r.addText(t)
+                     break
+
 
 
 
 if __name__ == '__main__':
-   fname = (len(sys.argv) > 1) and sys.argv[1] or "assets/stanza_singola.DXF" 
+   fname = (len(sys.argv) > 1) and sys.argv[1] or "assets/stanza_singola.DXF"
    dx = DxfReader(fname)
-   print(dx.rooms)
-   print(list(dx.texts))
-
-   
+   for r in rooms:
+        print(r)
+        print(r.texts)
