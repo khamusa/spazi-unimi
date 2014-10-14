@@ -1,5 +1,6 @@
 from point import Point
 from myitertools import circular_pairwise
+from svgwrite import Drawing
 
 # TODO: separate tests
 class Room():
@@ -43,10 +44,8 @@ class Room():
    # Uses the ray casting algorithm:
    # http://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm
    # For simplicity we assume the ray is casted horizontally to the left
-   def contains_point(self, point_or_x, y = None):
+   def _contains_point(self, point):
       """Tests wether or not the current room cointains a specific point"""
-      point = Point(point_or_x, y)
-
       # Amount of intersections counted
       match_count = 0
 
@@ -92,9 +91,15 @@ class Room():
       # it means the point is outside of the polygon
       return match_count % 2 != 0
 
-    def containsText(text):
-      return True
+   def containsText(self, text):
+      return self._contains_point(text.anchor_point)
 
-    def addText(text):
-      if( text not in self.texts )
-        self.texts.append(text)
+   def addText(self, text):
+      if( text not in self.texts ):
+         self.texts.append(text)
+
+   def traslated(self, amount_x, amount_y):
+      room        = Room([])
+      room.points = [ p.traslated(amount_x, amount_y) for p in self.points ]
+      room.texts  = [ t.traslated(amount_x, amount_y) for t in self.texts ]
+      return room

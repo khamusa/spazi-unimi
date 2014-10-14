@@ -45,6 +45,14 @@ class DxfReader():
 if __name__ == '__main__':
    fname = (len(sys.argv) > 1) and sys.argv[1] or "assets/stanza_singola.DXF"
    dx = DxfReader(fname)
-   for r in rooms:
+   for r in dx.rooms:
         print(r)
         print(r.texts)
+
+   print(dx.rooms[0])
+
+   svg      = svgwrite.Drawing()
+   points   = svg.polyline( [ (p.x, p.y) for p in dx.rooms[0].points ] , fill="#000")
+   svg.add(points)
+   svg.filename = "assets/test.svg"
+   svg.save()
