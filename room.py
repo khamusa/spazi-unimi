@@ -1,8 +1,6 @@
 from point import Point
 from myitertools import circular_pairwise
-from svgwrite import Drawing
 
-# TODO: separate tests
 class Room():
    def __init__(self, points):
       self.points = Room.prepare_points(points)
@@ -45,7 +43,7 @@ class Room():
    # http://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm
    # For simplicity we assume the ray is casted horizontally to the left
    def _contains_point(self, point):
-      """Tests wether or not the current room cointains a specific point"""
+      """Tests whether or not the current room cointains a specific point"""
       # Amount of intersections counted
       match_count = 0
 
