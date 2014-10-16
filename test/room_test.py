@@ -35,14 +35,13 @@ class RoomTest(unittest.TestCase):
       self.assertFalse(Room._compare_line_and_point( Point(1, 1), Point(9, 9), Point(1, 2)) > 0 )
       self.assertFalse(Room._compare_line_and_point( Point(0, 0), Point(9, 9), Point(1, 8)) > 0 )
       self.assertFalse(Room._compare_line_and_point( Point(9, 9), Point(5, 5), Point(1, 6)) > 0 )
+      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(2, 10), Point(1, 5)) == 0 )
 
       # Horizontal line with point aligned
       self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(10, 0), Point(4, 0)) == 0 )
 
       # vertical line with point aligned
       self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(0, 10), Point(0, 5)) == 0 )
-
-      # Pending: add different diagonal lines with point over it
 
    def test_room_traslation(self):
       def check_room_traslation(room, amount_x, amount_y):
@@ -66,3 +65,12 @@ class RoomTest(unittest.TestCase):
       check_room_traslation(self.room1, 20, -33)
       check_room_traslation(self.room1, -10, 23)
       check_room_traslation(self.room1, 0, 0)
+
+
+   def test_room_top_left_most_point(self):
+
+      def check_top_most(room, expected):
+         actual = room.top_left_most_point()
+         self.assertTrue(actual == expected, "Expected top-left most point was {}, but actual is {}".format(expected, actual))
+
+      check_top_most(self.room1, Point(0, 0))

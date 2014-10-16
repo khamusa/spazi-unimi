@@ -101,3 +101,11 @@ class Room():
       room.points = [ p.traslated(amount_x, amount_y) for p in self.points ]
       room.texts  = [ t.traslated(amount_x, amount_y) for t in self.texts ]
       return room
+
+   def top_left_most_point(self):
+      """Of all points of the room's polygon return the top-left most"""
+      minX = min(self.points, key=lambda s: s.x)
+      minY = min(self.points, key=lambda s: s.y)
+
+      return Point(minX.x, minY.y)
+
