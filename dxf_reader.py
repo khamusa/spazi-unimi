@@ -24,12 +24,12 @@ class DxfReader():
       self._grabber = dxfgrabber.readfile(self._filename)
 
       self.rooms = [
-            Room(ent.points) for ent in self._grabber.entities \
+            Room(ent.points).reflected_y() for ent in self._grabber.entities \
             if type(ent) in [LWPolyline, Polyline] and ent.is_closed and ent.layer in self.valid_poly_layers]
 
       # TODO: Controllare se ci sono casi di Mtext che restituiscano una lista
       # di testi alla chiamata di plain_text()
-      texts = (RoomText(ent.plain_text(), Point(ent.insert) )            \
+      texts = (RoomText(ent.plain_text(), Point(ent.insert) ).reflected_y()  \
             for ent in self._grabber.entities if type(ent) in [MText, Text]
             )
 
@@ -40,19 +40,21 @@ class DxfReader():
                      break
 
 
-
-
 if __name__ == '__main__':
-   fname = (len(sys.argv) > 1) and sys.argv[1] or "assets/stanza_singola.DXF"
+   fname = (len(sys.argv) > 1) and sys.argv[1] or "assets/dxf/stanza_singola.dxf"
    dx = DxfReader(fname)
-   for r in dx.rooms:
-        print(r)
-        print(r.texts)
 
-   print(dx.rooms[0])
+   minimum_x = 999999
+   minimum_y = 999999
+   for r in dx.rooms:
+      minimum_x = min(minimum_x, r.top_left_most_point().x)
+      minimum_y = min(minimum_y, r.top_left_most_point().y)
 
    svg      = svgwrite.Drawing()
-   points   = svg.polyline( [ (p.x, p.y) for p in dx.rooms[0].points ] , fill="#000")
-   svg.add(points)
+
+   for r in dx.rooms:
+      points   = svg.polyline( ( (p.x, p.y) for p in r.traslated(-minimum_x, -minimum_y).points ), fill="#f00",stroke="#666")
+      svg.add(points)
+
    svg.filename = "assets/test.svg"
    svg.save()

@@ -109,3 +109,10 @@ class Room():
 
       return Point(minX.x, minY.y)
 
+   def reflected_y(self):
+      room        = Room([])
+      room.points = [ p.reflected_y() for p in self.points ]
+      room.texts  = [ t.reflected_y() for t in self.texts ]
+      return room
+
+

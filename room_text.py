@@ -12,3 +12,6 @@ class RoomText:
 
    def traslated(self, amount_x, amount_y):
       return RoomText( self.text, self.anchor_point.traslated( amount_x, amount_y ) )
+
+   def reflected_y(self):
+      return RoomText( self.text, self.anchor_point.reflected_y() )
