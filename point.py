@@ -14,7 +14,7 @@ class Point():
       return "P({}, {})".format(self.x, self.y)
 
    def __repr__(self):
-      return self.str()
+      return str(self)
 
    def __getitem__(self, index):
       if index == 0:
@@ -22,7 +22,7 @@ class Point():
       if index == 1:
          return self.y
 
-      raise "__getitem__: index out of bounds for subscritable"
+      raise IndexError("__getitem__: index {} out of bounds for subscritable".format(index))
 
    def traslated(self, x_amount, y_amount):
       """Returns a new point representing the current point translated"""
