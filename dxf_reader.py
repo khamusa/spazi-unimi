@@ -42,6 +42,9 @@ class DxfReader():
 
 if __name__ == '__main__':
    fname = (len(sys.argv) > 1) and sys.argv[1] or "assets/dxf/stanza_singola.dxf"
+
+   import time
+   time_s = time.time()
    dx = DxfReader(fname)
 
    minimum_x = 999999
@@ -50,11 +53,17 @@ if __name__ == '__main__':
       minimum_x = min(minimum_x, r.top_left_most_point().x)
       minimum_y = min(minimum_y, r.top_left_most_point().y)
 
-   svg      = svgwrite.Drawing()
+   svg = svgwrite.Drawing()
 
    for r in dx.rooms:
-      points   = svg.polyline( ( (p.x, p.y) for p in r.traslated(-minimum_x, -minimum_y).points ), fill="#f00",stroke="#666")
+      for p in r.points:
+         p.traslate(-minimum_x, -minimum_y)
+
+      points   = svg.polyline( ( (p.x, p.y) for p in r.points ), fill="#f00",stroke="#666")
       svg.add(points)
 
    svg.filename = "assets/test.svg"
    svg.save()
+
+   print("Total time", time.time() - time_s, "seconds")
+
