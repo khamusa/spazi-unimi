@@ -1,5 +1,6 @@
 from point import Point
 from myitertools import circular_pairwise
+from itertools import chain
 
 class Room():
    def __init__(self, points):
@@ -96,11 +97,19 @@ class Room():
       if( text not in self.texts ):
          self.texts.append(text)
 
+   def clone(self):
+      r = Room([])
+      r.points = [ p.clone() for p in self.points ]
+      r.texts = [ t.clone() for t in self.texts ]
+      return r
+
+   def traslate(self, amount_x, amount_y):
+      for pt in chain(self.points, self.texts):
+         pt.traslate(amount_x, amount_y)
+      return self
+
    def traslated(self, amount_x, amount_y):
-      room        = Room([])
-      room.points = [ p.traslated(amount_x, amount_y) for p in self.points ]
-      room.texts  = [ t.traslated(amount_x, amount_y) for t in self.texts ]
-      return room
+      return self.clone().traslate(amount_x, amount_y)
 
    def top_left_most_point(self):
       """Of all points of the room's polygon return the top-left most"""

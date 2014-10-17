@@ -26,11 +26,20 @@ class Point():
 
    def traslated(self, x_amount, y_amount):
       """Returns a new point representing the current point translated"""
-      return Point(self.x + x_amount, self.y + y_amount)
+      return Point(self.x, self.y).traslate(x_amount, y_amount)
+
+   def traslate(self, x_amount, y_amount):
+      """Traslates the current point by the supplied amount, and return self for chainability"""
+      self.x += x_amount
+      self.y += y_amount
+      return self
 
    def reflected_y(self):
       """Returns a new point, with y coordinate reflected_y"""
       return Point(self.x, -self.y)
+
+   def clone(self):
+      return Point(self.x, self.y)
 
    def rotated_clockwise(self):
       """Returns a new point, rotated 90 grades clockwise, with origin as reference"""

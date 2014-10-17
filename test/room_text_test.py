@@ -5,18 +5,29 @@ from room_text import RoomText
 class RoomTextTest(unittest.TestCase):
    def test_text_translation(self):
       t  = RoomText( "ABC", Point(20, 20) )
+      old_x, old_y = t.anchor_point
+      t.traslate(10, 20)
+
+      self.assertTrue( t.anchor_point.x == old_x + 10 )
+      self.assertTrue( t.anchor_point.y == old_y + 20 )
+
+      t.traslate(-20, -30)
+
+      self.assertTrue( t.anchor_point.x == old_x - 10 )
+      self.assertTrue( t.anchor_point.y == old_y - 10 )
+
+   def test_text_traslated(self):
+      t  = RoomText( "ABC", Point(20, 20) )
       t2 = t.traslated(10, 20)
 
       # traslated must retur a new object
       self.assertFalse(t2 is t)
-      self.assertTrue( t2.anchor_point.x==30 )
-      self.assertTrue( t2.anchor_point.y==40 )
+      self.assertTrue( t2.anchor_point.x == 30 )
+      self.assertTrue( t2.anchor_point.y == 40 )
 
       t2 = t.traslated(-10, -20)
 
       # traslated must retur a new object
       self.assertFalse(t2 is t)
-      self.assertTrue( t2.anchor_point.x==10 )
-      self.assertTrue( t2.anchor_point.y==0 )
-
-
+      self.assertTrue( t2.anchor_point.x == 10 )
+      self.assertTrue( t2.anchor_point.y == 0 )

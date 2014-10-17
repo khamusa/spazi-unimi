@@ -10,8 +10,15 @@ class RoomText:
    def __repr__(self):
       return str(self)
 
+   def clone(self):
+      return RoomText(self.text, self.anchor_point.clone())
+
    def traslated(self, amount_x, amount_y):
-      return RoomText( self.text, self.anchor_point.traslated( amount_x, amount_y ) )
+      return RoomText( self.text, self.anchor_point.clone() ).traslate( amount_x, amount_y )
+
+   def traslate(self, amount_x, amount_y):
+      self.anchor_point.traslate(amount_x, amount_y)
+      return self
 
    def reflected_y(self):
       return RoomText( self.text, self.anchor_point.reflected_y() )

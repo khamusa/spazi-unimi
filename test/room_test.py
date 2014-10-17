@@ -45,18 +45,19 @@ class RoomTest(unittest.TestCase):
 
    def test_room_traslation(self):
       def check_room_traslation(room, amount_x, amount_y):
-         room_new = room.traslated(amount_x, amount_y)
 
-         # Traslated must return a NEW object
-         self.assertFalse(room_new is room)
+         old_points = [ p.clone() for p in room.points ]
+         old_texts = [ t.clone() for t in room.texts ]
+
+         room.traslate(amount_x, amount_y)
 
          # Check points have been traslated
-         for p1, p2 in zip(room_new.points, room.points):
+         for p1, p2 in zip(room.points, old_points):
             self.assertTrue(p1.x == p2.x + amount_x)
             self.assertTrue(p1.y == p2.y + amount_y)
 
          # Pending: test for every RoomText on room
-         for new_text, old_text in zip(room_new.texts, room.texts):
+         for new_text, old_text in zip(room.texts, old_texts):
             self.assertTrue(new_text.anchor_point.x == old_text.anchor_point.x + amount_x)
             self.assertTrue(new_text.anchor_point.y == old_text.anchor_point.y + amount_y)
 
