@@ -75,3 +75,11 @@ class RoomTest(unittest.TestCase):
          self.assertTrue(actual == expected, "Expected top-left most point was {}, but actual is {}".format(expected, actual))
 
       check_top_most(self.room1, Point(0, 0))
+
+   def test_room_cloning(self):
+      r2 = self.room1.clone()
+
+      self.assertTrue(r2.points == self.room1.points)
+      self.assertTrue(r2.texts == self.room1.texts)
+
+      self.assertTrue(r2 is not self.room1)

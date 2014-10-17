@@ -36,3 +36,10 @@ class PointTest(unittest.TestCase):
       self.assertTrue(p.x - 33 == p2.x)
       self.assertTrue(p.y - 44 == p2.y)
 
+   def test_point_cloning(self):
+      p = Point(3, 4)
+      p2 = p.clone()
+
+      self.assertTrue(p == p2)
+      self.assertTrue(p is not p2)
+

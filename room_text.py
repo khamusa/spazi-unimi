@@ -10,6 +10,9 @@ class RoomText:
    def __repr__(self):
       return str(self)
 
+   def __eq__(self, other):
+      return self.text == other.text and self.anchor_point == other.anchor_point
+
    def clone(self):
       return RoomText(self.text, self.anchor_point.clone())
 

@@ -31,3 +31,11 @@ class RoomTextTest(unittest.TestCase):
       self.assertFalse(t2 is t)
       self.assertTrue( t2.anchor_point.x == 10 )
       self.assertTrue( t2.anchor_point.y == 0 )
+
+   def test_room_text__cloning(self):
+      t  = RoomText( "ABC", Point(20, 20) )
+      t2 = t.clone()
+
+      self.assertTrue(t is not t2)
+      self.assertTrue(t.anchor_point == t2.anchor_point)
+      self.assertTrue(t.text == t2.text)
