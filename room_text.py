@@ -1,3 +1,4 @@
+from point import Point
 
 class RoomText:
    def __init__(self, txt, anchor_point):
@@ -9,6 +10,14 @@ class RoomText:
 
    def __repr__(self):
       return str(self)
+
+   def to_serializable(self):
+      """Transform this object in something json-serializable"""
+      return ("RoomText", self.text, self.anchor_point)
+
+   def from_serializable(json_obj):
+      """From a json serialization reconstruct the object"""
+      return RoomText(json_obj[1], Point.from_serializable(json_obj[2]))
 
    def __eq__(self, other):
       return self.text == other.text and self.anchor_point == other.anchor_point

@@ -1,4 +1,5 @@
 from point import Point
+from room_text import RoomText
 from myitertools import circular_pairwise
 from itertools import chain
 
@@ -15,6 +16,19 @@ class Room():
 
    def prepare_points(polypoints):
       return [Point(point[0], point[1]) for point in polypoints]
+
+   def to_serializable(self):
+      """Transform this object in something json-serializable"""
+      return ("Room", self.points, self.texts)
+
+   def from_serializable(json_obj):
+      """From a json serialization reconstruct the object"""
+      r = Room(Point.from_serializable(p) for p in json_obj[1])
+      for t in json_obj[2]:
+         t = RoomText.from_serializable(t)
+         r.addText(t)
+
+      return r
 
    # Uses point crossproduct to determine if a point is to the right or to
    # the left of the line that passes through a segment.

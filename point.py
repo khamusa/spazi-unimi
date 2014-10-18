@@ -16,6 +16,14 @@ class Point():
    def __repr__(self):
       return str(self)
 
+   def to_serializable(self):
+      """Transform this object in something json-serializable"""
+      return ("Point", self.x, self.y)
+
+   def from_serializable(json_obj):
+      """From a json serialization reconstruct the object"""
+      return Point(json_obj[1], json_obj[2])
+
    def __getitem__(self, index):
       if index == 0:
          return self.x
