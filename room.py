@@ -53,12 +53,14 @@ class Room():
 
       return -tmpA.cross_product(tmpC)
 
-   # Return true if this room object contains the supplied object
-   # Uses the ray casting algorithm:
-   # http://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm
-   # For simplicity we assume the ray is casted horizontally to the left
    def _contains_point(self, point):
-      """Tests whether or not the current room cointains a specific point"""
+      """Tests whether or not the current room cointains a specific point
+
+      Return true if this room object contains the supplied object
+      Uses the ray casting algorithm:
+      http://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm
+      For simplicity we assume the ray is casted horizontally to the left
+"""
       # Amount of intersections counted
       match_count = 0
 
