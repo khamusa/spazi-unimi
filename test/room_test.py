@@ -4,6 +4,8 @@ from room_text import RoomText
 import itertools
 
 import unittest
+from mock import MagicMock
+
 class RoomTest(unittest.TestCase):
    def setUp(self):
       # 10x10 square beginning on origin
@@ -83,3 +85,14 @@ class RoomTest(unittest.TestCase):
       self.assertTrue(r2.texts == self.room1.texts)
 
       self.assertTrue(r2 is not self.room1)
+
+   def test_room_scale(self):
+      for p in itertools.chain(self.room1.points, self.room1.texts):
+         p.scale =  MagicMock()
+
+      self.room1.scale(2)
+
+      for p in itertools.chain(self.room1.points, self.room1.texts):
+         p.scale.assert_called_with(2)
+
+

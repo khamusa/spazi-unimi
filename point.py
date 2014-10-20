@@ -56,3 +56,7 @@ class Point():
    def cross_product(self, other):
       """Returns an integer obtained as the cross product of the two points"""
       return self.x * other.y - self.y * other.x
+
+   def scale(self, amount):
+      self.x = self.x * amount
+      self.y = self.y * amount

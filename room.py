@@ -140,4 +140,7 @@ class Room():
       room.texts  = [ t.reflected_y() for t in self.texts ]
       return room
 
+   def scale(self, amount):
+      for pt in chain(self.texts, self.points):
+         pt.scale(amount)
 

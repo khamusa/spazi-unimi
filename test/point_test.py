@@ -43,3 +43,14 @@ class PointTest(unittest.TestCase):
       self.assertTrue(p == p2)
       self.assertTrue(p is not p2)
 
+   def test_point_scaling(self):
+      p = Point(10, 20)
+      p.scale(.2)
+
+      self.assertEqual(p.x, 2)
+      self.assertEqual(p.y, 4)
+
+      p.scale(2)
+
+      self.assertEqual(p.x, 4)
+      self.assertEqual(p.y, 8)

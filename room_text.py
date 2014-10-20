@@ -34,3 +34,6 @@ class RoomText:
 
    def reflected_y(self):
       return RoomText( self.text, self.anchor_point.reflected_y() )
+
+   def scale(self, amount):
+      self.anchor_point.scale(amount)
