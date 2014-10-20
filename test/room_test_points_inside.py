@@ -8,10 +8,12 @@ import unittest
 class RoomTestPointsInside(unittest.TestCase):
    def setUp(self):
       # 10x10 square beginning on origin
-      self.room1 = Room([(0,0),(10,0),(10,10),(0,10)])
-      self.room1.addText(RoomText("1234",Point(3,3)))
-      self.room1.addText(RoomText("Super Cool",Point(4,7)))
-      self.room1.addText(RoomText("Corner Text!",Point(1,10)))
+      self.room1 = Room([(0,0),(10,0),(10,10),(0,10)],
+         [
+            RoomText("1234",Point(3,3)),
+            RoomText("Super Cool",Point(4,7)),
+            RoomText("Corner Text!",Point(1,10))
+         ])
 
       # 10x10 diamond shape centered at origin
       self.room2 = Room([(10,0), (0, 10), (-10, 0), (0, -10)])

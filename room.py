@@ -4,9 +4,9 @@ from myitertools import circular_pairwise
 from itertools import chain
 
 class Room():
-   def __init__(self, points):
+   def __init__(self, points, texts=[]):
       self.points = Room.prepare_points(points)
-      self.texts  = []
+      self.texts  = texts
 
    def __str__(self):
       return "Stanza(" + ", ".join(str(p) for p in (self.points)) + ")"
@@ -19,15 +19,12 @@ class Room():
 
    def to_serializable(self):
       """Transform this object in something json-serializable"""
-      return ("Room", self.points, self.texts)
+      return { "points": self.points, "texts": self.texts }
 
    def from_serializable(json_obj):
       """From a json serialization reconstruct the object"""
-      r = Room(Point.from_serializable(p) for p in json_obj[1])
-      for t in json_obj[2]:
-         t = RoomText.from_serializable(t)
-         r.addText(t)
-
+      r = Room( (Point.from_serializable(p) for p in json_obj["points"]), \
+         [RoomText.from_serializable(t) for t in json_obj["texts"]] )
       return r
 
    # Uses point crossproduct to determine if a point is to the right or to
