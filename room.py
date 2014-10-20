@@ -106,7 +106,7 @@ class Room():
    def containsText(self, text):
       return self._contains_point(text.anchor_point)
 
-   def addText(self, text):
+   def add_text(self, text):
       if( text not in self.texts ):
          self.texts.append(text)
 

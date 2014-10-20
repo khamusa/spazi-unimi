@@ -8,7 +8,7 @@ from room_text import RoomText
 class JsonEncodingTest(unittest.TestCase):
    def test_room_to_serializable(self):
       r = Room([(1,2), (3, 4), (5, 6)])
-      r.addText(RoomText("Encoded cool text", Point([1,1])))
+      r.add_text(RoomText("Encoded cool text", Point([1,1])))
 
       self.assertEqual(r.to_serializable(), { "points": r.points, "texts": r.texts })
 
@@ -24,7 +24,7 @@ class JsonEncodingTest(unittest.TestCase):
 
    def test_room_encoding_and_decoding(self):
       r = Room([(1,2), (3, 4), (5, 6)])
-      r.addText(RoomText("Encoded cool text", Point([1,1])))
+      r.add_text(RoomText("Encoded cool text", Point([1,1])))
 
       s1 = json.dumps(r, cls = json_room_encoder.JsonRoomEncoder, indent = 3)
       d1 = json.loads(s1)

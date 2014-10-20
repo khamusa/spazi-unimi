@@ -36,7 +36,7 @@ class DxfReader():
       for t in texts:
            for r in self.rooms:
                 if r.containsText( t ):
-                     r.addText(t)
+                     r.add_text(t)
                      break
 
 
