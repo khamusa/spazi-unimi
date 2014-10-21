@@ -24,13 +24,21 @@ class DxfReader():
       self._filename = filename;
       self._grabber = dxfgrabber.readfile(self._filename)
 
+      def is_valid_room(ent):
+         return type(ent) in [LWPolyline, Polyline] and ent.layer in self.valid_poly_layers
+
+      def is_valid_text(ent):
+         return type(ent) in [MText, Text] and ent.layer in self.valid_text_layers
+
       rooms = (
             Room(ent.points).reflected_y() for ent in self._grabber.entities \
-            if type(ent) in [LWPolyline, Polyline] and ent.layer in self.valid_poly_layers)
+            if is_valid_room(ent)
+            )
 
       texts = (
             RoomText(ent.plain_text(), Point(ent.insert) ).reflected_y() \
-            for ent in self._grabber.entities if type(ent) in [MText, Text] and ent.layer in self.valid_text_layers
+            for ent in self._grabber.entities
+            if is_valid_text(ent)
             )
 
       self.floor = Floor(filename, rooms = rooms)
