@@ -11,6 +11,7 @@ import sys
 import svgwrite
 from room import Room
 from room_text import RoomText
+from floor import Floor
 from point import Point
 from dxfgrabber.entities import LWPolyline, Polyline, MText, Text
 
@@ -23,22 +24,18 @@ class DxfReader():
       self._filename = filename;
       self._grabber = dxfgrabber.readfile(self._filename)
 
-      self.rooms = [
-            Room(ent.points).reflected_y() for ent in self._grabber.entities \
-            if type(ent) in [LWPolyline, Polyline] and ent.layer in self.valid_poly_layers]
+      rooms = (
+            Room(ent.points) for ent in self._grabber.entities \
+            if type(ent) in [LWPolyline, Polyline] and ent.layer in self.valid_poly_layers)
 
-      # TODO: Controllare se ci sono casi di Mtext che restituiscano una lista
-      # di testi alla chiamata di plain_text()
-      texts = (RoomText(ent.plain_text(), Point(ent.insert) ).reflected_y()  \
+      texts = (
+            RoomText(ent.plain_text(), Point(ent.insert) ) \
             for ent in self._grabber.entities if type(ent) in [MText, Text] and ent.layer in self.valid_text_layers
             )
 
-      for t in texts:
-           for r in self.rooms:
-                if r.containsText( t ):
-                     r.add_text(t)
-                     break
-
+      self.floor = Floor(filename, rooms = rooms)
+      self.floor.associate_room_texts(texts)
+      self.floor.normalize(scale_amount=.4)
 
 if __name__ == '__main__':
    fname = (len(sys.argv) > 1) and sys.argv[1] or "assets/dxf/stanza_singola.dxf"
@@ -46,22 +43,13 @@ if __name__ == '__main__':
    import time
    import random
    time_s = time.time()
+
    dx = DxfReader(fname)
-
-   minimum_x = float('+inf')
-   minimum_y = float('+inf')
-   for r in dx.rooms:
-      r.scale(.4)
-      minimum_x = min(minimum_x, r.top_left_most_point().x)
-      minimum_y = min(minimum_y, r.top_left_most_point().y)
-
    svg = svgwrite.Drawing()
 
-   for r in dx.rooms:
-      r.traslate(-minimum_x, -minimum_y)
-
+   for r in dx.floor.rooms:
       color = "rgb({}, {}, {})".format(int(random.random()*200), int(random.random()*200), int(random.random()*200))
-      points   = svg.polyline( ( (p.x, p.y) for p in r.points ), fill=color,stroke="#666")
+      points   = svg.polyline( ( (p.x, p.y) for p in r.points ), fill=color, stroke="#666")
 
       svg.add(points)
 
