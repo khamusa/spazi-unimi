@@ -36,7 +36,7 @@ class DxfReader():
             )
 
       texts = (
-            RoomText(ent.plain_text(), Point(ent.insert) ).reflected_y() \
+            RoomText(ent.plain_text(), Point(ent.insert[0], -ent.insert[1]) ) \
             for ent in self._grabber.entities
             if is_valid_text(ent)
             )
