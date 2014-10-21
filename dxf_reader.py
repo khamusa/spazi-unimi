@@ -25,17 +25,17 @@ class DxfReader():
       self._grabber = dxfgrabber.readfile(self._filename)
 
       rooms = (
-            Room(ent.points) for ent in self._grabber.entities \
+            Room(ent.points).reflected_y() for ent in self._grabber.entities \
             if type(ent) in [LWPolyline, Polyline] and ent.layer in self.valid_poly_layers)
 
       texts = (
-            RoomText(ent.plain_text(), Point(ent.insert) ) \
+            RoomText(ent.plain_text(), Point(ent.insert) ).reflected_y() \
             for ent in self._grabber.entities if type(ent) in [MText, Text] and ent.layer in self.valid_text_layers
             )
 
       self.floor = Floor(filename, rooms = rooms)
       self.floor.associate_room_texts(texts)
-      self.floor.normalize(scale_amount=.4)
+      self.floor.normalize()
 
 if __name__ == '__main__':
    fname = (len(sys.argv) > 1) and sys.argv[1] or "assets/dxf/stanza_singola.dxf"
@@ -48,7 +48,7 @@ if __name__ == '__main__':
    svg = svgwrite.Drawing()
 
    for r in dx.floor.rooms:
-      color = "rgb({}, {}, {})".format(int(random.random()*200), int(random.random()*200), int(random.random()*200))
+      color    = "rgb({}, {}, {})".format(int(random.random()*200), int(random.random()*200), int(random.random()*200))
       points   = svg.polyline( ( (p.x, p.y) for p in r.points ), fill=color, stroke="#666")
 
       svg.add(points)

@@ -124,18 +124,21 @@ class Room():
    def traslated(self, amount_x, amount_y):
       return self.clone().traslate(amount_x, amount_y)
 
-   def top_left_most_point(self):
+   def offset_from_origin(self):
       """Of all points of the room's polygon return the top-left most"""
       minX = min(self.points, key=lambda s: s.x)
       minY = min(self.points, key=lambda s: s.y)
 
-      return Point(minX.x, minY.y)
+      return (minX.x, minY.y)
 
    def reflected_y(self):
-      room        = Room([])
-      room.points = [ p.reflected_y() for p in self.points ]
-      room.texts  = [ t.reflected_y() for t in self.texts ]
+      room        = self.clone()
+      room.reflect_y()
       return room
+
+   def reflect_y(self):
+      for pt in chain(self.texts, self.points):
+         pt.reflect_y()
 
    def scale(self, amount):
       for pt in chain(self.texts, self.points):

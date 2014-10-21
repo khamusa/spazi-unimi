@@ -72,13 +72,14 @@ class RoomTest(unittest.TestCase):
       check_room_traslation(self.room1, 0, 0)
 
 
-   def test_room_top_left_most_point(self):
+   def test_room_offset_from_origin(self):
 
-      def check_top_most(room, expected):
-         actual = room.top_left_most_point()
-         self.assertTrue(actual == expected, "Expected top-left most point was {}, but actual is {}".format(expected, actual))
+      def check_top_most(room, expected_x, expected_y):
+         minX, minY = room.offset_from_origin()
+         self.assertEqual(minX, expected_x)
+         self.assertEqual(minY, expected_y)
 
-      check_top_most(self.room1, Point(0, 0))
+      check_top_most(self.room1, 0, 0)
 
    def test_room_cloning(self):
       r2 = self.room1.clone()

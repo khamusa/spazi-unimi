@@ -33,7 +33,12 @@ class RoomText:
       return self
 
    def reflected_y(self):
-      return RoomText( self.text, self.anchor_point.reflected_y() )
+      rt = self.clone()
+      rt.reflect_y()
+      return rt
+
+   def reflect_y(self):
+      self.anchor_point.reflect_y()
 
    def scale(self, amount):
       self.anchor_point.scale(amount)

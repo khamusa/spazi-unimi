@@ -44,7 +44,12 @@ class Point():
 
    def reflected_y(self):
       """Returns a new point, with y coordinate reflected_y"""
-      return Point(self.x, -self.y)
+      p = self.clone()
+      p.reflect_y()
+      return p
+
+   def reflect_y(self):
+      self.y = -self.y
 
    def clone(self):
       return Point(self.x, self.y)
