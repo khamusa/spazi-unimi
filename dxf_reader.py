@@ -31,7 +31,7 @@ class DxfReader():
          return type(ent) in [MText, Text] and ent.layer in self.valid_text_layers
 
       rooms = (
-            Room(ent.points).reflected_y() for ent in self._grabber.entities \
+            Room( (p[0], -p[1]) for p in ent.points ) for ent in self._grabber.entities \
             if is_valid_room(ent)
             )
 

@@ -4,9 +4,9 @@ from myitertools import circular_pairwise
 from itertools import chain
 
 class Room():
-   def __init__(self, points, texts=[]):
+   def __init__(self, points, texts=None):
       self.points = Room.prepare_points(points)
-      self.texts  = texts
+      self.texts  = texts or []
 
    def __str__(self):
       return "Stanza(" + ", ".join(str(p) for p in (self.points)) + ")"
