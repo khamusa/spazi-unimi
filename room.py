@@ -143,4 +143,3 @@ class Room():
    def scale(self, amount):
       for pt in chain(self.texts, self.points):
          pt.scale(amount)
-
