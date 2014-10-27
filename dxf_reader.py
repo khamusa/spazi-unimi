@@ -43,7 +43,7 @@ class DxfReader():
 
       self.floor = Floor(filename, rooms = rooms)
       self.floor.associate_room_texts(texts)
-      self.floor.normalize()
+      self.floor.normalize(0.3)
 
 if __name__ == '__main__':
    fname = (len(sys.argv) > 1) and sys.argv[1] or "assets/dxf/stanza_singola.dxf"
@@ -68,4 +68,3 @@ if __name__ == '__main__':
    svg.save()
 
    print("Total time", time.time() - time_s, "seconds")
-

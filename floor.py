@@ -34,5 +34,5 @@ class Floor:
          r.traslate(traslate_x, traslate_y)
          r.scale(scale_amount)
 
-   def normalize(self):
-      self.transform(scale_amount = .4, traslate_x = -self.min_x, traslate_y = -self.min_y)
+   def normalize(self, scale_amount=.4):
+      self.transform(scale_amount=scale_amount, traslate_x = -self.min_x, traslate_y = -self.min_y)
