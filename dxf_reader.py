@@ -19,7 +19,7 @@ class DxfReader():
    valid_poly_layers = ["RM$"]
    valid_text_layers = ["NLOCALI", "RM$TXT"]
 
-   def __init__(self, filename):
+   def __init__(self, filename, building_name, floor_name):
       self._filename = filename;
       self._grabber = dxfgrabber.readfile(self._filename)
 
@@ -40,6 +40,6 @@ class DxfReader():
             if is_valid_text(ent)
             )
 
-      self.floor = Floor(filename, rooms = rooms)
+      self.floor = Floor(building_name, floor_name, rooms)
       self.floor.associate_room_texts(texts)
       self.floor.normalize(0.3)

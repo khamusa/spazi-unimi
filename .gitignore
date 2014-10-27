@@ -30,3 +30,6 @@ CVS
 __pycache__
 
 assets/test.svg
+
+#data
+data/

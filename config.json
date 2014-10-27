@@ -7,5 +7,11 @@
       "tests"                          : "test",
       "assets"                         : "assets",
       "tmp"                            : "tmp"
-   }
+   },
+
+   "filepaths" : {
+      "preprocessed_floor_format"      : "{building_name}_{floor_name}"
+   },
+
+   "json_indent" : 3 
 }

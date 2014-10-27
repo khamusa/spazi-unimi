@@ -1,4 +1,4 @@
-
+import time
 from point import Point
 class Floor:
 
@@ -36,3 +36,9 @@ class Floor:
 
    def normalize(self, scale_amount=.4):
       self.transform(scale_amount=scale_amount, traslate_x = -self.min_x, traslate_y = -self.min_y)
+
+   def to_serializable(self):
+      return { \
+         "filename" : self.building_name, "date": time.strftime("%m/%d/%Y"), \
+         "payload": { "n_rooms": len(self.rooms), "rooms": self.rooms } \
+      }
