@@ -8,7 +8,6 @@
 
 import dxfgrabber
 import sys
-import svgwrite
 from room import Room
 from room_text import RoomText
 from floor import Floor
@@ -44,27 +43,3 @@ class DxfReader():
       self.floor = Floor(filename, rooms = rooms)
       self.floor.associate_room_texts(texts)
       self.floor.normalize(0.3)
-
-if __name__ == '__main__':
-   fname = (len(sys.argv) > 1) and sys.argv[1] or "assets/dxf/stanza_singola.dxf"
-
-   import time
-   import random
-   time_s = time.time()
-
-   dx = DxfReader(fname)
-   svg = svgwrite.Drawing()
-
-   for r in dx.floor.rooms:
-      color    = "rgb({}, {}, {})".format(int(random.random()*200), int(random.random()*200), int(random.random()*200))
-      points   = svg.polyline( ( (p.x, p.y) for p in r.points ), fill=color, stroke="#666")
-
-      svg.add(points)
-
-      for t in r.texts:
-         svg.add(svg.text(t.text, t.anchor_point))
-
-   svg.filename = "assets/test.svg"
-   svg.save()
-
-   print("Total time", time.time() - time_s, "seconds")
