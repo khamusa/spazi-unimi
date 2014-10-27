@@ -1,0 +1,11 @@
+{
+   "folders"   : {
+      "data"                           : "data",
+      "data_dxf_base_data"             : "data/dxf",
+      "data_dxf_sources"               : "data/dxf/sources",
+      "data_dxf_preprocessed_output"   : "data/dxf/preprocessed",
+      "tests"                          : "test",
+      "assets"                         : "assets",
+      "tmp"                            : "tmp"
+   }
+}
