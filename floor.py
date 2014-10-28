@@ -1,5 +1,7 @@
 import time
 from point import Point
+from room import Room
+
 class Floor:
 
    def __init__(self, building_name, floor_name = None, rooms = []):
@@ -11,6 +13,14 @@ class Floor:
 
       for r in rooms:
          self.add_room(r)
+
+   def __eq__(self,other):
+      return (
+         self.rooms == other.rooms and
+         self.building_name == other.building_name and
+         self.floor_name == other.floor_name
+      )
+
 
    def add_room(self, room):
       """Adds a room to current floor object"""
@@ -38,7 +48,16 @@ class Floor:
       self.transform(scale_amount=scale_amount, traslate_x = -self.min_x, traslate_y = -self.min_y)
 
    def to_serializable(self):
-      return { \
-         "filename" : self.building_name, "date": time.strftime("%m/%d/%Y"), \
-         "payload": { "n_rooms": len(self.rooms), "rooms": self.rooms } \
+      return {
+         "building_name"   : self.building_name,
+         "floor_name"      : self.floor_name,
+         "date"            : time.strftime("%m/%d/%Y"),
+         "payload"         : {
+                                 "n_rooms": len(self.rooms),
+                                 "rooms"  : self.rooms
+                              }
       }
+
+   def from_serializable(data):
+      rooms = ( Room.from_serializable(r) for r in  data["payload"]["rooms"])
+      return Floor( data["building_name"] , data["floor_name"] , rooms  )

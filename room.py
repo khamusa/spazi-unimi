@@ -14,6 +14,9 @@ class Room():
    def __repr__(self):
       return str(self)
 
+   def __eq__(self,other):
+      return self.points == other.points and self.texts == other.texts
+
    def prepare_points(polypoints):
       return [Point(point[0], point[1]) for point in polypoints]
 
