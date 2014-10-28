@@ -1,13 +1,14 @@
 /* FORMATO DEI FILE JSON GENERATI DA DXF_READER */
 
-DXF_FILE = {
-   filename    : "pippo_pluto.dxf",
-   date        : "01/31/2014", /* AMERICAN FORMAT */
-   payload     : {
-      n_rooms  : 83,
-      rooms    : [
-         ROOM, [ROOM ...]
-      ]
+FLOOR = {
+   building_name  : "5830",
+   floor_name     : "1p",
+   date           : "01/31/2014", /* AMERICAN FORMAT */
+   payload        : {
+            n_rooms     : 83,
+            rooms       : [
+               ROOM, [ROOM ...]
+            ]
    }
 };
 
@@ -17,7 +18,7 @@ ROOM = {
    texts    : [ ROOM_TEXT, [ROOM_TEXT ... ]]
 }
 
-POINT       = {x: 45, y: 37}
+POINT       = { x: 45, y: 37 }
 
 ROOM_TEXT   = {
    anchor_point   : POINT,
