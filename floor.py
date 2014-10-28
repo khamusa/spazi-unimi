@@ -38,7 +38,12 @@ class Floor:
       self.transform(scale_amount=scale_amount, traslate_x = -self.min_x, traslate_y = -self.min_y)
 
    def to_serializable(self):
-      return { \
-         "filename" : self.building_name, "date": time.strftime("%m/%d/%Y"), \
-         "payload": { "n_rooms": len(self.rooms), "rooms": self.rooms } \
+      return {
+         "building_name"   : self.building_name,
+         "floor_name"      : self.floor_name,
+         "date"            : time.strftime("%m/%d/%Y"),
+         "payload"         : {
+                                 "n_rooms": len(self.rooms),
+                                 "rooms"  : self.rooms 
+                              }
       }
