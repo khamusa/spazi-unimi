@@ -63,3 +63,15 @@ class FloorTest(unittest.TestCase):
       self.assertTrue( t2_2 in r2.texts )
       self.assertTrue( t1_1 in r1.texts )
       self.assertTrue( t_none not in r1.texts )
+
+   def test_floor_equal(self):
+      r1 = Room([(0,0),(10,0),(10,10),(0,10)])
+      r2 = Room([(12,0),(22,0),(22,10),(12,10)])
+      t1 = RoomText("Text room 1",Point(5,5))
+      t2 = RoomText("Text room 2",Point(15,8))
+      t3 = RoomText("Text outside",Point(11,5))
+
+      floor = Floor("Building 1", "Floor1",[ r1,r2])
+      floor2 = Floor("Building 1", "Floor1",[r1,r2])
+
+      self.assertEqual(floor,floor2)
