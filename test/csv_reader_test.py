@@ -29,9 +29,30 @@ class CSVReaderTest(unittest.TestCase):
 
    def test_row_reader(self):
       csv = CSVReader(io.StringIO("codice,tipologia,pippo\na,b,c\nd,e,f"))
-      self.assertTrue("a" in csv.content[0]["codice"])
-      self.assertTrue("b" in csv.content[0]["tipologia"])
-      self.assertTrue("c" in csv.content[0]["pippo"])
-      self.assertTrue("d" in csv.content[1]["codice"])
-      self.assertTrue("e" in csv.content[1]["tipologia"])
-      self.assertTrue("f" in csv.content[1]["pippo"])
+      self.assertEqual("a", csv.content[0]["codice"])
+      self.assertEqual("b", csv.content[0]["tipologia"])
+      self.assertEqual("c", csv.content[0]["pippo"])
+      self.assertEqual("d", csv.content[1]["codice"])
+      self.assertEqual("e", csv.content[1]["tipologia"])
+      self.assertEqual("f", csv.content[1]["pippo"])
+
+   def test_row_reader_trimm(self):
+      csv = CSVReader(io.StringIO(" codice , tipologia   ,   pippo \n  a , b   , c \n d   , e    ,f  "))
+      self.assertEqual("a", csv.content[0]["codice"])
+      self.assertEqual("b", csv.content[0]["tipologia"])
+      self.assertEqual("c", csv.content[0]["pippo"])
+      self.assertEqual("d", csv.content[1]["codice"])
+      self.assertEqual("e", csv.content[1]["tipologia"])
+      self.assertEqual("f", csv.content[1]["pippo"])
+
+   def test_column_feature(self):
+      csv = CSVReader(io.StringIO("codice,tipologia,pippo\na,b,c\nd,e,f"), ["codice", "pippo"])
+      self.assertTrue("codice" in csv.header)
+      self.assertTrue("tipologia" not in csv.header)
+      self.assertTrue("pippo" in csv.header)
+      self.assertEqual("a", csv.content[0]["codice"])
+      self.assertFalse("tipologia" in csv.content[0])
+      self.assertEqual("c", csv.content[0]["pippo"])
+      self.assertEqual("d", csv.content[1]["codice"])
+      self.assertFalse("tipologia" in csv.content[1])
+      self.assertEqual("f", csv.content[1]["pippo"])
