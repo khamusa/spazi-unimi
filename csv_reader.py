@@ -11,3 +11,6 @@ class CSVReader:
 
       it = iter(reader)
       self.header = [s.strip() for s in next(it)]
+      self.content = []
+      for line in it:
+         self.content.append({ c: l for c,l in zip(self.header, line)})

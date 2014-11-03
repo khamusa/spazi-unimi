@@ -26,3 +26,12 @@ class CSVReaderTest(unittest.TestCase):
       self.assertTrue("d" not in csv.header)
       self.assertTrue("e" not in csv.header)
       self.assertTrue("f" not in csv.header)
+
+   def test_row_reader(self):
+      csv = CSVReader(io.StringIO("codice,tipologia,pippo\na,b,c\nd,e,f"))
+      self.assertTrue("a" in csv.content[0]["codice"])
+      self.assertTrue("b" in csv.content[0]["tipologia"])
+      self.assertTrue("c" in csv.content[0]["pippo"])
+      self.assertTrue("d" in csv.content[1]["codice"])
+      self.assertTrue("e" in csv.content[1]["tipologia"])
+      self.assertTrue("f" in csv.content[1]["pippo"])
