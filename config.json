@@ -4,6 +4,8 @@
       "data_dxf_base_data"             : "data/dxf",
       "data_dxf_sources"               : "data/dxf/sources",
       "data_dxf_preprocessed_output"   : "data/dxf/preprocessed",
+      "data_csv"                       : "data/csv",
+      "data_csv_sources"               : "data/csv/sources",
       "tests"                          : "test",
       "assets"                         : "assets",
       "tmp"                            : "tmp"
@@ -13,5 +15,11 @@
       "preprocessed_floor_format"      : "{building_name}_{floor_name}"
    },
 
-   "json_indent" : 3 
+   "json_indent" : 3,
+
+   "csv_headers" : {
+      "buildings"          : ["l_b_id", "b_id", "address", "lat", "lon"],
+      "rooms"              : ["b_id", "address", "l_floor", "r_id", "type_name", "room_name", "capacity"],
+      "room_categories"    : ["cat_id", "cat_name"]
+   }
 }
