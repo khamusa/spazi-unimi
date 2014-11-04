@@ -5,6 +5,7 @@ import sys
 import svgwrite
 import re
 import os
+import random
 
 class Main():
    def __init__(self, fname):
@@ -12,7 +13,7 @@ class Main():
       self._config = ConfigManager("config.json")
       self._persistence = PersistenceManager(self._config)
 
-   def run(self):
+   def run_dxf(self):
       rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(self.fname))
       if rm is None:
          raise RuntimeError("File name format error.")
@@ -35,19 +36,40 @@ class Main():
       self._persistence.floor_write(dx.floor)
 
 
-
 if __name__ == '__main__':
-   if len(sys.argv) > 1:
-      fname = sys.argv[1]
+   import argparse
 
+   parser = argparse.ArgumentParser(description = "Programma per l'aggiornamento dati del server Spazi Unimi.")
+
+   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "easy_rooms"],
+                      help="Il commando da eseguire: dxf, csv, easy_rooms")
+
+   parser.add_argument('files', metavar='file', type=str, nargs='*',
+                      help='I file su cui lavorare, a seconda del comando scelto. Se il comando è easy_rooms, verrà trascurato.')
+
+   args = parser.parse_args()
+
+
+
+   def update_dxf(args):
       import time
-      import random
-      time_s = time.time()
 
-      program = Main(fname)
-      program.run()
+      start_time = time.time()
 
-      print("Total time", time.time() - time_s, "seconds")
+      for fname in args.files:
+         program = Main(fname)
+         program.run_dxf()
 
-   else:
-      raise RuntimeError("Argument error: no file name.")
+      end_time = time.time() - start_time
+      print("Total time     :", end_time , "seconds")
+      print("Arithmetic mean:", end_time / len(args.files), "seconds")
+
+
+   ops = {
+      "dxf": update_dxf,
+      "csv": print,
+      "easy_rooms": print
+   }
+
+   ops[args.command](args)
+
