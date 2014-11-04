@@ -62,8 +62,6 @@ if __name__ == '__main__':
 
    parser = argparse.ArgumentParser(description = "Programma per l'aggiornamento dati del server Spazi Unimi.")
 
-   # TODO: verificare che se viene scelto csv e dxf, files non sia lista vuota.
-   # Similarmente se viene chiamato easy_rooms, files dev'essere vuoto
    parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "easy_rooms"],
                       help="Il commando da eseguire: dxf, csv, easy_rooms")
 
@@ -71,6 +69,16 @@ if __name__ == '__main__':
                       help='I file su cui lavorare, a seconda del comando scelto. Se il comando è easy_rooms, verrà trascurato.')
 
    args = parser.parse_args()
+
+   if(args.command in ["csv", "dxf"] and len(args.files) == 0):
+      print("Errore: Il comando "+args.command+" richiede almeno un file ."+args.command+" su cui lavorare.\n")
+      parser.print_help()
+      exit(1)
+
+   if(args.command in ["easy_rooms"] and len(args.files) > 0):
+      print("Errore: Il comando "+args.command+" non ammette ulteriori parametri.\n")
+      parser.print_help()
+      exit(1)
 
    program = Main()
    program.run_command(args.command, args.files)
