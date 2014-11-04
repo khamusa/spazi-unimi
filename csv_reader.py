@@ -4,8 +4,9 @@ class CSVReader:
    def __init__(self, csvfile, columns = None):
       try:
          dialect = csv.Sniffer().sniff(csvfile.read(1024), delimiters = '\n')
-      except Exception as e:
+      except csv.Error as e:
          dialect = "excel"
+
       csvfile.seek(0)
       reader = csv.reader(csvfile, dialect)
 
