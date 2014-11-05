@@ -11,9 +11,6 @@ class DB():
       try:
          self.client = pymongo.MongoClient(self.url,self.port)
          self.db     = self.client[self.dbname]
-
-         self.buildings = self.db.builyyy
+         
       except pymongo.errors.ConnectionFailure:
          sys.exit("Connection error")
-
-
