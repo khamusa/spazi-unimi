@@ -5,19 +5,36 @@ import sys
 import svgwrite
 import re
 import os
+import random
+import time
 
 class Main():
-   def __init__(self, fname):
-      self.fname = fname
-      self._config = ConfigManager("config.json")
+   def __init__(self):
+      self._config      = ConfigManager("config.json")
       self._persistence = PersistenceManager(self._config)
 
-   def run(self):
-      rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(self.fname))
+   def run_command(self, command, files):
+      start_time = time.time()
+
+      if len(files):
+         for filename in files:
+            getattr(self, "run_"+command)(filename)
+      else:
+         getattr(self, "run_"+command)()
+
+      end_time = time.time() - start_time
+      print("Total time     :", end_time , "seconds")
+
+      if len(files):
+         print("Arithmetic mean:", end_time / len(files), "seconds")
+
+
+   def run_dxf(self, filename):
+      rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))
       if rm is None:
          raise RuntimeError("File name format error.")
 
-      dx = DxfReader(self.fname, rm.group(1), rm.group(2))
+      dx = DxfReader(filename, rm.group(1), rm.group(2))
       svg = svgwrite.Drawing()
 
       for r in dx.floor.rooms:
@@ -34,20 +51,34 @@ class Main():
 
       self._persistence.floor_write(dx.floor)
 
+   def run_csv(self, filename):
+      print("CSV Not implemented yet.")
 
+   def run_easy_rooms(self):
+      print("Easy Rooms Not implemented yet.")
 
 if __name__ == '__main__':
-   if len(sys.argv) > 1:
-      fname = sys.argv[1]
+   import argparse
 
-      import time
-      import random
-      time_s = time.time()
+   parser = argparse.ArgumentParser(description = "Programma per l'aggiornamento dati del server Spazi Unimi.")
 
-      program = Main(fname)
-      program.run()
+   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "easy_rooms"],
+                      help="Il commando da eseguire: dxf, csv, easy_rooms")
 
-      print("Total time", time.time() - time_s, "seconds")
+   parser.add_argument('files', metavar='file', type=str, nargs='*',
+                      help='I file su cui lavorare, a seconda del comando scelto. Se il comando è easy_rooms, verrà trascurato.')
 
-   else:
-      raise RuntimeError("Argument error: no file name.")
+   args = parser.parse_args()
+
+   if(args.command in ["csv", "dxf"] and len(args.files) == 0):
+      print("Errore: Il comando "+args.command+" richiede almeno un file ."+args.command+" su cui lavorare.\n")
+      parser.print_help()
+      exit(1)
+
+   if(args.command in ["easy_rooms"] and len(args.files) > 0):
+      print("Errore: Il comando "+args.command+" non ammette ulteriori parametri.\n")
+      parser.print_help()
+      exit(1)
+
+   program = Main()
+   program.run_command(args.command, args.files)
