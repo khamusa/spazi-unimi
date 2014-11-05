@@ -13,7 +13,7 @@ class RoomText:
 
    def to_serializable(self):
       """Transform this object in something json-serializable"""
-      return { "text": self.text, "anchor_point": self.anchor_point }
+      return { "text": self.text, "anchor_point": self.anchor_point.to_serializable() }
 
    def from_serializable(json_obj):
       """From a json serialization reconstruct the object"""

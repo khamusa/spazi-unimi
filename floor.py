@@ -54,7 +54,7 @@ class Floor:
          "date"            : time.strftime("%m/%d/%Y"),
          "payload"         : {
                                  "n_rooms": len(self.rooms),
-                                 "rooms"  : self.rooms
+                                 "rooms"  : [ el.to_serializable() for el in self.rooms ]
                               }
       }
 

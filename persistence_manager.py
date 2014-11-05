@@ -18,4 +18,4 @@ class PersistenceManager():
         filename = self._cm["filepaths"]["preprocessed_floor_format"].format(building_name = floor.building_name, floor_name = floor.floor_name)
         full_file_path = os.path.join(base_building_path, filename + ".json")
         with open(full_file_path, "w") as fp:
-            json.dump(floor, fp, cls = JsonRoomEncoder, indent = self._cm["json_indent"])
+            json.dump(floor.to_serializable(), fp, indent = self._cm["json_indent"])

@@ -22,7 +22,10 @@ class Room():
 
    def to_serializable(self):
       """Transform this object in something json-serializable"""
-      return { "points": self.points, "texts": self.texts }
+      return {
+         "points": [ el.to_serializable() for el in self.points ],
+         "texts": [ el.to_serializable() for el in self.texts ]
+      }
 
    def from_serializable(json_obj):
       """From a json serialization reconstruct the object"""
