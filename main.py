@@ -16,11 +16,7 @@ class Main():
    def run_command(self, command, files):
       start_time = time.time()
 
-      if len(files):
-         for filename in files:
-            getattr(self, "run_"+command)(filename)
-      else:
-         getattr(self, "run_"+command)()
+      getattr(self, "run_"+command)(files)
 
       end_time = time.time() - start_time
       print("Total time     :", end_time , "seconds")
@@ -28,33 +24,36 @@ class Main():
       if len(files):
          print("Arithmetic mean:", end_time / len(files), "seconds")
 
+   def run_dxf(self, files):
+      for filename in files:
+         rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))
+         if rm is None:
+            raise RuntimeError("File name format error.")
 
-   def run_dxf(self, filename):
-      rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))
-      if rm is None:
-         raise RuntimeError("File name format error.")
+         dx = DxfReader(filename, rm.group(1), rm.group(2))
+         svg = svgwrite.Drawing()
 
-      dx = DxfReader(filename, rm.group(1), rm.group(2))
-      svg = svgwrite.Drawing()
+         for r in dx.floor.rooms:
+            color    = "rgb({}, {}, {})".format(int(random.random()*200), int(random.random()*200), int(random.random()*200))
+            points   = svg.polyline( ( (p.x, p.y) for p in r.points ), fill=color, stroke="#666")
 
-      for r in dx.floor.rooms:
-         color    = "rgb({}, {}, {})".format(int(random.random()*200), int(random.random()*200), int(random.random()*200))
-         points   = svg.polyline( ( (p.x, p.y) for p in r.points ), fill=color, stroke="#666")
+            svg.add(points)
 
-         svg.add(points)
+            for t in r.texts:
+               svg.add(svg.text(t.text, t.anchor_point))
 
-         for t in r.texts:
-            svg.add(svg.text(t.text, t.anchor_point))
+         svg.filename = "assets/test.svg"
+         svg.save()
 
-      svg.filename = "assets/test.svg"
-      svg.save()
+         self._persistence.floor_write(dx.floor)
 
-      self._persistence.floor_write(dx.floor)
+   def run_csv(self, files):
+      updater = CSVDataUpdater(self._config["csv_headers"])
 
-   def run_csv(self, filename):
-      print("CSV Not implemented yet.")
+      for filename in files:
+         updater.perform_update(filename)
 
-   def run_easy_rooms(self):
+   def run_easy_rooms(self, files_not_used = None):
       print("Easy Rooms Not implemented yet.")
 
 if __name__ == '__main__':
