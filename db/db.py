@@ -1,7 +1,8 @@
 import pymongo
 import sys
-class Db():
 
+
+class DB():
 
    def __init__(self, url, port, dbname):
       self.url    = url
@@ -10,5 +11,9 @@ class Db():
       try:
          self.client = pymongo.MongoClient(self.url,self.port)
          self.db     = self.client[self.dbname]
+
+         self.buildings = self.db.builyyy
       except pymongo.errors.ConnectionFailure:
          sys.exit("Connection error")
+
+
