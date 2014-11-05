@@ -1,4 +1,10 @@
 {
+   "db" : {
+      "url"    : "localhost",
+      "port"   : 27017,
+      "db_name" : "campus_unimi"
+   },
+
    "folders"   : {
       "data"                           : "data",
       "data_dxf_base_data"             : "data/dxf",
