@@ -1,17 +1,15 @@
 from dxf_reader import DxfReader
 from config_manager import ConfigManager
 from persistence_manager import PersistenceManager
-import sys
-import svgwrite
-import re
-import os
-import random
-import time
+from db.db_persistence_manager import DBPersistenceManager
+from csv_data_updater import CSVDataUpdater
+import sys, svgwrite, re, os, random, time
 
 class Main():
    def __init__(self):
       self._config      = ConfigManager("config.json")
       self._persistence = PersistenceManager(self._config)
+      self._dbpersistence = DBPersistenceManager(self._config)
 
    def run_command(self, command, files):
       start_time = time.time()
@@ -48,10 +46,11 @@ class Main():
          self._persistence.floor_write(dx.floor)
 
    def run_csv(self, files):
-      updater = CSVDataUpdater(self._config["csv_headers"])
+      updater = CSVDataUpdater(self._config["csv_headers"], self._dbpersistence)
 
       for filename in files:
-         updater.perform_update(filename)
+         with open(filename) as csvfile:
+            updater.perform_update(csvfile)
 
    def run_easy_rooms(self, files_not_used = None):
       print("Easy Rooms Not implemented yet.")

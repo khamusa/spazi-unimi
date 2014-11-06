@@ -8,8 +8,8 @@ class CSVDataUpdater:
       self._valid_headers = { k : set(v) for k, v in headers_dict.items() }
       self._pm = persistence_manager
 
-   def perform_update(self, filename, reader_class = CSVReader):
-      reader   = reader_class(filename)
+   def perform_update(self, csvfile, reader_class = CSVReader):
+      reader   = reader_class(csvfile)
       csv_type = self.infer_csv_from_header(reader.header)
 
       if csv_type == None:

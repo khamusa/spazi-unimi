@@ -1,6 +1,5 @@
 import json
 import os
-from json_room_encoder import JsonRoomEncoder
 
 class PersistenceManager():
 
