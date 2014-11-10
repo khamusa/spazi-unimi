@@ -8,6 +8,12 @@ class CSVDataUpdater:
       self._valid_headers = { k : set(v) for k, v in headers_dict.items() }
       self._pm = persistence_manager
 
+   def add_origin(self,items):
+      def add_origin_single(item):
+         item["origin"] = "csv"
+         return item
+      return ( add_origin_single(item) for item in items )
+
    def perform_update(self, csvfile, reader_class = CSVReader):
       reader   = reader_class(csvfile)
       csv_type = self.infer_csv_from_header(reader.header)
@@ -36,7 +42,8 @@ class CSVDataUpdater:
       self._pm.insert_room_categories(categories)
 
    def update_buildings(self,buildings):
-      self._pm.insert_buildings(buildings)
+      self._pm.insert_bid_lookup_table( buildings )
+      self._pm.insert_buildings( self.add_origin(buildings) )
 
    def update_rooms(self,rooms):
-      self._pm.insert_rooms(rooms)
+      self._pm.insert_rooms( self.add_origin(rooms) )

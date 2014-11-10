@@ -21,6 +21,7 @@ class DBPersistenceManager:
          self.insert_room_category(c)
 
    def insert_building(self,building):
+      self.clean_collection("buildings")
       self.db["buildings"].insert(building)
 
    def insert_buildings(self,buildings):
@@ -33,3 +34,13 @@ class DBPersistenceManager:
    def insert_rooms(self,rooms):
       for r in rooms:
          self.insert_room(r)
+
+   def insert_bid_lookup_table(self,buildings):
+      self.clean_collection("bid_to_lbid")
+
+      # create indexes
+      self.db["bid_to_lbid"].ensure_index("l_b_id")
+      self.db["bid_to_lbid"].ensure_index("b_id")
+
+      for b in buildings:
+         self.db["bid_to_lbid"].insert({ "l_b_id":b["l_b_id"] , "b_id" : b["b_id"] })

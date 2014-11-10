@@ -58,7 +58,8 @@ class CSVDataUpdaterTest(unittest.TestCase):
 
 
    def test_update_buildings_calls_persistence_manager_correctly(self):
-      buildings = ["first", "second"]
+      buildings = [{"first":1}, {"second":2}]
+      self.csv_updater.add_origin = MagicMock(return_value=buildings)
       self.csv_updater.update_buildings(buildings)
       self.csv_updater._pm.insert_buildings.assert_called_once_with(buildings)
 
@@ -71,6 +72,7 @@ class CSVDataUpdaterTest(unittest.TestCase):
 
    def test_update_rooms_calls_persistence_manager_correctly(self):
       rooms = ["first", "second"]
+      self.csv_updater.add_origin = MagicMock(return_value=rooms)
       self.csv_updater.update_rooms(rooms)
       self.csv_updater._pm.insert_rooms.assert_called_once_with(rooms)
 
@@ -80,3 +82,7 @@ class CSVDataUpdaterTest(unittest.TestCase):
       self.csv_updater.update_rooms = MagicMock()
       self.csv_updater.perform_update("Test.csv", reader_class = readerMock)
       self.csv_updater.update_rooms.assert_called_once_with("pippo")
+
+   def test_prepare_origin(self):
+      items = self.csv_updater.add_origin([ { "key1":1 , "key2":"pippo" } , { "key1":1 , "key2":"pluto" } ])
+      self.assertEqual(list(items),[ { "key1":1 , "key2":"pippo" , "origin":"csv" } , { "key1":1 , "key2":"pluto" , "origin":"csv"} ])
