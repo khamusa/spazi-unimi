@@ -16,7 +16,7 @@ class CSVDataUpdater:
          raise InvalidCSVHeaderError("L'intestazione del file CSV non è valida")
 
       {
-         "rooms"           : lambda s: None,
+         "rooms"           : self.update_rooms,
          "buildings"       : self.update_buildings,
          "room_categories" : self.update_room_categories
 
@@ -37,3 +37,6 @@ class CSVDataUpdater:
 
    def update_buildings(self,buildings):
       self._pm.insert_buildings(buildings)
+
+   def update_rooms(self,rooms):
+      self._pm.insert_rooms(rooms)

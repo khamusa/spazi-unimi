@@ -26,3 +26,10 @@ class DBPersistenceManager:
    def insert_buildings(self,buildings):
       for b in buildings:
          self.insert_building(b)
+
+   def insert_room(self,room):
+      self.db["rooms"].insert(room)
+
+   def insert_rooms(self,rooms):
+      for r in rooms:
+         self.insert_room(r)

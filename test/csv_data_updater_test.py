@@ -68,3 +68,15 @@ class CSVDataUpdaterTest(unittest.TestCase):
       self.csv_updater.update_buildings = MagicMock()
       self.csv_updater.perform_update("Test.csv", reader_class = readerMock)
       self.csv_updater.update_buildings.assert_called_once_with("pippo")
+
+   def test_update_rooms_calls_persistence_manager_correctly(self):
+      rooms = ["first", "second"]
+      self.csv_updater.update_rooms(rooms)
+      self.csv_updater._pm.insert_rooms.assert_called_once_with(rooms)
+
+   def test_perform_update_calls_correct_update_method_for_rooms(self):
+      readerMock = MagicMock(return_value = MagicMock(content = "pippo"))
+      self.csv_updater.infer_csv_from_header = MagicMock(return_value = "rooms")
+      self.csv_updater.update_rooms = MagicMock()
+      self.csv_updater.perform_update("Test.csv", reader_class = readerMock)
+      self.csv_updater.update_rooms.assert_called_once_with("pippo")
