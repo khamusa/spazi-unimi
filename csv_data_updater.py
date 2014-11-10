@@ -17,7 +17,7 @@ class CSVDataUpdater:
 
       {
          "rooms"           : lambda s: None,
-         "buildings"       : lambda s: None,
+         "buildings"       : self.update_buildings,
          "room_categories" : self.update_room_categories
 
       }[csv_type](reader.content)
@@ -34,3 +34,6 @@ class CSVDataUpdater:
 
    def update_room_categories(self, categories):
       self._pm.insert_room_categories(categories)
+
+   def update_buildings(self,buildings):
+      self._pm.insert_buildings(buildings)

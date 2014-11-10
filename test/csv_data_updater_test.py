@@ -55,3 +55,16 @@ class CSVDataUpdaterTest(unittest.TestCase):
       self.csv_updater.infer_csv_from_header = MagicMock(return_value = None)
       with self.assertRaises(InvalidCSVHeaderError):
          self.csv_updater.perform_update("Test.csv", reader_class = readerMock)
+
+
+   def test_update_buildings_calls_persistence_manager_correctly(self):
+      buildings = ["first", "second"]
+      self.csv_updater.update_buildings(buildings)
+      self.csv_updater._pm.insert_buildings.assert_called_once_with(buildings)
+
+   def test_perform_update_calls_correct_update_method_for_buildings(self):
+      readerMock = MagicMock(return_value = MagicMock(content = "pippo"))
+      self.csv_updater.infer_csv_from_header = MagicMock(return_value = "buildings")
+      self.csv_updater.update_buildings = MagicMock()
+      self.csv_updater.perform_update("Test.csv", reader_class = readerMock)
+      self.csv_updater.update_buildings.assert_called_once_with("pippo")
