@@ -21,10 +21,10 @@ class DBPersistenceManager:
          self.insert_room_category(c)
 
    def insert_building(self,building):
-      self.clean_collection("buildings")
       self.db["buildings"].insert(building)
 
    def insert_buildings(self,buildings):
+      self.clean_collection("buildings")
       for b in buildings:
          self.insert_building(b)
 

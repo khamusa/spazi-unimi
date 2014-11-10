@@ -70,7 +70,10 @@ class DbTest(unittest.TestCase):
 
    def test_insertbuildings(self):
       args = ["first","second"]
+      self.pm.clean_collection = MagicMock()
       self.pm.insert_building = MagicMock()
       self.pm.insert_buildings(args)
+
+      self.pm.clean_collection.assert_called_once_with("buildings")
       self.pm.insert_building.assert_any_call("first")
       self.pm.insert_building.assert_any_call("second")
