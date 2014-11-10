@@ -23,6 +23,7 @@ class Main():
 
    def run_dxf(self, files):
       persistence = SVGPersistenceDecorator(JSONPersistenceManager(self._config))
+      # TO-DO creare DXFDataUpdater
       for filename in files:
          rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))
          if rm is None:
