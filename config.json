@@ -1,4 +1,5 @@
 {
+   "env" : "development",
    "db" : {
       "url"    : "localhost",
       "port"   : 27017,

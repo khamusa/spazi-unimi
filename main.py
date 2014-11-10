@@ -1,15 +1,14 @@
 from dxf_reader import DxfReader
 from config_manager import ConfigManager
-from persistence_manager import PersistenceManager
+from json_persistence_manager import JSONPersistenceManager
 from db.db_persistence_manager import DBPersistenceManager
 from csv_data_updater import CSVDataUpdater
-import sys, svgwrite, re, os, random, time
+from svg_persistence_decorator import SVGPersistenceDecorator
+import sys, re, os, time
 
 class Main():
    def __init__(self):
       self._config      = ConfigManager("config.json")
-      self._persistence = PersistenceManager(self._config)
-      self._dbpersistence = DBPersistenceManager(self._config)
 
    def run_command(self, command, files):
       start_time = time.time()
@@ -23,30 +22,18 @@ class Main():
          print("Arithmetic mean:", end_time / len(files), "seconds")
 
    def run_dxf(self, files):
+      persistence = SVGPersistenceDecorator(JSONPersistenceManager(self._config))
       for filename in files:
          rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))
          if rm is None:
             raise RuntimeError("File name format error.")
 
          dx = DxfReader(filename, rm.group(1), rm.group(2))
-         svg = svgwrite.Drawing()
-
-         for r in dx.floor.rooms:
-            color    = "rgb({}, {}, {})".format(int(random.random()*200), int(random.random()*200), int(random.random()*200))
-            points   = svg.polyline( ( (p.x, p.y) for p in r.points ), fill=color, stroke="#666")
-
-            svg.add(points)
-
-            for t in r.texts:
-               svg.add(svg.text(t.text, t.anchor_point))
-
-         svg.filename = "assets/test.svg"
-         svg.save()
-
-         self._persistence.floor_write(dx.floor)
+         persistence.floor_write(dx.floor)
 
    def run_csv(self, files):
-      updater = CSVDataUpdater(self._config["csv_headers"], self._dbpersistence)
+      persistence = DBPersistenceManager(self._config)
+      updater = CSVDataUpdater(self._config["csv_headers"], persistence)
 
       for filename in files:
          with open(filename) as csvfile:
