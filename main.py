@@ -29,6 +29,7 @@ class Main():
             raise RuntimeError("File name format error.")
 
          dx = DxfReader(filename, rm.group(1), rm.group(2))
+         # TO-DO creare DXFDataUpdater
          svg = svgwrite.Drawing()
 
          for r in dx.floor.rooms:
