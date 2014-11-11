@@ -1,5 +1,6 @@
 import unittest
 from tasks.csv_data_updater import CSVDataUpdater, InvalidCSVHeaderError
+from persistence.db import MongoDBPersistenceManager
 from mock import MagicMock
 
 class CSVDataUpdaterTest(unittest.TestCase):
@@ -42,6 +43,8 @@ class CSVDataUpdaterTest(unittest.TestCase):
       cat = ["first", "second"]
       self.csv_updater.update_room_categories(cat)
       self.csv_updater._pm.insert_room_categories.assert_called_once_with(cat)
+      self.csv_updater._pm.clean_collection.assert_any_call(self.csv_updater._pm.ROOM_CATEGORIES)
+
 
    def test_perform_update_calls_correct_update_method_for_room_categories(self):
       readerMock = MagicMock(return_value = MagicMock(content = "pippo"))
@@ -62,6 +65,8 @@ class CSVDataUpdaterTest(unittest.TestCase):
       self.csv_updater.add_origin = MagicMock(return_value=buildings)
       self.csv_updater.update_buildings(buildings)
       self.csv_updater._pm.insert_buildings.assert_called_once_with(buildings)
+      self.csv_updater._pm.clean_collection.assert_any_call(self.csv_updater._pm.BUILDINGS)
+      self.csv_updater._pm.clean_collection.assert_any_call(self.csv_updater._pm.BID_TO_LBID)
 
    def test_perform_update_calls_correct_update_method_for_buildings(self):
       readerMock = MagicMock(return_value = MagicMock(content = "pippo"))

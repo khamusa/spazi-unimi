@@ -39,9 +39,12 @@ class CSVDataUpdater:
       return None
 
    def update_room_categories(self, categories):
+      self._pm.clean_collection(self._pm.ROOM_CATEGORIES)
       self._pm.insert_room_categories(categories)
 
    def update_buildings(self,buildings):
+      self._pm.clean_collection(self._pm.BUILDINGS)
+      self._pm.clean_collection(self._pm.BID_TO_LBID)
       self._pm.insert_bid_lookup_table( buildings )
       self._pm.insert_buildings( self.add_origin(buildings) )
 

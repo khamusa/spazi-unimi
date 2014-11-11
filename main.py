@@ -1,7 +1,7 @@
 from dxf_reader import DxfReader
 from config_manager import ConfigManager
 from json_persistence_manager import JSONPersistenceManager
-from persistence.db.db_persistence_manager import DBPersistenceManager
+from persistence.db.mongo_db_persistence_manager import MongoDBPersistenceManager
 from tasks.csv_data_updater import CSVDataUpdater
 from svg_persistence_decorator import SVGPersistenceDecorator
 import sys, re, os, time
@@ -33,7 +33,7 @@ class Main():
          persistence.floor_write(dx.floor)
 
    def run_csv(self, files):
-      persistence = DBPersistenceManager(self._config)
+      persistence = MongoDBPersistenceManager(self._config)
       updater = CSVDataUpdater(self._config["csv_headers"], persistence)
 
       for filename in files:

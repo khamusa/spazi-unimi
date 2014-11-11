@@ -7,7 +7,7 @@ class DbTest(unittest.TestCase):
 
    def setUp(self) :
       self.db = MagicMock()
-      self.pm = DBPersistenceManager(db=self.db)
+      self.pm = MongoDBPersistenceManager(db=self.db)
 
    def test_clientCreation(self) :
       config = ConfigManager("config.json")["db"]
@@ -16,20 +16,18 @@ class DbTest(unittest.TestCase):
    def test_roomcategory_save(self):
       args = { "cat_id" : "123" , "cat_name" : "room" }
       self.pm.insert_room_category( args )
-      self.db["room_categories"].insert.assert_called_once_with( args )
+      self.db[self.pm.ROOM_CATEGORIES].insert.assert_called_once_with( args )
 
    def test_insertroomcategories(self):
       args = [ "first", "second" ]
       self.pm.insert_room_category = MagicMock()
-      self.pm.clean_collection = MagicMock()
       self.pm.insert_room_categories( args )
-      self.pm.clean_collection.assert_called_once_with("room_categories")
       self.pm.insert_room_category.assert_any_call("first")
       self.pm.insert_room_category.assert_any_call("second")
 
    def test_cleancollection(self):
-      self.pm.clean_collection("room_categories")
-      self.db["room_categories"].drop.assert_called_once_with()
+      self.pm.clean_collection(self.pm.ROOM_CATEGORIES)
+      self.db[self.pm.ROOM_CATEGORIES].drop.assert_called_once_with()
 
 
    def test_room_save(self):
@@ -44,7 +42,7 @@ class DbTest(unittest.TestCase):
             }
 
       self.pm.insert_room(args)
-      self.db["rooms"].insert.assert_called_once_with(args)
+      self.db[self.pm.ROOMS].insert.assert_called_once_with(args)
 
    def test_insertrooms(self):
       args = ["first","second"]
@@ -64,15 +62,12 @@ class DbTest(unittest.TestCase):
       }
 
       self.pm.insert_building(args)
-      self.db["buildings"].insert.assert_called_once_with(args)
+      self.db[self.pm.BUILDINGS].insert.assert_called_once_with(args)
 
 
    def test_insertbuildings(self):
       args = ["first","second"]
-      self.pm.clean_collection = MagicMock()
       self.pm.insert_building = MagicMock()
       self.pm.insert_buildings(args)
-
-      self.pm.clean_collection.assert_called_once_with("buildings")
       self.pm.insert_building.assert_any_call("first")
       self.pm.insert_building.assert_any_call("second")
