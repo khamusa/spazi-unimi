@@ -1,4 +1,4 @@
-from db.db import DB
+from . import DB;
 
 class DBPersistenceManager:
 

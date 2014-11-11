@@ -1,51 +1,51 @@
-from room import Room
-from point import Point
-from room_text import RoomText
+from model.drawable import DrawableRoom
+from model.drawable import DrawablePoint
+from model.drawable import DrawableText
 import itertools
 
 import unittest
 from mock import MagicMock
 
-class RoomTest(unittest.TestCase):
+class DrawableRoomTest(unittest.TestCase):
    def setUp(self):
       # 10x10 square beginning on origin
-      self.room1 = Room([(0,0),(10,0),(10,10),(0,10)],
+      self.room1 = DrawableRoom([(0,0),(10,0),(10,10),(0,10)],
          [
-            RoomText("1234",Point(3,3)),
-            RoomText("Super Cool",Point(4,7)),
-            RoomText("Corner Text!",Point(1,10))
+            DrawableText("1234",DrawablePoint(3,3)),
+            DrawableText("Super Cool",DrawablePoint(4,7)),
+            DrawableText("Corner Text!",DrawablePoint(1,10))
          ])
 
       # 10x10 diamond shape centered at origin
-      self.room2 = Room([(10,0), (0, 10), (-10, 0), (0, -10)])
+      self.room2 = DrawableRoom([(10,0), (0, 10), (-10, 0), (0, -10)])
 
       # L-shaped room
-      self.room3 = Room([(0,0),(10,0),(10,5),(5,5),(5,10),(0,10)])
+      self.room3 = DrawableRoom([(0,0),(10,0),(10,5),(5,5),(5,10),(0,10)])
 
    def test_room_creation(self):
       original_points = [(0.3333333, 0.123123), (0.2222333, 10.19), (10.33334, 10.78530), (10.51111, 0.898999)]
-      room = Room(original_points)
+      room = DrawableRoom(original_points)
 
       # points have been saved?
       self.assertTrue(room.points)
 
    def test_point_to_right_of_line(self):
-      self.assertTrue(Room._compare_line_and_point( Point(10, 0), Point(0, 10), Point(9.9, 9.9)) > 0 )
-      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 2)) > 0 )
-      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 8)) > 0 )
-      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 8.999)) > 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(10, 0), DrawablePoint(0, 10), DrawablePoint(9.9, 9.9)) > 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(1, 9), DrawablePoint(1, 2)) > 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(1, 9), DrawablePoint(1, 8)) > 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(1, 9), DrawablePoint(1, 8.999)) > 0 )
 
       # Diagonal line
-      self.assertFalse(Room._compare_line_and_point( Point(1, 1), Point(9, 9), Point(1, 2)) > 0 )
-      self.assertFalse(Room._compare_line_and_point( Point(0, 0), Point(9, 9), Point(1, 8)) > 0 )
-      self.assertFalse(Room._compare_line_and_point( Point(9, 9), Point(5, 5), Point(1, 6)) > 0 )
-      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(2, 10), Point(1, 5)) == 0 )
+      self.assertFalse(DrawableRoom._compare_line_and_point( DrawablePoint(1, 1), DrawablePoint(9, 9), DrawablePoint(1, 2)) > 0 )
+      self.assertFalse(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(9, 9), DrawablePoint(1, 8)) > 0 )
+      self.assertFalse(DrawableRoom._compare_line_and_point( DrawablePoint(9, 9), DrawablePoint(5, 5), DrawablePoint(1, 6)) > 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(2, 10), DrawablePoint(1, 5)) == 0 )
 
       # Horizontal line with point aligned
-      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(10, 0), Point(4, 0)) == 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(10, 0), DrawablePoint(4, 0)) == 0 )
 
       # vertical line with point aligned
-      self.assertTrue(Room._compare_line_and_point( Point(0, 0), Point(0, 10), Point(0, 5)) == 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(0, 10), DrawablePoint(0, 5)) == 0 )
 
    def test_room_traslation(self):
       def check_room_traslation(room, amount_x, amount_y):
@@ -60,7 +60,7 @@ class RoomTest(unittest.TestCase):
             self.assertTrue(p1.x == p2.x + amount_x)
             self.assertTrue(p1.y == p2.y + amount_y)
 
-         # Pending: test for every RoomText on room
+         # Pending: test for every DrawableText on room
          for new_text, old_text in zip(room.texts, old_texts):
             self.assertTrue(new_text.anchor_point.x == old_text.anchor_point.x + amount_x)
             self.assertTrue(new_text.anchor_point.y == old_text.anchor_point.y + amount_y)

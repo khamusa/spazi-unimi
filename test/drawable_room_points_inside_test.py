@@ -1,32 +1,32 @@
-from room import Room
-from room_text import RoomText
-from point import Point
-from myitertools import circular_pairwise, partition
+from model.drawable import DrawableRoom
+from model.drawable import DrawableText
+from model.drawable import DrawablePoint
+from utils.myitertools import circular_pairwise, partition
 import itertools
 import unittest
 
-class RoomTestPointsInside(unittest.TestCase):
+class DrawableRoomTestDrawablePointsInside(unittest.TestCase):
    def setUp(self):
       # 10x10 square beginning on origin
-      self.room1 = Room([(0,0),(10,0),(10,10),(0,10)],
+      self.room1 = DrawableRoom([(0,0),(10,0),(10,10),(0,10)],
          [
-            RoomText("1234",Point(3,3)),
-            RoomText("Super Cool",Point(4,7)),
-            RoomText("Corner Text!",Point(1,10))
+            DrawableText("1234",DrawablePoint(3,3)),
+            DrawableText("Super Cool",DrawablePoint(4,7)),
+            DrawableText("Corner Text!",DrawablePoint(1,10))
          ])
 
       # 10x10 diamond shape centered at origin
-      self.room2 = Room([(10,0), (0, 10), (-10, 0), (0, -10)])
+      self.room2 = DrawableRoom([(10,0), (0, 10), (-10, 0), (0, -10)])
 
       # L-shaped room
-      self.room3 = Room([(0,0),(10,0),(10,5),(5,5),(5,10),(0,10)])
+      self.room3 = DrawableRoom([(0,0),(10,0),(10,5),(5,5),(5,10),(0,10)])
 
    def test_room_contains_point(self):
       def room_contains(room, x, y):
-            self.assertTrue( room._contains_point(Point(x, y)), "Room should contain {}, {}".format(x, y) )
+            self.assertTrue( room._contains_point(DrawablePoint(x, y)), "Room should contain {}, {}".format(x, y) )
 
       def room_not_contains(room, x, y):
-            self.assertFalse( room._contains_point(Point(x, y)), "Room should not contain {}, {}".format(x, y) )
+            self.assertFalse( room._contains_point(DrawablePoint(x, y)), "Room should not contain {}, {}".format(x, y) )
 
       # Generic points inside the square room
       for x, y in circular_pairwise(range(1,10)):
@@ -46,7 +46,7 @@ class RoomTestPointsInside(unittest.TestCase):
                (0.001, 0.001),
                (9.999, 9.999),
 
-               # Points precisely on the border
+               # DrawablePoints precisely on the border
                (5, 0),
                (10, 5),
                (5, 10),
@@ -71,11 +71,11 @@ class RoomTestPointsInside(unittest.TestCase):
                # Close to the center
                (0.001, 0.001), (3, 3), (-4.8, -4.8), (4.1, 3.8),
 
-               # Points precisely over the border
+               # DrawablePoints precisely over the border
                (10, 0), (0, 10), (-10, 0), (0, -10)
             ],
             "falses" : [
-               # Points definetely outside
+               # DrawablePoints definetely outside
                (9.9, 9.9), (10.2, 0), (0, -10.1), (10.001, 10.001), (33, 12)
             ]
          },
@@ -88,11 +88,11 @@ class RoomTestPointsInside(unittest.TestCase):
                # Close to the center
                (2, 3), (4, 5), (8, 2), (1, 7),
 
-               # Points precisely over the vertices
+               # DrawablePoints precisely over the vertices
                (0,0),(10,0),(10,5),(5,5),(5,10),(0,10)
             ],
             "falses" : [
-               # Points definetely outside
+               # DrawablePoints definetely outside
                (10.1, 0.3), (-0.1, 1), (2, 10.1), (-0.1, -0.1), (1, -0.1),
                (6,6), (5.1, 5.1)
             ]

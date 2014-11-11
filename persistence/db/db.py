@@ -1,7 +1,6 @@
 import pymongo
 import sys
 
-
 class DB():
 
    def __init__(self, url, port, dbname):

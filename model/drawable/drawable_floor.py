@@ -1,8 +1,7 @@
 import time
-from point import Point
-from room import Room
+from .drawable_room import DrawableRoom
 
-class Floor:
+class DrawableFloor:
 
    def __init__(self, building_name, floor_name = None, rooms = []):
       self.building_name   = building_name
@@ -59,5 +58,5 @@ class Floor:
       }
 
    def from_serializable(data):
-      rooms = ( Room.from_serializable(r) for r in  data["payload"]["rooms"])
-      return Floor( data["building_name"] , data["floor_name"] , rooms  )
+      rooms = ( DrawableRoom.from_serializable(r) for r in  data["payload"]["rooms"])
+      return DrawableFloor( data["building_name"] , data["floor_name"] , rooms  )

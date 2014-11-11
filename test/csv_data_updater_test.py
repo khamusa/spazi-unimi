@@ -1,5 +1,5 @@
 import unittest
-from csv_data_updater import CSVDataUpdater, InvalidCSVHeaderError
+from tasks.csv_data_updater import CSVDataUpdater, InvalidCSVHeaderError
 from mock import MagicMock
 
 class CSVDataUpdaterTest(unittest.TestCase):

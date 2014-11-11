@@ -1,6 +1,6 @@
 import unittest
 import io
-from csv_reader import CSVReader
+from utils.csv_reader import CSVReader
 
 class CSVReaderTest(unittest.TestCase):
    def test_header_reader(self):

@@ -1,4 +1,4 @@
-from csv_reader import CSVReader
+from utils.csv_reader import CSVReader
 
 class InvalidCSVHeaderError(RuntimeError):
    pass

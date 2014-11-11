@@ -1,8 +1,8 @@
 from dxf_reader import DxfReader
 from config_manager import ConfigManager
 from json_persistence_manager import JSONPersistenceManager
-from db.db_persistence_manager import DBPersistenceManager
-from csv_data_updater import CSVDataUpdater
+from persistence.db.db_persistence_manager import DBPersistenceManager
+from tasks.csv_data_updater import CSVDataUpdater
 from svg_persistence_decorator import SVGPersistenceDecorator
 import sys, re, os, time
 
@@ -41,7 +41,7 @@ class Main():
             updater.perform_update(csvfile)
 
    def run_easy_rooms(self, files_not_used = None):
-      print("Easy Rooms Not implemented yet.")
+      print("Easy DrawableRooms Not implemented yet.")
 
 if __name__ == '__main__':
    import argparse

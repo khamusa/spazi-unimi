@@ -8,10 +8,10 @@
 
 import dxfgrabber
 import sys
-from room import Room
-from room_text import RoomText
-from floor import Floor
-from point import Point
+from model.drawable import DrawableRoom
+from model.drawable import DrawableText
+from model.drawable import DrawableFloor
+from model.drawable import DrawablePoint
 from dxfgrabber.entities import LWPolyline, Polyline, MText, Text
 
 class DxfReader():
@@ -30,16 +30,16 @@ class DxfReader():
          return type(ent) in [MText, Text] and ent.layer in self.valid_text_layers
 
       rooms = (
-            Room( (p[0], -p[1]) for p in ent.points ) for ent in self._grabber.entities \
+            DrawableRoom( (p[0], -p[1]) for p in ent.points ) for ent in self._grabber.entities \
             if is_valid_room(ent)
             )
 
       texts = (
-            RoomText(ent.plain_text(), Point(ent.insert[0], -ent.insert[1]) ) \
+            DrawableText(ent.plain_text(), DrawablePoint(ent.insert[0], -ent.insert[1]) ) \
             for ent in self._grabber.entities
             if is_valid_text(ent)
             )
 
-      self.floor = Floor(building_name, floor_name, rooms)
+      self.floor = DrawableFloor(building_name, floor_name, rooms)
       self.floor.associate_room_texts(texts)
       self.floor.normalize(0.3)

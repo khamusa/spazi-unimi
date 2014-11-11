@@ -1,10 +1,10 @@
 import unittest
-from point import Point
-from room_text import RoomText
+from model.drawable import DrawablePoint
+from model.drawable import DrawableText
 
-class RoomTextTest(unittest.TestCase):
+class DrawableTextTest(unittest.TestCase):
    def test_text_translation(self):
-      t  = RoomText( "ABC", Point(20, 20) )
+      t  = DrawableText( "ABC", DrawablePoint(20, 20) )
       old_x, old_y = t.anchor_point
       t.traslate(10, 20)
 
@@ -17,7 +17,7 @@ class RoomTextTest(unittest.TestCase):
       self.assertTrue( t.anchor_point.y == old_y - 10 )
 
    def test_text_traslated(self):
-      t  = RoomText( "ABC", Point(20, 20) )
+      t  = DrawableText( "ABC", DrawablePoint(20, 20) )
       t2 = t.traslated(10, 20)
 
       # traslated must retur a new object
@@ -33,7 +33,7 @@ class RoomTextTest(unittest.TestCase):
       self.assertTrue( t2.anchor_point.y == 0 )
 
    def test_room_text__cloning(self):
-      t  = RoomText( "ABC", Point(20, 20) )
+      t  = DrawableText( "ABC", DrawablePoint(20, 20) )
       t2 = t.clone()
 
       self.assertTrue(t is not t2)

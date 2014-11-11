@@ -1,11 +1,11 @@
-from point import Point
-from room_text import RoomText
-from myitertools import circular_pairwise
+from utils.myitertools import circular_pairwise
 from itertools import chain
+from .drawable_text import DrawableText
+from .drawable_point import DrawablePoint
 
-class Room():
+class DrawableRoom():
    def __init__(self, points, texts=None):
-      self.points = Room.prepare_points(points)
+      self.points = DrawableRoom.prepare_points(points)
       self.texts  = texts or []
 
    def __str__(self):
@@ -18,7 +18,7 @@ class Room():
       return self.points == other.points and self.texts == other.texts
 
    def prepare_points(polypoints):
-      return [Point(point[0], point[1]) for point in polypoints]
+      return [DrawablePoint(point[0], point[1]) for point in polypoints]
 
    def to_serializable(self):
       """Transform this object in something json-serializable"""
@@ -29,8 +29,8 @@ class Room():
 
    def from_serializable(json_obj):
       """From a json serialization reconstruct the object"""
-      r = Room( (Point.from_serializable(p) for p in json_obj["points"]), \
-         [RoomText.from_serializable(t) for t in json_obj["texts"]] )
+      r = DrawableRoom( (DrawablePoint.from_serializable(p) for p in json_obj["points"]), \
+         [DrawableText.from_serializable(t) for t in json_obj["texts"]] )
       return r
 
    # Uses point crossproduct to determine if a point is to the right or to
@@ -78,7 +78,7 @@ class Room():
             # The following function returns -1 if the point is to the left
             # of the segment, 0 if it is on the same line as the segment,
             # +1 if it is to the right
-            comparison = Room._compare_line_and_point(a, b, point)
+            comparison = DrawableRoom._compare_line_and_point(a, b, point)
 
             # If the point is on the same line, we can conclude it belongs
             # to the shape if its x coordinates are between a's and b's
@@ -117,7 +117,7 @@ class Room():
          self.texts.append(text)
 
    def clone(self):
-      r = Room([])
+      r = DrawableRoom([])
       r.points = [ p.clone() for p in self.points ]
       r.texts = [ t.clone() for t in self.texts ]
       return r
