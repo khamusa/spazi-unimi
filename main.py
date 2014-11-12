@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
    parser = argparse.ArgumentParser(description = "Programma per l'aggiornamento dati del server Spazi Unimi.")
 
-   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "easy_rooms"],
+   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "easy_rooms", "cow"],
                       help="Il commando da eseguire: dxf, csv, easy_rooms")
 
    parser.add_argument('files', metavar='file', type=str, nargs='*',
@@ -65,6 +65,15 @@ if __name__ == '__main__':
       print("Errore: Il comando "+args.command+" non ammette ulteriori parametri.\n")
       parser.print_help()
       exit(1)
+
+   if(args.command == 'cow'):
+      try:
+         with open("assets/cow.txt") as fp:
+            for line in fp:
+               print(line, end="")
+      except:
+         print("There is no cow level.")
+      exit()
 
    program = Main()
    program.run_command(args.command, args.files)
