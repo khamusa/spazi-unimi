@@ -22,7 +22,7 @@ class Main():
          print("Arithmetic mean:", end_time / len(files), "seconds")
 
    def run_dxf(self, files):
-      persistence = SVGPersistenceDecorator(JSONPersistenceManager(self._config))
+      persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
       # TO-DO creare DXFDataUpdater
       for filename in files:
          rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))

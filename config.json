@@ -13,6 +13,9 @@
       "data_dxf_preprocessed_output"   : "data/dxf/preprocessed",
       "data_csv"                       : "data/csv",
       "data_csv_sources"               : "data/csv/sources",
+      "data_svg_base_data"             : "data/svg",
+      "data_svg_sources"               : "data/svg/sources",
+      "data_svg_preprocessed_output"   : "data/svg/preprocessed",
       "tests"                          : "test",
       "assets"                         : "assets",
       "tmp"                            : "tmp"
