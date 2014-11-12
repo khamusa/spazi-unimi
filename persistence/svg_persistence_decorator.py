@@ -1,6 +1,7 @@
 import svgwrite, random
+from .persistence_manager import PersistenceManager
 
-class SVGPersistenceDecorator:
+class SVGPersistenceDecorator(PersistenceManager):
 
    def __init__(self, persistence):
       self._decorated = persistence
