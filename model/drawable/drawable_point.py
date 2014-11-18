@@ -1,3 +1,4 @@
+from math import sin, cos, radians
 class DrawablePoint():
    def __init__(self, a, b = None):
       a, b = b is None and (a[0], a[1]) or (a, b)
@@ -51,6 +52,17 @@ class DrawablePoint():
    def reflect_y(self):
       self.y = -self.y
 
+   def rotate(self, grades, center_x = 0, center_y = 0):
+      theta = radians(grades)
+      self.x -= center_x
+      self.y -= center_y
+      x = self.x * cos(theta) - self.y * sin(theta)
+      y = self.x * sin(theta) + self.y * cos(theta)
+      self.x = center_x + x
+      self.y = center_y + y
+
+      return self
+
    def clone(self):
       return DrawablePoint(self.x, self.y)
 
@@ -62,6 +74,9 @@ class DrawablePoint():
       """Returns an integer obtained as the cross product of the two points"""
       return self.x * other.y - self.y * other.x
 
-   def scale(self, amount):
-      self.x = self.x * amount
-      self.y = self.y * amount
+   def scale(self, amount_x, amount_y = None):
+      amount_y = amount_y or amount_x
+      self.x = self.x * amount_x
+      self.y = self.y * amount_y
+
+      return self
