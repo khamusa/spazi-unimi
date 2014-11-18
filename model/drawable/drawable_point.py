@@ -1,4 +1,6 @@
-from math import sin, cos, radians
+from math import sin, cos, radians, sqrt
+from sys import float_info
+
 class DrawablePoint():
    def __init__(self, a, b = None):
       a, b = b is None and (a[0], a[1]) or (a, b)
@@ -9,7 +11,10 @@ class DrawablePoint():
       return round(a, 3)
 
    def __eq__(self, other):
-      return other.x == self.x and other.y == self.y
+      return (
+            self._round(abs(other.x - self.x)) == 0.0 and
+            self._round(abs(other.y - self.y)) == 0.0
+            )
 
    def __str__(self):
       return "P({}, {})".format(self.x, self.y)
@@ -43,6 +48,13 @@ class DrawablePoint():
       self.y += y_amount
       return self
 
+   def distance_to(a, b = None):
+      """Calculates distance from current point to another point or tuple of coordinates"""
+      other_x, other_y = b is None and (a[0], a[1]) or (a, b)
+      x1 = abs(self.x - other_x)
+      y1 = abs(self.y - other_y)
+      return sqrt(x1*x1 + y1*y1)
+
    def reflected_y(self):
       """Returns a new point, with y coordinate reflected_y"""
       p = self.clone()
@@ -58,8 +70,8 @@ class DrawablePoint():
       self.y -= center_y
       x = self.x * cos(theta) - self.y * sin(theta)
       y = self.x * sin(theta) + self.y * cos(theta)
-      self.x = center_x + x
-      self.y = center_y + y
+      self.x = center_x + self._round(x)
+      self.y = center_y + self._round(y)
 
       return self
 
