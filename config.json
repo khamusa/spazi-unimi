@@ -22,7 +22,8 @@
    },
 
    "filepaths" : {
-      "preprocessed_floor_format"      : "{building_name}_{floor_name}"
+      "preprocessed_floor_format"      : "{building_name}_{floor_name}",
+      "floor_mapping"                  : "model/floor_mapping.json"
    },
 
    "json_indent" : 3,
