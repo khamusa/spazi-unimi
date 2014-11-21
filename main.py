@@ -1,4 +1,4 @@
-from dxf_reader import DxfReader
+from tasks.dxf.dxf_reader import DxfReader
 from config_manager import ConfigManager
 from persistence.json_persistence_manager import JSONPersistenceManager
 from persistence.db.mongo_db_persistence_manager import MongoDBPersistenceManager
@@ -27,7 +27,8 @@ class Main():
       for filename in files:
          rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))
          if rm is None:
-            raise RuntimeError("File name format error.")
+            print("File name format error: ", filename)
+            continue
 
          dx = DxfReader(filename, rm.group(1), rm.group(2))
          persistence.floor_write(dx.floor)
