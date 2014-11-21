@@ -1,4 +1,5 @@
 from utils.csv_reader import CSVReader
+from utils.logger import Logger
 
 class InvalidCSVHeaderError(RuntimeError):
    pass
@@ -19,14 +20,16 @@ class CSVDataUpdater:
       csv_type = self.infer_csv_from_header(reader.header)
 
       if csv_type == None:
-         raise InvalidCSVHeaderError("L'intestazione del file CSV non è valida")
+         Logger.error("Invalid CSV header file") 
+      else:
+         {
+            "rooms"           : self.update_rooms,
+            "buildings"       : self.update_buildings,
+            "room_categories" : self.update_room_categories
 
-      {
-         "rooms"           : self.update_rooms,
-         "buildings"       : self.update_buildings,
-         "room_categories" : self.update_room_categories
+         }[csv_type](reader.content)
 
-      }[csv_type](reader.content)
+         return csv_type
 
 
    def infer_csv_from_header(self, effective_header):
@@ -39,14 +42,17 @@ class CSVDataUpdater:
       return None
 
    def update_room_categories(self, categories):
+      Logger.info("Updating room_categories collection")
       self._pm.clean_collection(self._pm.ROOM_CATEGORIES)
       self._pm.insert_room_categories(categories)
 
    def update_buildings(self,buildings):
+      Logger.info("Updating buildings collection")
       self._pm.clean_collection(self._pm.BUILDINGS)
       self._pm.clean_collection(self._pm.BID_TO_LBID)
       self._pm.insert_bid_lookup_table( buildings )
       self._pm.insert_buildings( self.add_origin(buildings) )
 
    def update_rooms(self,rooms):
+      Logger.info("Updating rooms collection")
       self._pm.insert_rooms( self.add_origin(rooms) )
