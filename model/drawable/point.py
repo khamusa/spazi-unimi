@@ -1,7 +1,7 @@
 from math import sin, cos, radians, sqrt
 from sys import float_info
 
-class DrawablePoint():
+class Point():
    def __init__(self, a, b = None):
       a, b = b is None and (a[0], a[1]) or (a, b)
       self.x = self._round(a)
@@ -28,7 +28,7 @@ class DrawablePoint():
 
    def from_serializable(json_obj):
       """From a json serialization reconstruct the object"""
-      return DrawablePoint(json_obj["x"], json_obj["y"])
+      return Point(json_obj["x"], json_obj["y"])
 
    def __getitem__(self, index):
       if index == 0:
@@ -40,7 +40,7 @@ class DrawablePoint():
 
    def traslated(self, x_amount, y_amount):
       """Returns a new point representing the current point translated"""
-      return DrawablePoint(self.x, self.y).traslate(x_amount, y_amount)
+      return Point(self.x, self.y).traslate(x_amount, y_amount)
 
    def traslate(self, x_amount, y_amount):
       """Traslates the current point by the supplied amount, and return self for chainability"""
@@ -76,11 +76,11 @@ class DrawablePoint():
       return self
 
    def clone(self):
-      return DrawablePoint(self.x, self.y)
+      return Point(self.x, self.y)
 
    def rotated_clockwise(self):
       """Returns a new point, rotated 90 grades clockwise, with origin as reference"""
-      return DrawablePoint(self.y, -self.x)
+      return Point(self.y, -self.x)
 
    def cross_product(self, other):
       """Returns an integer obtained as the cross product of the two points"""

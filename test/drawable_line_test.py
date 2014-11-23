@@ -1,5 +1,5 @@
 import unittest
-from model.drawable import DrawableLine, DrawablePoint
+from model.drawable import DrawableLine, Point
 
 class DrawableLineTest(unittest.TestCase):
    def test_line_creation(self):
@@ -9,8 +9,8 @@ class DrawableLineTest(unittest.TestCase):
       self.assertEqual(l1.end[0], 3)
       self.assertEqual(l1.end[1], 4)
 
-      p1 = DrawablePoint(1, 2)
-      p2 = DrawablePoint(3, 4)
+      p1 = Point(1, 2)
+      p2 = Point(3, 4)
       l2 = DrawableLine( p1, p2 )
       self.assertEqual(l2.start[0], 1)
       self.assertEqual(l2.start[1], 2)
@@ -19,8 +19,8 @@ class DrawableLineTest(unittest.TestCase):
 
    def test_line_eq(self):
       l1 = DrawableLine( (1, 2), (3, 4) )
-      l2 = DrawableLine( DrawablePoint(1, 2), DrawablePoint(3, 4) )
-      l3 = DrawableLine( DrawablePoint(3, 4), DrawablePoint(1, 2) )
+      l2 = DrawableLine( Point(1, 2), Point(3, 4) )
+      l3 = DrawableLine( Point(3, 4), Point(1, 2) )
       self.assertEqual(l1, l2)
       self.assertEqual(l1, l3)
       self.assertEqual(l3, l2)

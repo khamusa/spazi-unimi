@@ -12,7 +12,7 @@ import sys
 from model.drawable import DrawableRoom
 from model.drawable import DrawableText
 from model.drawable import DrawableFloor
-from model.drawable import DrawablePoint
+from model.drawable import Point
 from dxfgrabber.entities import LWPolyline, Polyline, MText, Text
 from . import DXFDoorParser
 
@@ -39,7 +39,7 @@ class DxfReader():
             )
 
       texts = (
-            DrawableText(ent.plain_text(), DrawablePoint(ent.insert[0], -ent.insert[1]) ) \
+            DrawableText(ent.plain_text(), Point(ent.insert[0], -ent.insert[1]) ) \
             for ent in self._grabber.entities
             if is_valid_text(ent)
             )

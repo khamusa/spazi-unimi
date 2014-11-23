@@ -1,5 +1,5 @@
 from model.drawable import DrawableRoom
-from model.drawable import DrawablePoint
+from model.drawable import Point
 from model.drawable import DrawableText
 import itertools
 
@@ -11,9 +11,9 @@ class DrawableRoomTest(unittest.TestCase):
       # 10x10 square beginning on origin
       self.room1 = DrawableRoom([(0,0),(10,0),(10,10),(0,10)],
          [
-            DrawableText("1234",DrawablePoint(3,3)),
-            DrawableText("Super Cool",DrawablePoint(4,7)),
-            DrawableText("Corner Text!",DrawablePoint(1,10))
+            DrawableText("1234",Point(3,3)),
+            DrawableText("Super Cool",Point(4,7)),
+            DrawableText("Corner Text!",Point(1,10))
          ])
 
       # 10x10 diamond shape centered at origin
@@ -30,22 +30,22 @@ class DrawableRoomTest(unittest.TestCase):
       self.assertTrue(room.points)
 
    def test_point_to_right_of_line(self):
-      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(10, 0), DrawablePoint(0, 10), DrawablePoint(9.9, 9.9)) > 0 )
-      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(1, 9), DrawablePoint(1, 2)) > 0 )
-      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(1, 9), DrawablePoint(1, 8)) > 0 )
-      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(1, 9), DrawablePoint(1, 8.999)) > 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( Point(10, 0), Point(0, 10), Point(9.9, 9.9)) > 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 2)) > 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 8)) > 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 8.999)) > 0 )
 
       # Diagonal line
-      self.assertFalse(DrawableRoom._compare_line_and_point( DrawablePoint(1, 1), DrawablePoint(9, 9), DrawablePoint(1, 2)) > 0 )
-      self.assertFalse(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(9, 9), DrawablePoint(1, 8)) > 0 )
-      self.assertFalse(DrawableRoom._compare_line_and_point( DrawablePoint(9, 9), DrawablePoint(5, 5), DrawablePoint(1, 6)) > 0 )
-      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(2, 10), DrawablePoint(1, 5)) == 0 )
+      self.assertFalse(DrawableRoom._compare_line_and_point( Point(1, 1), Point(9, 9), Point(1, 2)) > 0 )
+      self.assertFalse(DrawableRoom._compare_line_and_point( Point(0, 0), Point(9, 9), Point(1, 8)) > 0 )
+      self.assertFalse(DrawableRoom._compare_line_and_point( Point(9, 9), Point(5, 5), Point(1, 6)) > 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(2, 10), Point(1, 5)) == 0 )
 
       # Horizontal line with point aligned
-      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(10, 0), DrawablePoint(4, 0)) == 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(10, 0), Point(4, 0)) == 0 )
 
       # vertical line with point aligned
-      self.assertTrue(DrawableRoom._compare_line_and_point( DrawablePoint(0, 0), DrawablePoint(0, 10), DrawablePoint(0, 5)) == 0 )
+      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(0, 10), Point(0, 5)) == 0 )
 
    def test_room_traslation(self):
       def check_room_traslation(room, amount_x, amount_y):
