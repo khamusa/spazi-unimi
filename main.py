@@ -1,4 +1,4 @@
-from dxf_reader import DxfReader
+from tasks.dxf.dxf_reader import DxfReader
 from config_manager import ConfigManager
 from persistence.json_persistence_manager import JSONPersistenceManager
 from persistence.db.mongo_db_persistence_manager import MongoDBPersistenceManager
