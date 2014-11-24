@@ -30,6 +30,7 @@ class PointTest(unittest.TestCase):
 
       self.assertTrue(p.x + 10 == p2.x)
       self.assertTrue(p.y + 20 == p2.y)
+      self.assertTrue(p2 is not p)
 
       p2 = p.traslated(-33, -44)
 
@@ -45,12 +46,50 @@ class PointTest(unittest.TestCase):
 
    def test_point_scaling(self):
       p = Point(10, 20)
-      p.scale(.2)
+      p1 = p.scale(.2)
 
       self.assertEqual(p.x, 2)
       self.assertEqual(p.y, 4)
+      self.assertTrue(p1 is p)
 
       p.scale(2)
 
       self.assertEqual(p.x, 4)
       self.assertEqual(p.y, 8)
+
+      p2 = p.scaled(2, 3)
+
+      self.assertEqual(p2.x, 8)
+      self.assertEqual(p2.y, 24)
+      self.assertTrue(p2 is not p)
+
+
+   def test_point_rotation(self):
+      p = Point(10, 20)
+      p1 = p.rotate(90)
+
+      self.assertEqual(p.x, -20)
+      self.assertEqual(p.y, 10)
+      self.assertTrue(p1 is p)
+
+      p.rotate(90)
+
+      self.assertEqual(p.x, -10)
+      self.assertEqual(p.y, -20)
+
+      p2 = p.rotated(-180)
+
+      self.assertEqual(p2.x, 10)
+      self.assertEqual(p2.y, 20)
+      self.assertTrue(p2 is not p)
+
+   def test_point_reflect_y(self):
+      p = Point(3, 4)
+      p2 = p.reflect_y()
+
+      self.assertEqual(p, Point(3, -4))
+      self.assertTrue(p is p2)
+
+      p2 = p.reflected_y()
+      self.assertEqual(p2, Point(3, 4))
+      self.assertTrue(p is not p2)

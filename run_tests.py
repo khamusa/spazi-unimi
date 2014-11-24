@@ -11,7 +11,6 @@ else:
    sys.argv = sys.argv[0:1]
 
 for filename in files_list:
-   print(filename)
    if re.match(".+test\.py" , filename):
       s = __import__("test."+filename.rsplit(".py")[0], globals(), locals(), ['*'], 0)
       potential_class_names = [local for local in dir(s) if re.match("[A-Z][^_]+", local) ]

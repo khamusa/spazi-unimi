@@ -1,5 +1,6 @@
 from model.drawable import DrawableRoom
 from model.drawable import Point
+from model.drawable import Polygon
 from model.drawable import DrawableText
 import itertools
 
@@ -9,7 +10,8 @@ from mock import MagicMock
 class DrawableRoomTest(unittest.TestCase):
    def setUp(self):
       # 10x10 square beginning on origin
-      self.room1 = DrawableRoom([(0,0),(10,0),(10,10),(0,10)],
+      self.polygon1 = Polygon.from_absolute_coordinates([(0,0),(10,0),(10,10),(0,10)])
+      self.room1 = DrawableRoom(self.polygon1,
          [
             DrawableText("1234",Point(3,3)),
             DrawableText("Super Cool",Point(4,7)),
@@ -17,48 +19,23 @@ class DrawableRoomTest(unittest.TestCase):
          ])
 
       # 10x10 diamond shape centered at origin
-      self.room2 = DrawableRoom([(10,0), (0, 10), (-10, 0), (0, -10)])
+      self.polygon2 = Polygon.from_absolute_coordinates([(10,0), (0, 10), (-10, 0), (0, -10)])
+      self.room2 = DrawableRoom(self.polygon2)
 
       # L-shaped room
-      self.room3 = DrawableRoom([(0,0),(10,0),(10,5),(5,5),(5,10),(0,10)])
-
-   def test_room_creation(self):
-      original_points = [(0.3333333, 0.123123), (0.2222333, 10.19), (10.33334, 10.78530), (10.51111, 0.898999)]
-      room = DrawableRoom(original_points)
-
-      # points have been saved?
-      self.assertTrue(room.points)
-
-   def test_point_to_right_of_line(self):
-      self.assertTrue(DrawableRoom._compare_line_and_point( Point(10, 0), Point(0, 10), Point(9.9, 9.9)) > 0 )
-      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 2)) > 0 )
-      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 8)) > 0 )
-      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 8.999)) > 0 )
-
-      # Diagonal line
-      self.assertFalse(DrawableRoom._compare_line_and_point( Point(1, 1), Point(9, 9), Point(1, 2)) > 0 )
-      self.assertFalse(DrawableRoom._compare_line_and_point( Point(0, 0), Point(9, 9), Point(1, 8)) > 0 )
-      self.assertFalse(DrawableRoom._compare_line_and_point( Point(9, 9), Point(5, 5), Point(1, 6)) > 0 )
-      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(2, 10), Point(1, 5)) == 0 )
-
-      # Horizontal line with point aligned
-      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(10, 0), Point(4, 0)) == 0 )
-
-      # vertical line with point aligned
-      self.assertTrue(DrawableRoom._compare_line_and_point( Point(0, 0), Point(0, 10), Point(0, 5)) == 0 )
+      self.polygon3 = Polygon.from_absolute_coordinates([(0,0),(10,0),(10,5),(5,5),(5,10),(0,10)])
+      self.room3 = DrawableRoom(self.polygon3)
 
    def test_room_traslation(self):
       def check_room_traslation(room, amount_x, amount_y):
+         room.polygon = MagicMock();
 
-         old_points = [ p.clone() for p in room.points ]
          old_texts = [ t.clone() for t in room.texts ]
 
          room.traslate(amount_x, amount_y)
 
-         # Check points have been traslated
-         for p1, p2 in zip(room.points, old_points):
-            self.assertTrue(p1.x == p2.x + amount_x)
-            self.assertTrue(p1.y == p2.y + amount_y)
+         # Check polygon have been traslated
+         room.polygon.traslate.assert_called_with(amount_x, amount_y)
 
          # Pending: test for every DrawableText on room
          for new_text, old_text in zip(room.texts, old_texts):
@@ -84,18 +61,22 @@ class DrawableRoomTest(unittest.TestCase):
    def test_room_cloning(self):
       r2 = self.room1.clone()
 
-      self.assertTrue(r2.points == self.room1.points)
-      self.assertTrue(r2.texts == self.room1.texts)
+
+      self.assertEqual(r2.texts, self.room1.texts)
+      self.assertEqual(r2.polygon, self.room1.polygon)
+      self.assertEqual(r2, self.room1)
 
       self.assertTrue(r2 is not self.room1)
 
    def test_room_scale(self):
-      for p in itertools.chain(self.room1.points, self.room1.texts):
+      self.room1.polygon = MagicMock()
+      for p in self.room1.texts:
          p.scale =  MagicMock()
 
       self.room1.scale(2)
 
-      for p in itertools.chain(self.room1.points, self.room1.texts):
+      for p in self.room1.texts:
          p.scale.assert_called_with(2)
+      self.room1.polygon.scale.assert_called_with(2)
 
 
