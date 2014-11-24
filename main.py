@@ -1,14 +1,18 @@
-from dxf_reader import DxfReader
+from tasks.dxf.dxf_reader import DxfReader
 from config_manager import ConfigManager
 from persistence.json_persistence_manager import JSONPersistenceManager
 from persistence.db.mongo_db_persistence_manager import MongoDBPersistenceManager
 from tasks.csv_data_updater import CSVDataUpdater
 from persistence.svg_persistence_decorator import SVGPersistenceDecorator
-import sys, re, os, time
+from utils.logger import Logger
+import sys, re, os, time, shutil
 
 class Main():
    def __init__(self):
       self._config      = ConfigManager("config.json")
+
+   def save_file(self, file, dest, name):
+      shutil.copy(file, dest + "/" + name)
 
    def run_command(self, command, files):
       start_time = time.time()
@@ -27,7 +31,8 @@ class Main():
       for filename in files:
          rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))
          if rm is None:
-            raise RuntimeError("File name format error.")
+            print("File name format error: ", filename)
+            continue
 
          dx = DxfReader(filename, rm.group(1), rm.group(2))
          persistence.floor_write(dx.floor)
@@ -37,8 +42,11 @@ class Main():
       updater = CSVDataUpdater(self._config["csv_headers"], persistence)
 
       for filename in files:
+         Logger.info("Processing file " + filename)
          with open(filename) as csvfile:
-            updater.perform_update(csvfile)
+            csv_name = updater.perform_update(csvfile)
+            if csv_name is not None:
+               self.save_file(filename, self._config["folders"]["data_csv_sources"], csv_name + ".csv")
 
    def run_easy_rooms(self, files_not_used = None):
       print("Easy DrawableRooms Not implemented yet.")
