@@ -23,7 +23,7 @@ class DrawableFloor:
 
    def add_room(self, room):
       """Adds a room to current floor object"""
-      minX, minY   = room.offset_from_origin()
+      minX, minY  = room.min_absolute_point()
       self.min_x  = min(self.min_x, minX)
       self.min_y  = min(self.min_y, minY)
       self.rooms.append(room)

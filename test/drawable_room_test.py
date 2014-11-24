@@ -49,10 +49,10 @@ class DrawableRoomTest(unittest.TestCase):
       check_room_traslation(self.room1, 0, 0)
 
 
-   def test_room_offset_from_origin(self):
+   def test_room_min_absolute_point(self):
 
       def check_top_most(room, expected_x, expected_y):
-         minX, minY = room.offset_from_origin()
+         minX, minY = room.min_absolute_point()
          self.assertEqual(minX, expected_x)
          self.assertEqual(minY, expected_y)
 
@@ -71,12 +71,12 @@ class DrawableRoomTest(unittest.TestCase):
    def test_room_scale(self):
       self.room1.polygon = MagicMock()
       for p in self.room1.texts:
-         p.scale =  MagicMock()
+         p.anchor_point.scale =  MagicMock()
 
       self.room1.scale(2)
 
-      for p in self.room1.texts:
-         p.scale.assert_called_with(2)
+      for t in self.room1.texts:
+         t.anchor_point.scale.assert_called_with(2)
       self.room1.polygon.scale.assert_called_with(2)
 
 

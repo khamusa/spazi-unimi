@@ -48,11 +48,9 @@ class DrawableRoom():
       relative_point = text.anchor_point.traslated(traslate_x, traslate_y)
       return self.polygon._contains_point(relative_point)
 
-   def offset_from_origin(self):
-      """TODO: remvoe method, delegating this functionality to the polygon
-      itself (we have to change the calling classes/functions/modules, then
-      remove this method"""
-      return (self.polygon.anchor_point[0], self.polygon.anchor_point[1])
+   def min_absolute_point(self):
+      min_point, _ = self.polygon.bounding_box
+      return self.polygon.anchor_point.traslated(*min_point)
 
    ##########################
    # TRANSFORMATION METHODS #
@@ -62,7 +60,7 @@ class DrawableRoom():
       """Traslates this room, by traslating it's polygon and texts"""
       self.polygon.traslate(amount_x, amount_y)
       for t in self.texts:
-         t.traslate(amount_x, amount_y)
+         t.anchor_point.traslate(amount_x, amount_y)
       return self
 
    def traslated(self, amount_x, amount_y):
@@ -79,5 +77,6 @@ class DrawableRoom():
    def scale(self, amount):
       """TODO: accept amount_x and amount_y separeted"""
       self.polygon.scale(amount)
+      self.polygon.anchor_point.scale(amount)
       for t in self.texts:
-         t.scale(amount)
+         t.anchor_point.scale(amount)

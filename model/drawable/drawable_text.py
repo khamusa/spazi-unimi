@@ -24,21 +24,3 @@ class DrawableText:
 
    def clone(self):
       return DrawableText(self.text, self.anchor_point.clone())
-
-   def traslated(self, amount_x, amount_y):
-      return DrawableText( self.text, self.anchor_point.clone() ).traslate( amount_x, amount_y )
-
-   def traslate(self, amount_x, amount_y):
-      self.anchor_point.traslate(amount_x, amount_y)
-      return self
-
-   def reflected_y(self):
-      rt = self.clone()
-      rt.reflect_y()
-      return rt
-
-   def reflect_y(self):
-      self.anchor_point.reflect_y()
-
-   def scale(self, amount):
-      self.anchor_point.scale(amount)
