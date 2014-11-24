@@ -1,7 +1,7 @@
 import time
-from .drawable_room import DrawableRoom
+from . import Room
 
-class DrawableFloor:
+class Floor:
 
    def __init__(self, building_name, floor_name = None, rooms = []):
       self.building_name   = building_name
@@ -23,7 +23,7 @@ class DrawableFloor:
 
    def add_room(self, room):
       """Adds a room to current floor object"""
-      minX, minY   = room.offset_from_origin()
+      minX, minY  = room.min_absolute_point()
       self.min_x  = min(self.min_x, minX)
       self.min_y  = min(self.min_y, minY)
       self.rooms.append(room)
@@ -32,7 +32,7 @@ class DrawableFloor:
       """Given a list of texts, associates each one with a room belonging to the current floor"""
       for t in texts:
          for r in self.rooms:
-            if r.containsText( t ):
+            if r.contains_text( t ):
                r.add_text(t)
                break
 
@@ -58,5 +58,5 @@ class DrawableFloor:
       }
 
    def from_serializable(data):
-      rooms = ( DrawableRoom.from_serializable(r) for r in  data["payload"]["rooms"])
-      return DrawableFloor( data["building_name"] , data["floor_name"] , rooms  )
+      rooms = ( Room.from_serializable(r) for r in  data["payload"]["rooms"])
+      return Floor( data["building_name"] , data["floor_name"] , rooms  )
