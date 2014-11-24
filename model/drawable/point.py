@@ -1,7 +1,8 @@
+from . import Drawable
 from math import sin, cos, radians, sqrt
 from sys import float_info
 
-class Point():
+class Point(Drawable):
    def __init__(self, a, b = None):
       a, b = b is None and (a[0], a[1]) or (a, b)
       self.x = self._round(a)
@@ -38,16 +39,6 @@ class Point():
 
       raise IndexError("__getitem__: index {} out of bounds for subscritable".format(index))
 
-   def traslated(self, x_amount, y_amount):
-      """Returns a new point representing the current point translated"""
-      return Point(self.x, self.y).traslate(x_amount, y_amount)
-
-   def traslate(self, x_amount, y_amount):
-      """Traslates the current point by the supplied amount, and return self for chainability"""
-      self.x += x_amount
-      self.y += y_amount
-      return self
-
    def distance_to(a, b = None):
       """Calculates distance from current point to another point or tuple of coordinates"""
       other_x, other_y = b is None and (a[0], a[1]) or (a, b)
@@ -55,14 +46,27 @@ class Point():
       y1 = abs(self.y - other_y)
       return sqrt(x1*x1 + y1*y1)
 
-   def reflected_y(self):
-      """Returns a new point, with y coordinate reflected_y"""
-      p = self.clone()
-      p.reflect_y()
-      return p
+   def clone(self):
+      return Point(self.x, self.y)
+
+   def cross_product(self, other):
+      """Returns an integer obtained as the cross product of the two points"""
+      return self.x * other.y - self.y * other.x
+
+   ##########################
+   # TRANSFORMATION METHODS #
+   ##########################
+
+   def traslate(self, x_amount, y_amount):
+      """Traslates the current point by the supplied amount, and return self for chainability"""
+      self.x += x_amount
+      self.y += y_amount
+      return self
 
    def reflect_y(self):
       self.y = -self.y
+
+      return self
 
    def rotate(self, grades, center_x = 0, center_y = 0):
       theta = radians(grades)
@@ -75,20 +79,14 @@ class Point():
 
       return self
 
-   def clone(self):
-      return Point(self.x, self.y)
-
-   def rotated_clockwise(self):
-      """Returns a new point, rotated 90 grades clockwise, with origin as reference"""
-      return Point(self.y, -self.x)
-
-   def cross_product(self, other):
-      """Returns an integer obtained as the cross product of the two points"""
-      return self.x * other.y - self.y * other.x
-
    def scale(self, amount_x, amount_y = None):
       amount_y = amount_y or amount_x
       self.x = self.x * amount_x
       self.y = self.y * amount_y
 
       return self
+
+   # Anomaly! Use carefully, only defined by Point
+   def rotated_clockwise(self):
+      """Returns a new point, rotated 90 grades clockwise, with origin as reference"""
+      return Point(self.y, -self.x)
