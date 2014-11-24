@@ -1,6 +1,6 @@
 from .point import Point
 
-class DrawableText:
+class Text:
    def __init__(self, txt, anchor_point):
       self.text         = txt
       self.anchor_point = anchor_point
@@ -17,10 +17,10 @@ class DrawableText:
 
    def from_serializable(json_obj):
       """From a json serialization reconstruct the object"""
-      return DrawableText(json_obj["text"], Point.from_serializable(json_obj["anchor_point"]))
+      return Text(json_obj["text"], Point.from_serializable(json_obj["anchor_point"]))
 
    def __eq__(self, other):
       return self.text == other.text and self.anchor_point == other.anchor_point
 
    def clone(self):
-      return DrawableText(self.text, self.anchor_point.clone())
+      return Text(self.text, self.anchor_point.clone())

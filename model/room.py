@@ -1,8 +1,8 @@
-from .drawable_text import DrawableText
-from .point import Point
-from .polygon import Polygon
+from .drawable import Text
+from .drawable import Point
+from .drawable import Polygon
 
-class DrawableRoom():
+class Room():
    def __init__(self, polygon = None, texts=None):
       self.polygon = polygon
       self.texts   = texts or []
@@ -25,9 +25,9 @@ class DrawableRoom():
 
    def from_serializable(json_obj):
       """From a json serialization reconstruct the object"""
-      return DrawableRoom(
+      return Room(
             Polygon.from_serializable(json_obj["polygon"]),
-            [ DrawableText.from_serializable(t) for t in json_obj["texts"] ]
+            [ Text.from_serializable(t) for t in json_obj["texts"] ]
          )
 
    def add_text(self, text):
@@ -35,11 +35,11 @@ class DrawableRoom():
          self.texts.append(text)
 
    def clone(self):
-      r = DrawableRoom(self.polygon.clone(), [ t.clone() for t in self.texts ])
+      r = Room(self.polygon.clone(), [ t.clone() for t in self.texts ])
       return r
 
-   def containsText(self, text):
-      """TODO: rename to contains_text """
+   def contains_text(self, text):
+      """Returns true if current room contains the supplied text"""
       if not self.polygon:
          return False
 

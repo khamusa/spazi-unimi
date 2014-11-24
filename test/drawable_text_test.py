@@ -1,11 +1,11 @@
 import unittest
 from model.drawable import Point
-from model.drawable import DrawableText
+from model.drawable import Text
 
-class DrawableTextTest(unittest.TestCase):
+class TextTest(unittest.TestCase):
 
    def test_room_text_cloning(self):
-      t  = DrawableText( "ABC", Point(20, 20) )
+      t  = Text( "ABC", Point(20, 20) )
       t2 = t.clone()
 
       self.assertTrue(t is not t2)

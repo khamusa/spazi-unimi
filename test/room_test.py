@@ -1,30 +1,30 @@
-from model.drawable import DrawableRoom
+from model import Room
 from model.drawable import Point
 from model.drawable import Polygon
-from model.drawable import DrawableText
+from model.drawable import Text
 import itertools
 
 import unittest
 from mock import MagicMock
 
-class DrawableRoomTest(unittest.TestCase):
+class RoomTest(unittest.TestCase):
    def setUp(self):
       # 10x10 square beginning on origin
       self.polygon1 = Polygon.from_absolute_coordinates([(0,0),(10,0),(10,10),(0,10)])
-      self.room1 = DrawableRoom(self.polygon1,
+      self.room1 = Room(self.polygon1,
          [
-            DrawableText("1234",Point(3,3)),
-            DrawableText("Super Cool",Point(4,7)),
-            DrawableText("Corner Text!",Point(1,10))
+            Text("1234",Point(3,3)),
+            Text("Super Cool",Point(4,7)),
+            Text("Corner Text!",Point(1,10))
          ])
 
       # 10x10 diamond shape centered at origin
       self.polygon2 = Polygon.from_absolute_coordinates([(10,0), (0, 10), (-10, 0), (0, -10)])
-      self.room2 = DrawableRoom(self.polygon2)
+      self.room2 = Room(self.polygon2)
 
       # L-shaped room
       self.polygon3 = Polygon.from_absolute_coordinates([(0,0),(10,0),(10,5),(5,5),(5,10),(0,10)])
-      self.room3 = DrawableRoom(self.polygon3)
+      self.room3 = Room(self.polygon3)
 
    def test_room_traslation(self):
       def check_room_traslation(room, amount_x, amount_y):
@@ -37,7 +37,7 @@ class DrawableRoomTest(unittest.TestCase):
          # Check polygon have been traslated
          room.polygon.traslate.assert_called_with(amount_x, amount_y)
 
-         # Pending: test for every DrawableText on room
+         # Pending: test for every Text on room
          for new_text, old_text in zip(room.texts, old_texts):
             self.assertTrue(new_text.anchor_point.x == old_text.anchor_point.x + amount_x)
             self.assertTrue(new_text.anchor_point.y == old_text.anchor_point.y + amount_y)
