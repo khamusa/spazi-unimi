@@ -14,13 +14,11 @@ from model.drawable import DrawableText
 from model.drawable import DrawableFloor
 from model.drawable import Point
 from dxfgrabber.entities import LWPolyline, Polyline, MText, Text
-from . import DXFDoorParser
 
 class DxfReader():
    # Todo: extract to external config file
    valid_poly_layers = ["RM$"]
    valid_text_layers = ["NLOCALI", "RM$TXT"]
-   valid_door_layers = ["PORTE"]
 
    def __init__(self, filename, building_name, floor_name):
       self._filename = filename;
@@ -44,10 +42,7 @@ class DxfReader():
             if is_valid_text(ent)
             )
 
-      doors = DXFDoorParser.parse_doors(self._grabber)
-
       self.floor = DrawableFloor(building_name, floor_name, rooms)
-      #self.floor.add_doors(doors)
       self.floor.associate_room_texts(texts)
       self.floor.normalize(0.3)
 
