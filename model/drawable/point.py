@@ -39,7 +39,7 @@ class Point(Drawable):
 
       raise IndexError("__getitem__: index {} out of bounds for subscritable".format(index))
 
-   def distance_to(a, b = None):
+   def distance_to(self, a, b = None):
       """Calculates distance from current point to another point or tuple of coordinates"""
       other_x, other_y = b is None and (a[0], a[1]) or (a, b)
       x1 = abs(self.x - other_x)

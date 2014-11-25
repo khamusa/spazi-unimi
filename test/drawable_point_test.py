@@ -10,6 +10,11 @@ class PointTest(unittest.TestCase):
       self.assertTrue( 10 == Point( (10, 20, 30) ).x )
       self.assertTrue( 20 == Point( (10, 20, 30) ).y )
 
+   def test_distance_to(self):
+      p1 = Point(0, 0)
+      self.assertEqual(p1.distance_to(0, 10), 10)
+      self.assertEqual(p1.distance_to(p1.x, p1.y), 0)
+
    def test_point_traslation(self):
       p = Point(3, 4)
 
