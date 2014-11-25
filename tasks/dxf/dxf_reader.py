@@ -16,6 +16,7 @@ from model.drawable import Point
 from model.drawable import Polygon
 from dxfgrabber.entities import LWPolyline, Polyline, MText
 import dxfgrabber.entities
+from utils.logger import Logger
 
 class DxfReader():
    # Todo: extract to external config file
@@ -24,8 +25,7 @@ class DxfReader():
 
    def __init__(self, filename, building_name, floor_name):
       self._filename = filename;
-      self._grabber = dxfgrabber.readfile(self._filename)
-
+      self._read_dxf(self._filename)
 
       def is_valid_room(ent):
          return type(ent) in [LWPolyline, Polyline] and ent.layer in self.valid_poly_layers
@@ -49,4 +49,17 @@ class DxfReader():
       self.floor.associate_room_texts(texts)
       self.floor.normalize(0.3)
 
+
+   def _read_dxf(self, filename):
+      try:
+         self._grabber = dxfgrabber.readfile(filename)
+      except PermissionError:
+         Logger.error("Permission error: cannot read file " + filename)
+         raise
+      except IsADirectoryError:
+         Logger.error("File is a directory error: cannot read file " + filename)
+         raise
+      except FileNotFoundError:
+         Logger.error("File not found error: cannot read file " + filename)
+         raise
 

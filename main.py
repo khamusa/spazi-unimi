@@ -34,7 +34,11 @@ class Main():
             print("File name format error: ", filename)
             continue
 
-         dx = DxfReader(filename, rm.group(1), rm.group(2))
+         try:
+            dx = DxfReader(filename, rm.group(1), rm.group(2))
+         except Exception:
+            Logger.error("File was not read: " + filename)
+            continue
          persistence.floor_write(dx.floor)
 
    def run_csv(self, files):
