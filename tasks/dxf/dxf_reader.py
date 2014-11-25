@@ -46,6 +46,9 @@ class DxfReader():
             )
 
       self.floor = Floor(building_name, floor_name, rooms)
+      if self.floor.n_rooms == 0:
+         Logger.error("The floor read has no rooms: " + self._filename)
+         raise RuntimeError("Floor read has no rooms")
       self.floor.associate_room_texts(texts)
       self.floor.normalize(0.3)
 

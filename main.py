@@ -37,10 +37,10 @@ class Main():
          try:
             dx = DxfReader(filename, rm.group(1), rm.group(2))
          except Exception:
-            Logger.error("File was not read: " + filename)
+            Logger.error("File processing was not completed: " + filename)
             continue
          persistence.floor_write(dx.floor)
-
+         Logger.info("Completed - {} rooms founded in: {}".format(dx.floor.n_rooms, filename))
    def run_csv(self, files):
       persistence = MongoDBPersistenceManager(self._config)
       updater = CSVDataUpdater(self._config["csv_headers"], persistence)
