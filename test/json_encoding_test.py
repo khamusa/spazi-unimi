@@ -74,3 +74,21 @@ class JsonEncodingTest(unittest.TestCase):
       f2 = Floor.from_serializable(f_load)
 
       self.assertEqual(f1,f2)
+
+
+   def test_polygon_to_serializable(self):
+      self.polygon1.anchor_point.to_serializable = MagicMock(return_value="anchor_pippo")
+      for p in self.polygon1.points:
+         p.to_serializable = MagicMock(return_value="pippo_point")
+      self.assertEqual( self.polygon1.to_serializable(),
+         {
+            "anchor_point" : "anchor_pippo",
+            "points"       : [ "pippo_point" for p in self.polygon1.points ]
+         })
+
+
+   def test_polygon_from_serializable(self):
+      p_dump = json.dumps(self.polygon1.to_serializable())
+      p_load = json.loads(p_dump)
+      pol2 = Polygon.from_serializable(p_load)
+      self.assertEqual(self.polygon1, pol2)
