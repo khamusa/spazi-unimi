@@ -56,6 +56,10 @@ class PolygonTest(unittest.TestCase):
          [ Point(0, 0), Point(10, 0), Point(10, 10), Point(0, 10) ]
       )
 
+   def test_polygon_cloning(self):
+      p2 = self.polygon1.clone()
+      self.assertTrue(p2 is not self.polygon1)
+      self.assertEqual(self.polygon1, p2)
 
    def test_polygon_translation(self):
       #[ (0, 0), (10, 0), (10, 10), (0, 10) ]
@@ -135,7 +139,6 @@ class PolygonTest(unittest.TestCase):
          [ Point(0, 0), Point(-10, 0), Point(-10, -10), Point(0, -10) ]
          )
 
-
    def test_calculate_bounding_box(self):
       self.assertEqual(self.polygon1.bounding_box, (Point(0, 0), Point(10, 10)))
       self.assertEqual(self.polygon2.bounding_box, (Point(0, 0), Point(60, 60)))
@@ -148,3 +151,9 @@ class PolygonTest(unittest.TestCase):
       self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 3)
       self.polygon1.rotate(90)
       self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 4)
+
+   def test___entities__method(self):
+      # We want to make sure polygon defines this method, that's the only
+      # reason this test exists
+      self.assertEqual(self.polygon1.points, self.polygon1.__entities__())
+
