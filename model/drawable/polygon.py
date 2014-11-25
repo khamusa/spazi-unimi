@@ -1,8 +1,9 @@
 from utils.myitertools import circular_pairwise
 from . import Point
 from . import Drawable
+from . import Anchorable
 
-class Polygon(Drawable):
+class Polygon(Drawable, Anchorable):
 
    def from_absolute_coordinates(points):
       """Factory method, creates a polygon based on absolute coordinates
@@ -85,10 +86,9 @@ class Polygon(Drawable):
 
       self.bounding_box = (Point(min_x, min_y), Point(max_x, max_y))
 
-   def flatten(self):
-      x = self.anchor_point.x
-      y = self.anchor_point.y
-      return ( p.traslated(x, y) for p in self.points )
+   def __entities__(self):
+      """Hook method for Anchorable"""
+      return self.points
 
    ##########################
    # TRANSFORMATION METHODS #

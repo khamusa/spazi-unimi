@@ -17,7 +17,7 @@ class SVGPersistenceDecorator(PersistenceManager):
       svg = svgwrite.Drawing()
       for r in obj.rooms:
          color    = "rgb({}, {}, {})".format(int(random.random()*200), int(random.random()*200), int(random.random()*200))
-         points   = svg.polyline( ((p.x, p.y) for p in r.polygon.flatten()), fill=color, stroke="#666")
+         points   = svg.polyline( ((p.x, p.y) for p in r.polygon.absolutized().points), fill=color, stroke="#666")
 
          svg.add(points)
 
