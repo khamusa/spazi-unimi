@@ -1,6 +1,7 @@
 import unittest
 from model.drawable import Point
 from model.drawable import Polygon
+from mock import MagicMock
 
 class PolygonTest(unittest.TestCase):
 
@@ -57,26 +58,25 @@ class PolygonTest(unittest.TestCase):
 
 
    def test_polygon_translation(self):
+      #[ (0, 0), (10, 0), (10, 10), (0, 10) ]
+      anchor_point = self.polygon1.anchor_point.clone()
       self.polygon1.traslate(30, 40)
-      self.assertEqual(self.polygon1.anchor_point, Point(130, 240))
+      self.assertTrue(Point(30, 40) in self.polygon1.points)
 
       self.polygon1.traslate(-230, 0)
-      self.assertEqual(self.polygon1.anchor_point, Point(-100, 240))
+      self.assertTrue(Point(40-230, 40) in self.polygon1.points)
 
       p2 = self.polygon1.traslate(0, -340)
-      self.assertEqual(self.polygon1.anchor_point, Point(-100, -100))
+      self.assertTrue(Point(10+30-230, 10+40-340) in self.polygon1.points)
       self.assertTrue(p2 is self.polygon1)
 
       # Immutable version
       p3 = self.polygon1.traslated(100, 100)
-      self.assertEqual(self.polygon1.anchor_point, Point(-100, -100))
-      self.assertEqual(p3.anchor_point, Point(0, 0))
+      self.assertTrue(Point(30-230, 10+40-340) in self.polygon1.points)
       self.assertFalse(p3 is self.polygon1)
 
-      # After all translations, make sure the polygon shape didn't change
-      self.assertEqual(self.polygon1.points,
-         [ Point(0, 0), Point(10, 0), Point(10, 10), Point(0, 10) ]
-      )
+      # After all translations, make sure the anchor point didn't change
+      self.assertEqual(self.polygon1.anchor_point, anchor_point)
 
    def test_polygon_reflection(self):
       p1 = self.polygon1.reflect_y()
@@ -134,3 +134,17 @@ class PolygonTest(unittest.TestCase):
       self.assertEqual(p2.points,
          [ Point(0, 0), Point(-10, 0), Point(-10, -10), Point(0, -10) ]
          )
+
+
+   def test_calculate_bounding_box(self):
+      self.assertEqual(self.polygon1.bounding_box, (Point(0, 0), Point(10, 10)))
+      self.assertEqual(self.polygon2.bounding_box, (Point(0, 0), Point(60, 60)))
+      self.polygon1._calculate_bounding_box = MagicMock()
+      self.polygon1.traslate(10, 10)
+      self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 1)
+      self.polygon1.reflect_y()
+      self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 2)
+      self.polygon1.scale(4)
+      self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 3)
+      self.polygon1.rotate(90)
+      self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 4)

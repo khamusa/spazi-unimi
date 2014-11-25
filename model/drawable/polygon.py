@@ -96,7 +96,7 @@ class Polygon(Drawable):
 
    def traslate(self, amount_x, amount_y):
       """Traslates the polygon relatively to it's containing element"""
-      self.anchor_point.traslate(amount_x, amount_y)
+      self._transform_points( lambda s: s.traslate(amount_x, amount_y))
       return self
 
    def reflect_y(self):

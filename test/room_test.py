@@ -35,7 +35,7 @@ class RoomTest(unittest.TestCase):
          room.traslate(amount_x, amount_y)
 
          # Check polygon have been traslated
-         room.polygon.traslate.assert_called_with(amount_x, amount_y)
+         room.polygon.anchor_point.traslate.assert_called_with(amount_x, amount_y)
 
          # Pending: test for every Text on room
          for new_text, old_text in zip(room.texts, old_texts):
@@ -80,3 +80,9 @@ class RoomTest(unittest.TestCase):
       self.room1.polygon.scale.assert_called_with(2)
 
 
+   def test_min_absolute_point(self):
+      self.assertEqual(self.room1.min_absolute_point(), Point(0, 0))
+      self.room1.traslate(5, 5)
+      self.assertEqual(self.room1.min_absolute_point(), Point(5, 5))
+      self.room1.reflect_y()
+      self.assertEqual(self.room1.min_absolute_point(), Point(5, -15))

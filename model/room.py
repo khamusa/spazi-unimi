@@ -58,21 +58,22 @@ class Room():
 
    def traslate(self, amount_x, amount_y):
       """Traslates this room, by traslating it's polygon and texts"""
-      self.polygon.traslate(amount_x, amount_y)
+      self.polygon.anchor_point.traslate(amount_x, amount_y)
       for t in self.texts:
          t.anchor_point.traslate(amount_x, amount_y)
       return self
 
    def traslated(self, amount_x, amount_y):
-      return self.clone().traslate(amount_x, amount_y)
+      return self.clone().anchor_point.traslate(amount_x, amount_y)
 
    def reflected_y(self):
       return self.clone().reflect_y()
 
    def reflect_y(self):
+      self.polygon.anchor_point.reflect_y()
       self.polygon.reflect_y()
       for t in self.texts:
-         t.reflect_y()
+         t.anchor_point.reflect_y()
 
    def scale(self, amount):
       """TODO: accept amount_x and amount_y separeted"""
