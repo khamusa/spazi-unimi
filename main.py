@@ -9,7 +9,7 @@ import sys, re, os, time, shutil
 
 class Main():
    def __init__(self):
-      self._config      = ConfigManager("config.json")
+      self._config      = ConfigManager("config/general.json")
 
    def save_file(self, file, dest, name):
       shutil.copy(file, dest + "/" + name)
