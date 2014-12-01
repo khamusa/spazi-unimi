@@ -2,3 +2,4 @@ dxfgrabber==0.7.4
 svgwrite
 mock
 pymongo
+pygeocoder==1.2.5
