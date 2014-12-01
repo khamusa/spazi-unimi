@@ -35,7 +35,7 @@
       "id": "0",
       "floor_name": "Piano Terra",
       "suffix_regex": "TODO",
-      "name_regexes": ["^terra$", "^(piano\\s+)terra", "^terra(\\s+piano)" ]
+      "name_regexes": ["^terra$", "^(piano\\s+)terra", "^terra(\\s+piano)", "^terreno$", "^(piano\\s+)terreno" ]
    },
    {
       "id": "0.5",

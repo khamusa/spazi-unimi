@@ -8,10 +8,9 @@ class FloorInference:
    with open(config_file) as cf:
       FLOOR_DICT = json.load(cf)
 
-   print(FLOOR_DICT[5])
 
    @classmethod
-   def choose_identifier(self, id1, id2):
+   def get_identifier(self, filename, grabber):
       """Given two potential floor identifiers, choose the best one, or return
       None if they're conflicting"""
       pass
@@ -27,7 +26,7 @@ class FloorInference:
    def from_cartiglio(self, grabber):
       """From a dxfgrabber instance, reads the information on layer CARTIGLIO,
       trying to figure out which floor the dxf file refer to"""
-      texts = self._get_texts_from_cartiglio(grabber)
+      texts = self._extract_texts_from_cartiglio(grabber)
 
       label_position = None
       for (insert_point, t) in texts:
@@ -38,21 +37,20 @@ class FloorInference:
                return floor_id
 
          if(t == "PIANO"):
-            label_position = insert_point
-            break
-
-      # Strategy two has found the label 'PIANO'
-      if(label_position):
-         possible_texts = [
-               self._floor_id_from_name(t) for insert_point, t in texts
-               if self._is_possible_text_for_label(insert_point, label_position) and
-                  self._floor_id_from_name(t) and
-                  t != "PIANO"
-            ]
-
-         return (len(possible_texts) > 0) and possible_texts[0]
+            return self._find_text_value_for_piano_label(insert_point, texts)
 
       return False
+
+   @classmethod
+   def _find_text_value_for_piano_label(self, label_position, texts):
+      possible_texts = [
+            self._floor_id_from_name(t) for insert_point, t in texts
+            if self._is_possible_text_for_label(insert_point, label_position) and
+               self._floor_id_from_name(t) and
+               t != "PIANO"
+         ]
+
+      return (len(possible_texts) > 0) and possible_texts[0]
 
    @classmethod
    def _is_possible_text_for_label(self, insert_point, label_position):
@@ -64,19 +62,19 @@ class FloorInference:
          )
 
    @classmethod
-   def _get_texts_from_cartiglio(self, grabber):
+   def _extract_texts_from_cartiglio(self, grabber):
       """Auxiliary method for inference from cartiglio"""
       def get_text(p):
          return self.sanitize_layer_name(
-                  ( hasattr(p, "text") and p.text ) or
-                  ( hasattr(p, "rawtext") and p.rawtext )
+                  ( hasattr(p, "text") and p.text or p.plain_text()) or
+                  ( hasattr(p, "rawtext") and p.rawtext ) or ""
                )
 
       return [
                (p.insert, get_text(p))
                for p in grabber.entities
                if re.match("CARTIGLIO", p.layer, re.I) and
-                  p.dxftype == "MTEXT"
+                  p.dxftype == "MTEXT" or p.dxftype == "TEXT"
             ]
 
    @classmethod
