@@ -1,6 +1,9 @@
-from .drawable_point import DrawablePoint
-from .drawable_text  import DrawableText
-from .drawable_room  import DrawableRoom
-from .drawable_floor import DrawableFloor
+from .anchorable 	import Anchorable
+from .drawable 	import Drawable
+from .point 		import Point
+from .polygon 		import Polygon
+from .text  		import Text
 
-__all__ = ["DrawableFloor", "DrawablePoint", "DrawableText", "DrawableRoom"]
+
+
+__all__ = ["Anchorable", "Drawable", "Point", "Text", "Polygon"]
