@@ -5,6 +5,7 @@ from persistence.db.mongo_db_persistence_manager import MongoDBPersistenceManage
 from tasks.csv_data_updater import CSVDataUpdater
 from persistence.svg_persistence_decorator import SVGPersistenceDecorator
 from utils.logger import Logger
+from tasks.data_merger import DataMerger
 import sys, re, os, time, shutil
 
 class Main():
@@ -37,9 +38,10 @@ class Main():
          dx = DxfReader(filename, rm.group(1), rm.group(2))
          persistence.floor_write(dx.floor)
 
-   def run_csv(self, files):
+   def run_edilizia(self, files):
       persistence = MongoDBPersistenceManager(self._config)
-      updater = CSVDataUpdater(self._config["csv_headers"], persistence)
+      data_merger = DataMerger()
+      updater = EdiliziaDataUpdater(self._config["csv_headers"], persistence,data_merger)
 
       for filename in files:
          Logger.info("Processing file " + filename)
@@ -64,7 +66,7 @@ if __name__ == '__main__':
 
    args = parser.parse_args()
 
-   if(args.command in ["csv", "dxf"] and len(args.files) == 0):
+   if(args.command in ["edilizia", "dxf"] and len(args.files) == 0):
       print("Errore: Il comando "+args.command+" richiede almeno un file ."+args.command+" su cui lavorare.\n")
       parser.print_help()
       exit(1)
