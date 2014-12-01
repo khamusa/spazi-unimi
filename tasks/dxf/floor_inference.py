@@ -74,7 +74,7 @@ class FloorInference:
                (p.insert, get_text(p))
                for p in grabber.entities
                if re.match("CARTIGLIO", p.layer, re.I) and
-                  p.dxftype == "MTEXT" or p.dxftype == "TEXT"
+                  (p.dxftype == "MTEXT" or p.dxftype == "TEXT")
             ]
 
    @classmethod
@@ -84,7 +84,7 @@ class FloorInference:
       m = re.match(regex, name)
       if(m):
          name = m.group(1)
-      return name
+      return name.strip()
 
    @classmethod
    def _floor_id_from_name(self, name):
