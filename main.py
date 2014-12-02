@@ -9,7 +9,7 @@ import sys, re, os, time, shutil
 
 class Main():
    def __init__(self):
-      self._config      = ConfigManager("config.json")
+      self._config      = ConfigManager("config/general.json")
 
    def save_file(self, file, dest, name):
       shutil.copy(file, dest + "/" + name)
@@ -29,18 +29,22 @@ class Main():
       persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
       # TO-DO creare DXFDataUpdater
       for filename in files:
-         rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))
+         Logger.info("Processing file: " + filename)
+         rm = re.match(".+\.dxf", os.path.basename(filename), re.I)
          if rm is None:
-            print("File name format error: ", filename)
+            Logger.error("The supplied file extension is not DXF.")
             continue
 
          try:
-            dx = DxfReader(filename, rm.group(1), rm.group(2))
+            dx = DxfReader(filename)
          except Exception:
             Logger.error("File processing was not completed: " + filename)
             continue
-         persistence.floor_write(dx.floor)
-         Logger.info("Completed - {} rooms founded in: {}".format(dx.floor.n_rooms, filename))
+
+         if(dx.floor):
+            persistence.floor_write(dx.floor)
+            Logger.info("Completed - {} rooms founded in: {}".format(dx.floor.n_rooms, filename))
+
    def run_csv(self, files):
       persistence = MongoDBPersistenceManager(self._config)
       updater = CSVDataUpdater(self._config["csv_headers"], persistence)

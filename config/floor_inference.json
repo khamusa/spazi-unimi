@@ -1,0 +1,172 @@
+[
+   {
+      "id": "-100",
+      "floor_name": "Cantina",
+      "suffix_regex": ["^caa?$"],
+      "name_regexes": ["cantina" ]
+   },
+   {
+      "id": "-3",
+      "floor_name": "Terzo Interrato",
+      "suffix_regex": ["^3i$"],
+      "name_regexes": [ "(terzo\\s+interr)", "3.?.?\\s*interr" ]
+   },
+   {
+      "id": "-2",
+      "floor_name": "Secondo Interrato",
+      "suffix_regex": ["^2i$"],
+      "name_regexes": [ "(secondo\\s+interr)", "2.?.?\\s*interr" ]
+   },
+   {
+      "id": "-1",
+
+      "floor_name": "Primo Interrato",
+      "suffix_regex": ["^ip?$", "^1ip?$", "^s2$"],
+      "name_regexes": [ "(primo\\s+interr)", "iinterrato", "1.?.?\\s*interr", "^interrato$" ]
+   },
+   {
+      "id": "-0.5",
+
+      "floor_name": "Seminterrato",
+      "suffix_regex": ["^s[a1p]$", "^p?s$"],
+      "name_regexes": [ "seminterrato", "amm\\.?(ezzato)? primo interrato" ]
+   },
+   {
+      "id": "0",
+      "floor_name": "Piano Terra",
+      "suffix_regex": ["^t[pra]?$", "^pt$"],
+      "name_regexes": ["^terra$", "^(piano\\s+)terra", "^terra(\\s+piano)", "^terreno$", "^(piano\\s+)terreno" ]
+   },
+   {
+      "id": "0.5",
+      "floor_name": "Mezzanino/Rialzato Piano Terra",
+      "suffix_regex": ["^a[pr]$", "^r[ap\\.]?$", "^arp?$"],
+      "name_regexes": [ "^ammezzato$", "^rialzato$", "^ammezzato rialzato$", "^ammezzato terra$" ]
+   },
+   {
+      "id": "1",
+      "floor_name": "Primo Piano",
+      "suffix_regex": ["^p?1[ap]?\\.?$"],
+      "name_regexes": ["^primo$", "^(piano\\s+)primo", "^primo(\\s+piano)" ]
+   },
+   {
+      "id": "1.5",
+      "floor_name": "Mezzanino/Rialzato Primo Piano",
+      "suffix_regex": ["^1ap$", "^a1$"],
+      "name_regexes": ["primo ammezzato", "ammezzato primo", "primo rialzato", "rialzato primo" ]
+   },
+   {
+      "id": "2",
+      "floor_name": "Secondo Piano",
+      "suffix_regex": ["^p?2[ap]?\\.?$"],
+      "name_regexes": ["^secondo$", "^(piano\\s+)secondo", "^secondo(\\s+piano)" ]
+   },
+   {
+      "id": "2.5",
+      "floor_name": "Mezzanino/Rialzato Secondo Piano",
+      "suffix_regex": ["^2ap$"],
+      "name_regexes": ["secondo ammezzato", "ammezzato secondo", "secondo rialzato", "rialzato secondo" ]
+   },
+   {
+      "id": "3",
+      "floor_name": "Terzo Piano",
+      "suffix_regex": ["^p?3[ap]?\\.?$"],
+      "name_regexes": ["^terzo$", "^(piano\\s+)terzo", "^terzo(\\s+piano)" ]
+   },
+   {
+      "id": "3.5",
+      "floor_name": "Mezzanino/Rialzato Terzo Piano",
+      "suffix_regex": ["^3ap$"],
+      "name_regexes": ["terzo ammezzato", "ammezzato terzo", "terzo rialzato", "rialzato terzo" ]
+   },
+   {
+      "id": "4",
+      "floor_name": "Quarto Piano",
+      "suffix_regex": ["^p?4[ap]?\\.?$"],
+      "name_regexes": ["^quarto$", "^(piano\\s+)quarto", "^quarto(\\s+piano)" ]
+   },
+   {
+      "id": "4.5",
+      "floor_name": "Mezzanino/Rialzato Quarto Piano",
+      "suffix_regex": ["^4ap$"],
+      "name_regexes": ["quarto ammezzato", "ammezzato quarto", "quarto rialzato", "rialzato quarto" ]
+   },
+   {
+      "id": "5",
+      "floor_name": "Quinto Piano",
+      "suffix_regex": ["^p?5[ap]?\\.?$"],
+      "name_regexes": ["^quinto$", "^(piano\\s+)quinto", "^quinto(\\s+piano)" ]
+   },
+   {
+      "id": "6",
+      "floor_name": "Sesto Piano",
+      "suffix_regex": ["^p?6[ap]?\\.?$"],
+      "name_regexes": ["^sesto$", "^(piano\\s+)sesto", "^sesto(\\s+piano)" ]
+   },
+   {
+      "id": "7",
+      "floor_name": "Settimo Piano",
+      "suffix_regex": ["^p?7[ap]?\\.?$"],
+      "name_regexes": ["^settimo$", "^(piano\\s+)settimo", "^settimo(\\s+piano)" ]
+   },
+   {
+      "id": "8",
+      "floor_name": "Ottavo Piano",
+      "suffix_regex": ["^p?8[ap]?\\.?$"],
+      "name_regexes": ["^ottavo$", "^(piano\\s+)ottavo", "^ottavo(\\s+piano)" ]
+   },
+   {
+      "id": "9",
+      "floor_name": "Nono Piano",
+      "suffix_regex": ["^p?9[ap]?\\.?$"],
+      "name_regexes": ["^nono$", "^(piano\\s+)nono", "^nono(\\s+piano)" ]
+   },
+   {
+      "id": "10",
+      "floor_name": "Decimo Piano",
+      "suffix_regex": ["^p?10[ap]?\\.?$"],
+      "name_regexes": ["^decimo$", "^(piano\\s+)decimo", "^decimo(\\s+piano)" ]
+   },
+   {
+      "id": "11",
+      "floor_name": "Undicesimo Piano",
+      "suffix_regex": ["^p?11[ap]?\\.?$"],
+      "name_regexes": ["^undicesimo$", "^(piano\\s+)undicesimo", "^undicesimo(\\s+piano)" ]
+   },
+   {
+      "id": "12",
+      "floor_name": "Dodicesimo Piano",
+      "suffix_regex": ["^p?12[ap]?\\.?$"],
+      "name_regexes": ["^dodicesimo$", "^(piano\\s+)dodicesimo", "^dodicesimo(\\s+piano)" ]
+   },
+   {
+      "id": "13",
+      "floor_name": "Tredicesimo Piano",
+      "suffix_regex": ["^p?13[ap]?\\.?$"],
+      "name_regexes": ["^tredicesimo$", "^(piano\\s+)tredicesimo", "^tredicesimo(\\s+piano)" ]
+   },
+   {
+      "id": "14",
+      "floor_name": "Quattordicesimo Piano",
+      "suffix_regex": ["^p?14[ap]?\\.?$"],
+      "name_regexes": ["^quattordicesimo$", "^(piano\\s+)quattordicesimo", "^quattordicesimo(\\s+piano)" ]
+   },
+   {
+      "id": "15",
+      "floor_name": "Quindicesimo Piano",
+      "suffix_regex": ["^p?15[ap]?\\.?$"],
+      "name_regexes": ["^quindicesimo$", "^(piano\\s+)quindicesimo", "^quindicesimo(\\s+piano)" ]
+   },
+   {
+      "id": "16",
+      "floor_name": "Sedicesimo Piano",
+      "suffix_regex": ["^p?16[ap]?\\.?$"],
+      "name_regexes": ["^sedicesimo$", "^(piano\\s+)sedicesimo", "^sedicesimo(\\s+piano)" ]
+   },
+   {
+      "id": "100",
+      "floor_name": "Mansarda / Sottotetto",
+      "suffix_regex": ["^sta$"],
+      "name_regexes": ["^(piano\\s+)?mansarda(to)?$", "^(piano\\s+)?sott?ott?ett?o?$" ]
+   }
+]
