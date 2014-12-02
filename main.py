@@ -20,10 +20,10 @@ class Main():
       getattr(self, "run_"+command)(files)
 
       end_time = time.time() - start_time
-      print("Total time     :", end_time , "seconds")
+      Logger.success("Total time     :", end_time , "seconds")
 
       if len(files):
-         print("Arithmetic mean:", end_time / len(files), "seconds")
+         Logger.success("Arithmetic mean:", end_time / len(files), "seconds")
 
    def run_dxf(self, files):
       persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
