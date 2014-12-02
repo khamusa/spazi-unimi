@@ -29,7 +29,7 @@
 
       "floor_name": "Seminterrato",
       "suffix_regex": ["^s[a1p]$", "^p?s$"],
-      "name_regexes": [ "seminterrato" ]
+      "name_regexes": [ "seminterrato", "amm\\.?(ezzato)? primo interrato" ]
    },
    {
       "id": "0",
