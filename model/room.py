@@ -45,7 +45,7 @@ class Room():
 
       traslate_x = -self.polygon.anchor_point.x
       traslate_y = -self.polygon.anchor_point.y
-      relative_point = text.anchor_point.traslated(traslate_x, traslate_y)
+      relative_point = text.traslated_ac(traslate_x, traslate_y)
       return self.polygon._contains_point(relative_point)
 
    def min_absolute_point(self):
@@ -60,7 +60,7 @@ class Room():
       """Traslates this room, by traslating it's polygon and texts"""
       self.polygon.anchor_point.traslate(amount_x, amount_y)
       for t in self.texts:
-         t.anchor_point.traslate(amount_x, amount_y)
+         t.traslate_ac(amount_x, amount_y)
       return self
 
    def traslated(self, amount_x, amount_y):
@@ -73,11 +73,11 @@ class Room():
       self.polygon.anchor_point.reflect_y()
       self.polygon.reflect_y()
       for t in self.texts:
-         t.anchor_point.reflect_y()
+         t.reflect_y_ac()
 
    def scale(self, amount):
       """TODO: accept amount_x and amount_y separeted"""
       self.polygon.scale(amount)
       self.polygon.anchor_point.scale(amount)
       for t in self.texts:
-         t.anchor_point.scale(amount)
+         t.scale_ac(amount)
