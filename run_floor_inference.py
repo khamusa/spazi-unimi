@@ -5,7 +5,7 @@ if __name__ == "__main__":
    import sys, dxfgrabber, shutil, os
    files = sys.argv[1:]
 
-   for i in range(files):
+   for i in range(len(files)):
       f = files[i]
 
       print(i, " - Processing file", os.path.basename(f))
