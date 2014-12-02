@@ -13,21 +13,21 @@ class Logger():
    VERBOSITY_FATAL      = 1
    verbosity = VERBOSITY_ALL
 
-   def success(*texts):
+   def success(*texts, indent=0, out=sys.stdout):
       if(Logger.verbosity >= Logger.VERBOSITY_INFO):
-         print(Logger._prefix(" OK ", Logger.OK), *texts, file=sys.stderr)
+         print(" "*indent+Logger._prefix(" OK ", Logger.OK), *texts, file=out)
 
-   def info(*texts):
+   def info(*texts, indent=0, out=sys.stdout):
       if(Logger.verbosity >= Logger.VERBOSITY_INFO):
-         print(Logger._prefix("INFO", Logger.INFO), *texts)
+         print(" "*indent+Logger._prefix("INFO", Logger.INFO), *texts, file=out)
 
-   def warning(*texts):
+   def warning(*texts, indent=0, out=sys.stdout):
       if(Logger.verbosity >= Logger.VERBOSITY_WARNINGS):
-         print(Logger._prefix("WARN", Logger.WARN), *texts, file=sys.stderr)
+         print(" "*indent+Logger._prefix("WARN", Logger.WARN), *texts, file=out)
 
-   def error(*texts):
+   def error(*texts, indent=0, out=sys.stderr):
       if(Logger.verbosity >= Logger.VERBOSITY_FATAL):
-         print(Logger._prefix(" ERR", Logger.ERR), *texts, file=sys.stderr)
+         print(" "*indent+Logger._prefix(" ERR", Logger.ERR), *texts, file=out)
 
    def _prefix(key, color):
       if (os.fstat(0) == os.fstat(1)):
