@@ -1,8 +1,9 @@
 from .drawable import Text
 from .drawable import Point
 from .drawable import Polygon
+from .drawable import Drawable
 
-class Room():
+class Room(Drawable):
    def __init__(self, polygon = None, texts=None):
       self.polygon = polygon
       self.texts   = texts or []
@@ -63,12 +64,6 @@ class Room():
          t.traslate_ac(amount_x, amount_y)
       return self
 
-   def traslated(self, amount_x, amount_y):
-      return self.clone().anchor_point.traslate(amount_x, amount_y)
-
-   def reflected_y(self):
-      return self.clone().reflect_y()
-
    def reflect_y(self):
       self.polygon.anchor_point.reflect_y()
       self.polygon.reflect_y()
@@ -81,3 +76,9 @@ class Room():
       self.polygon.anchor_point.scale(amount)
       for t in self.texts:
          t.scale_ac(amount)
+
+   def rotate(self, grades):
+      self.polygon.rotate(grades)
+      self.polygon.rotate_ac(grades)
+      for t in self.texts:
+         t.rotate_ac(amount)
