@@ -8,7 +8,7 @@
 """
 
 import dxfgrabber
-import sys, os
+import sys, os, re
 from model import Room
 from model import Floor
 from model.drawable import Text
@@ -16,6 +16,8 @@ from model.drawable import Point
 from model.drawable import Polygon
 from dxfgrabber.entities import LWPolyline, Polyline, MText
 import dxfgrabber.entities
+from tasks.dxf.floor_inference import FloorInference
+from utils.logger import Logger
 
 class DxfReader():
    # Todo: extract to external config file
@@ -25,8 +27,13 @@ class DxfReader():
    def __init__(self, filename):
       self._filename = filename;
       self._basename = os.path.basename(filename)
-      self._grabber = dxfgrabber.readfile(self._filename)
+      self.floor = None
 
+      try:
+         self._grabber = dxfgrabber.readfile(self._filename)
+      except Exception as e:
+         Logger.error("Unknown exception on DXF file reading: " + str(e))
+         return
 
       def is_valid_room(ent):
          return type(ent) in [LWPolyline, Polyline] and ent.layer in self.valid_poly_layers
@@ -64,8 +71,6 @@ class DxfReader():
       self.floor = Floor(building_name, floor_name, rooms)
       self.floor.associate_room_texts(texts)
       self.floor.normalize(0.3)
-
-      return self.floor
 
    def _get_building_name(self, basename):
       building_name = None

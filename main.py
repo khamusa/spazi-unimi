@@ -29,6 +29,7 @@ class Main():
       persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
       # TO-DO creare DXFDataUpdater
       for filename in files:
+         Logger.info("Processing file: " + filename)
          rm = re.match(".+\.dxf", os.path.basename(filename), re.I)
          if rm is None:
             Logger.error("The supplied file extension is not DXF.")
@@ -36,7 +37,7 @@ class Main():
 
          dx = DxfReader(filename)
 
-         if(dx):
+         if(dx.floor):
             persistence.floor_write(dx.floor)
 
    def run_csv(self, files):
