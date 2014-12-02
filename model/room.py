@@ -51,7 +51,7 @@ class Room(Drawable):
 
    def min_absolute_point(self):
       min_point, _ = self.polygon.bounding_box
-      return self.polygon.anchor_point.traslated(*min_point)
+      return self.polygon.traslated_ac(*min_point)
 
    ##########################
    # TRANSFORMATION METHODS #
@@ -59,13 +59,13 @@ class Room(Drawable):
 
    def traslate(self, amount_x, amount_y):
       """Traslates this room, by traslating it's polygon and texts"""
-      self.polygon.anchor_point.traslate(amount_x, amount_y)
+      self.polygon.traslate_ac(amount_x, amount_y)
       for t in self.texts:
          t.traslate_ac(amount_x, amount_y)
       return self
 
    def reflect_y(self):
-      self.polygon.anchor_point.reflect_y()
+      self.polygon.reflect_y_ac()
       self.polygon.reflect_y()
       for t in self.texts:
          t.reflect_y_ac()
@@ -73,7 +73,7 @@ class Room(Drawable):
    def scale(self, amount):
       """TODO: accept amount_x and amount_y separeted"""
       self.polygon.scale(amount)
-      self.polygon.anchor_point.scale(amount)
+      self.polygon.scale_ac(amount)
       for t in self.texts:
          t.scale_ac(amount)
 

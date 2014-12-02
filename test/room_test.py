@@ -83,7 +83,7 @@ class RoomTest(unittest.TestCase):
          room.traslate(amount_x, amount_y)
 
          # Check polygon have been traslated
-         room.polygon.anchor_point.traslate.assert_called_with(amount_x, amount_y)
+         room.polygon.traslate_ac.assert_called_with(amount_x, amount_y)
 
          # Pending: test for every Text on room
          for new_text, old_text in zip(room.texts, old_texts):
