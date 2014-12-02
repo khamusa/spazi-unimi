@@ -69,11 +69,38 @@ class FloorTest(unittest.TestCase):
    def test_floor_equal(self):
       p2 = Polygon.from_absolute_coordinates([(12,0),(22,0),(22,10),(12,10)])
       r2 = Room(p2)
-      t1 = Text("Text room 1",Point(5,5))
-      t2 = Text("Text room 2",Point(15,8))
-      t3 = Text("Text outside",Point(11,5))
-
       floor = Floor("Building 1", "Floor1", [self.room1,r2])
       floor2 = Floor("Building 1", "Floor1",[self.room1,r2])
-
       self.assertEqual(floor,floor2)
+      floor3 = Floor("Building 1", "Floor", [self.room1,r2])
+      self.assertNotEqual(floor, floor3)
+      floor3 = Floor("Building", "Floor1", [self.room1,r2])
+      self.assertNotEqual(floor, floor3)
+      floor3 = Floor("Building 1", "Floor1", [self.room1])
+      self.assertNotEqual(floor, floor3)
+
+   def test_floor_trasform(self):
+      self.room1.traslate = MagicMock()
+      self.room1.scale = MagicMock()
+      self.f.add_room(self.room1)
+      self.f.transform()
+      self.room1.traslate.assert_called_once_with(0, 0)
+      self.room1.scale.assert_called_once_with(1)
+
+      for count in range(1, 10):
+         self.f.add_room(self.room1)
+
+      self.f.transform()
+      self.assertEqual(self.room1.traslate.call_count, 11)
+      self.assertEqual(self.room1.scale.call_count, 11)
+
+
+   def test_floor_normalize(self):
+      self.f.transform = MagicMock()
+      sa = 10
+      self.f.normalize(sa)
+      self.f.transform.assert_called_once_with(
+         scale_amount = sa,
+         traslate_x   = -self.f.min_x,
+         traslate_y   = -self.f.min_y
+         )

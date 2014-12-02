@@ -23,14 +23,17 @@ class JsonEncodingTest(unittest.TestCase):
       self.room1.add_text(Text("Encoded cool text", Point([1,1])))
       self.assertEqual(self.room1.to_serializable(), { "polygon": "pippo_serializzato", "texts": serialize_list(self.room1.texts) })
 
-   def test_room_text_to_serializable(self):
-      rt = Text("Encoded cool text", Point([1,1]))
-      self.assertEqual(rt.to_serializable(), { "text": rt.text, "anchor_point": rt.anchor_point.to_serializable() })
+   def test_room_text_serializable(self):
+      t1 = Text("Encoded cool text", Point([1,1]))
+      self.assertEqual(t1.to_serializable(), { "text": t1.text, "anchor_point": t1.anchor_point.to_serializable() })
+      t2 = Text.from_serializable(t1.to_serializable())
+      self.assertEqual(t1, t2)
 
-   def test_point_to_serializable(self):
+   def test_point_serializable(self):
       p = Point([1,2])
-
       self.assertEqual(p.to_serializable(), { "x": p.x, "y": p.y })
+      p2 = Point.from_serializable(p.to_serializable())
+      self.assertEqual(p, p2)
 
    def test_room_encoding_and_decoding(self):
       r = Room([(1,2), (3, 4), (5, 6)])

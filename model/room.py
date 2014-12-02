@@ -14,7 +14,7 @@ class Room():
       return str(self)
 
    def __eq__(self,other):
-      return self.polygon == other.polygon and self.texts == other.texts
+      return self.polygon == other.polygon
 
    def to_serializable(self):
       """Transform this object in something json-serializable"""
