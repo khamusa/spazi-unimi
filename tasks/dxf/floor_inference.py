@@ -26,7 +26,7 @@ class FloorInference:
             Logger.warning(msg+"\n       : [SOLVED] One of them equals the id obtained from the filename: "+filename_id)
             return filename_id
          else:
-            Logger.error(msg+"\n       : [UNDECIDABLE] Multiple cartiglios in file?")
+            Logger.warning(msg+"\n       : [UNDECIDABLE] Multiple cartiglios in file?")
             return False
 
       cartiglio_id = len(possible_ids) and possible_ids.pop()
@@ -36,8 +36,6 @@ class FloorInference:
             "The floor identification issues a conflict:", filename_id, "from filename suffix but", cartiglio_id, "from layer \"CARTIGLIO\"",
             "\n       : [SOLVED]", cartiglio_id, "will be used"
             )
-      elif not filename_id and not cartiglio_id:
-         Logger.error("No floor identification was possible from filename nor \"CARTIGLIO\" layer information")
 
       return cartiglio_id or filename_id
 

@@ -29,13 +29,15 @@ class Main():
       persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
       # TO-DO creare DXFDataUpdater
       for filename in files:
-         rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))
+         rm = re.match(".+\.dxf", os.path.basename(filename), re.I)
          if rm is None:
-            print("File name format error: ", filename)
+            Logger.error("The supplied file extension is not DXF.")
             continue
 
-         dx = DxfReader(filename, rm.group(1), rm.group(2))
-         persistence.floor_write(dx.floor)
+         dx = DxfReader(filename)
+
+         if(dx):
+            persistence.floor_write(dx.floor)
 
    def run_csv(self, files):
       persistence = MongoDBPersistenceManager(self._config)
