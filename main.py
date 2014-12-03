@@ -12,6 +12,8 @@ class Main():
       self._config      = ConfigManager("config/general.json")
 
    def save_file(self, file, dest, name):
+      if not os.path.exists(dest):
+         os.mkdir(dest)
       shutil.copy(file, dest + "/" + name)
 
    def run_command(self, command, files):
@@ -44,6 +46,11 @@ class Main():
          if(dx.floor):
             persistence.floor_write(dx.floor)
             Logger.info("Completed - {} rooms founded in: {}".format(dx.floor.n_rooms, filename))
+            self.save_file(
+               filename,
+               self._config["folders"]["data_dxf_sources"] + "/" + dx.floor.building_name,
+               dx.floor.building_name + "_" + dx.floor.floor_name + ".dxf"
+               )
 
    def run_csv(self, files):
       persistence = MongoDBPersistenceManager(self._config)
