@@ -10,7 +10,7 @@ class DbTest(unittest.TestCase):
       self.pm = MongoDBPersistenceManager(db=self.db)
 
    def test_clientCreation(self) :
-      config = ConfigManager("config.json")["db"]
+      config = ConfigManager("config/general.json")["db"]
       db = DB( config["url"], config["port"], config["db_name"])
 
    def test_roomcategory_save(self):

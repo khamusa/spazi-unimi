@@ -29,8 +29,15 @@
    "json_indent" : 3,
 
    "csv_headers" : {
-      "buildings"          : ["l_b_id", "b_id", "address", "lat", "lon"],
-      "rooms"              : ["b_id", "address", "l_floor", "r_id", "type_name", "room_name", "capacity"],
-      "room_categories"    : ["cat_id", "cat_name"]
+      "edilizia":{
+         "buildings"          : ["l_b_id", "b_id", "address", "lat", "lon"],
+         "rooms"              : ["r_id", "b_id", "room_name", "capacity", "address", "l_floor", "type_name"],
+         "room_categories"    : ["cat_id", "cat_name"]
+      },
+      "easyroom":{
+         "buildings"          : ["b_id", "address", "building_name", "n_floors"],
+         "rooms"              : ["r_id", "b_id", "room_name", "capacity", "floor", "accessibility", "equipments" ]
+      }
+
    }
 }

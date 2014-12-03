@@ -3,6 +3,7 @@ import unittest
 import sys
 from os import listdir
 import re
+from colour_runner.runner import ColourTextTestRunner
 
 if(len(sys.argv) == 1):
    files_list = listdir('test')
@@ -18,4 +19,4 @@ for filename in files_list:
          setattr(sys.modules[__name__], classname, getattr(s, classname))
 
 
-unittest.main(exit=False, verbosity = 2)
+unittest.main(exit=False, verbosity = 2, testRunner=ColourTextTestRunner)

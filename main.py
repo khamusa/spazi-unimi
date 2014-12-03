@@ -1,20 +1,21 @@
-from tasks.dxf.dxf_reader import DxfReader
 from config_manager import ConfigManager
+
+# TODO cambiare import in tasks.*
+from tasks.dxf.dxf_task import DxfTask
+from tasks.csv_task import CSVTask
+from tasks.data_merger import DataMerger
+
 from persistence.json_persistence_manager import JSONPersistenceManager
 from persistence.db.mongo_db_persistence_manager import MongoDBPersistenceManager
-from tasks.csv_data_updater import CSVDataUpdater
+
 from persistence.svg_persistence_decorator import SVGPersistenceDecorator
 from utils.logger import Logger
+
 import sys, re, os, time, shutil
 
 class Main():
    def __init__(self):
       self._config      = ConfigManager("config/general.json")
-
-   def save_file(self, file, dest, name):
-      if not os.path.exists(dest):
-         os.mkdir(dest)
-      shutil.copy(file, dest + "/" + name)
 
    def run_command(self, command, files):
       start_time = time.time()
@@ -29,63 +30,31 @@ class Main():
 
    def run_dxf(self, files):
       persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
-      # TO-DO creare DXFDataUpdater
-      for filename in files:
-         Logger.info("Processing file: " + filename)
-         rm = re.match(".+\.dxf", os.path.basename(filename), re.I)
-         if rm is None:
-            Logger.error("The supplied file extension is not DXF.")
-            continue
+      task        = DXFTask(self._config, persistence)
 
-         try:
-            dx = DxfReader(filename)
-         except Exception:
-            Logger.error("File processing was not completed: " + filename)
-            continue
-
-         if(dx.floor):
-            persistence.floor_write(dx.floor)
-            Logger.info("Completed - {} rooms founded in: {}".format(dx.floor.n_rooms, filename))
-            self.save_file(
-               filename,
-               self._config["folders"]["data_dxf_sources"] + "/" + dx.floor.building_name,
-               dx.floor.building_name + "_" + dx.floor.floor_name + ".dxf"
-               )
+      task.perform_updates_on_files(files)
 
    def run_csv(self, files):
       persistence = MongoDBPersistenceManager(self._config)
-      updater = CSVDataUpdater(self._config["csv_headers"], persistence)
+      task        = CSVTask(self._config, persistence)
 
-      for filename in files:
-         Logger.info("Processing file " + filename)
-         with open(filename) as csvfile:
-            csv_name = updater.perform_update(csvfile)
-            if csv_name is not None:
-               self.save_file(filename, self._config["folders"]["data_csv_sources"], csv_name + ".csv")
-
-   def run_easy_rooms(self, files_not_used = None):
-      print("Easy DrawableRooms Not implemented yet.")
+      task.perform_updates_on_files(files)
 
 if __name__ == '__main__':
    import argparse
 
    parser = argparse.ArgumentParser(description = "Programma per l'aggiornamento dati del server Spazi Unimi.")
 
-   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "easy_rooms", "cow"],
-                      help="Il commando da eseguire: dxf, csv, easy_rooms")
+   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "cow"],
+                      help="Il commando da eseguire: dxf, csv")
 
    parser.add_argument('files', metavar='file', type=str, nargs='*',
-                      help='I file su cui lavorare, a seconda del comando scelto. Se il comando è easy_rooms, verrà trascurato.')
+                      help='I file su cui lavorare, a seconda del comando scelto.')
 
    args = parser.parse_args()
 
    if(args.command in ["csv", "dxf"] and len(args.files) == 0):
       print("Errore: Il comando "+args.command+" richiede almeno un file ."+args.command+" su cui lavorare.\n")
-      parser.print_help()
-      exit(1)
-
-   if(args.command in ["easy_rooms"] and len(args.files) > 0):
-      print("Errore: Il comando "+args.command+" non ammette ulteriori parametri.\n")
       parser.print_help()
       exit(1)
 
