@@ -1,7 +1,7 @@
 from config_manager import ConfigManager
 
 # TODO cambiare import in tasks.*
-from tasks.dxf.dxf_reader import DxfReader
+from tasks.dxf.dxf_task import DxfTask
 from tasks.csv_task import CSVTask
 from tasks.data_merger import DataMerger
 
@@ -30,15 +30,8 @@ class Main():
 
    def run_dxf(self, files):
       persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
-      # TODO creare DXFDataUpdater
-      for filename in files:
-         rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))
-         if rm is None:
-            print("File name format error: ", filename)
-            continue
+      task        =
 
-         dx = DxfReader(filename, rm.group(1), rm.group(2))
-         persistence.floor_write(dx.floor)
 
    def run_csv(self, files):
       persistence = MongoDBPersistenceManager(self._config)
