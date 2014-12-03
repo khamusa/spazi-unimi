@@ -24,7 +24,7 @@ class Anchorable():
    def traslate_ac(self, *args, **kargs):
      return self.anchor_point.traslate(*args, **kargs)
 
-   def reflecte_y_ac(self, *args, **kargs):
+   def reflect_y_ac(self, *args, **kargs):
      return self.anchor_point.reflect_y(*args, **kargs)
 
    def scale_ac(self, *args, **kargs):

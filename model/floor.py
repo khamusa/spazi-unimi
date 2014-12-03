@@ -9,6 +9,7 @@ class Floor:
       self.rooms           = []
       self.min_x           = float("+inf")
       self.min_y           = float("+inf")
+      self.n_rooms         = 0
 
       for r in rooms:
          self.add_room(r)
@@ -27,6 +28,7 @@ class Floor:
       self.min_x  = min(self.min_x, minX)
       self.min_y  = min(self.min_y, minY)
       self.rooms.append(room)
+      self.n_rooms = self.n_rooms + 1
 
    def associate_room_texts(self, texts):
       """Given a list of texts, associates each one with a room belonging to the current floor"""

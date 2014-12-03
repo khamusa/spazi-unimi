@@ -26,6 +26,54 @@ class RoomTest(unittest.TestCase):
       self.polygon3 = Polygon.from_absolute_coordinates([(0,0),(10,0),(10,5),(5,5),(5,10),(0,10)])
       self.room3 = Room(self.polygon3)
 
+   def test_room_equality(self):
+      # Equality is true
+      r2 = Room(self.polygon1.clone(), [ t.clone() for t in self.room1.texts ])
+      r3 = Room(
+                  self.polygon1.clone(),
+                  [ t.clone() for t in self.room1.texts[1:] ]
+               )
+
+      # Equality is false
+      d = Room(
+                  self.polygon1.clone().traslate(1, 0),
+                  [ t.clone() for t in self.room1.texts ]
+               )
+      self.assertEqual(self.room1, r2)
+      self.assertEqual(self.room1, r3)
+      self.assertNotEqual(self.room1, d)
+
+   def test_room_cloning(self):
+      r2 = self.room1.clone()
+
+
+      self.assertEqual(r2.texts, self.room1.texts)
+      self.assertEqual(r2.polygon, self.room1.polygon)
+      self.assertEqual(r2, self.room1)
+
+      self.assertTrue(r2 is not self.room1)
+
+   def test_room_min_absolute_point(self):
+      def check_min_abs_point(room, expected_x, expected_y):
+         minX, minY = room.min_absolute_point()
+         self.assertEqual(minX, expected_x)
+         self.assertEqual(minY, expected_y)
+
+      check_min_abs_point(self.room1, 0, 0)
+      self.room1.traslate(5, 5)
+      check_min_abs_point(self.room1, 5, 5)
+      self.room1.reflect_y()
+      check_min_abs_point(self.room1, 5, -15)
+
+   def test_room_contains_text(self):
+      t1 = Text("In text!",Point(5,5))
+      t2 = Text("Out text!",Point(11,5))
+      self.assertTrue(self.room1.contains_text(t1))
+      self.assertFalse(self.room1.contains_text(t2))
+
+   ###################
+   # TRANSFORMATIONS #
+   ###################
    def test_room_traslation(self):
       def check_room_traslation(room, amount_x, amount_y):
          room.polygon = MagicMock();
@@ -35,7 +83,7 @@ class RoomTest(unittest.TestCase):
          room.traslate(amount_x, amount_y)
 
          # Check polygon have been traslated
-         room.polygon.anchor_point.traslate.assert_called_with(amount_x, amount_y)
+         room.polygon.traslate_ac.assert_called_with(amount_x, amount_y)
 
          # Pending: test for every Text on room
          for new_text, old_text in zip(room.texts, old_texts):
@@ -48,25 +96,24 @@ class RoomTest(unittest.TestCase):
       check_room_traslation(self.room1, -10, 23)
       check_room_traslation(self.room1, 0, 0)
 
+   def test_room_reflection(self):
+      self.room1.reflect_y()
+      self.assertEqual(
+                        self.room1.polygon.points,
+                        [Point(0,0), Point(10,0), Point(10,-10), Point(0,-10)]
+                     )
 
-   def test_room_min_absolute_point(self):
+      self.polygon1.anchor_point.reflect_y = MagicMock()
+      self.polygon1.reflect_y = MagicMock()
+      for t in self.room1.texts:
+         t.anchor_point.reflect_y = MagicMock()
 
-      def check_top_most(room, expected_x, expected_y):
-         minX, minY = room.min_absolute_point()
-         self.assertEqual(minX, expected_x)
-         self.assertEqual(minY, expected_y)
+      self.room1.reflect_y()
 
-      check_top_most(self.room1, 0, 0)
-
-   def test_room_cloning(self):
-      r2 = self.room1.clone()
-
-
-      self.assertEqual(r2.texts, self.room1.texts)
-      self.assertEqual(r2.polygon, self.room1.polygon)
-      self.assertEqual(r2, self.room1)
-
-      self.assertTrue(r2 is not self.room1)
+      self.polygon1.anchor_point.reflect_y.assert_called_once()
+      self.polygon1.reflect_y.assert_called_once()
+      for t in self.room1.texts:
+         t.anchor_point.reflect_y.assert_called_once()
 
    def test_room_scale(self):
       self.room1.polygon = MagicMock()
@@ -78,11 +125,3 @@ class RoomTest(unittest.TestCase):
       for t in self.room1.texts:
          t.anchor_point.scale.assert_called_with(2)
       self.room1.polygon.scale.assert_called_with(2)
-
-
-   def test_min_absolute_point(self):
-      self.assertEqual(self.room1.min_absolute_point(), Point(0, 0))
-      self.room1.traslate(5, 5)
-      self.assertEqual(self.room1.min_absolute_point(), Point(5, 5))
-      self.room1.reflect_y()
-      self.assertEqual(self.room1.min_absolute_point(), Point(5, -15))

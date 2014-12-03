@@ -9,9 +9,11 @@ import sys, re, os, time, shutil
 
 class Main():
    def __init__(self):
-      self._config      = ConfigManager("config.json")
+      self._config      = ConfigManager("config/general.json")
 
    def save_file(self, file, dest, name):
+      if not os.path.exists(dest):
+         os.mkdir(dest)
       shutil.copy(file, dest + "/" + name)
 
    def run_command(self, command, files):
@@ -20,22 +22,35 @@ class Main():
       getattr(self, "run_"+command)(files)
 
       end_time = time.time() - start_time
-      print("Total time     :", end_time , "seconds")
+      Logger.success("Total time     :", end_time , "seconds")
 
       if len(files):
-         print("Arithmetic mean:", end_time / len(files), "seconds")
+         Logger.success("Arithmetic mean:", end_time / len(files), "seconds")
 
    def run_dxf(self, files):
       persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
       # TO-DO creare DXFDataUpdater
       for filename in files:
-         rm = re.match("(\w+)_(\w+)\.dxf", os.path.basename(filename))
+         Logger.info("Processing file: " + filename)
+         rm = re.match(".+\.dxf", os.path.basename(filename), re.I)
          if rm is None:
-            print("File name format error: ", filename)
+            Logger.error("The supplied file extension is not DXF.")
             continue
 
-         dx = DxfReader(filename, rm.group(1), rm.group(2))
-         persistence.floor_write(dx.floor)
+         try:
+            dx = DxfReader(filename)
+         except Exception:
+            Logger.error("File processing was not completed: " + filename)
+            continue
+
+         if(dx.floor):
+            persistence.floor_write(dx.floor)
+            Logger.info("Completed - {} rooms founded in: {}".format(dx.floor.n_rooms, filename))
+            self.save_file(
+               filename,
+               self._config["folders"]["data_dxf_sources"] + "/" + dx.floor.building_name,
+               dx.floor.building_name + "_" + dx.floor.floor_name + ".dxf"
+               )
 
    def run_csv(self, files):
       persistence = MongoDBPersistenceManager(self._config)

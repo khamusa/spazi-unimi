@@ -1,6 +1,7 @@
 from .point import Point
+from .anchorable import Anchorable
 
-class Text:
+class Text(Anchorable):
    def __init__(self, txt, anchor_point):
       self.text         = txt
       self.anchor_point = anchor_point
@@ -24,3 +25,9 @@ class Text:
 
    def clone(self):
       return Text(self.text, self.anchor_point.clone())
+
+   def __entities__(self):
+      """Hook method used by Anchorable superclass. Text has no inner objects
+      with positions relative to it's anchor_point, so we just return an empty
+      list"""
+      return []

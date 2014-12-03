@@ -1,8 +1,9 @@
 from .drawable import Text
 from .drawable import Point
 from .drawable import Polygon
+from .drawable import Drawable
 
-class Room():
+class Room(Drawable):
    def __init__(self, polygon = None, texts=None):
       self.polygon = polygon
       self.texts   = texts or []
@@ -14,7 +15,7 @@ class Room():
       return str(self)
 
    def __eq__(self,other):
-      return self.polygon == other.polygon and self.texts == other.texts
+      return self.polygon == other.polygon
 
    def to_serializable(self):
       """Transform this object in something json-serializable"""
@@ -45,12 +46,12 @@ class Room():
 
       traslate_x = -self.polygon.anchor_point.x
       traslate_y = -self.polygon.anchor_point.y
-      relative_point = text.anchor_point.traslated(traslate_x, traslate_y)
+      relative_point = text.traslated_ac(traslate_x, traslate_y)
       return self.polygon._contains_point(relative_point)
 
    def min_absolute_point(self):
       min_point, _ = self.polygon.bounding_box
-      return self.polygon.anchor_point.traslated(*min_point)
+      return self.polygon.traslated_ac(*min_point)
 
    ##########################
    # TRANSFORMATION METHODS #
@@ -58,26 +59,26 @@ class Room():
 
    def traslate(self, amount_x, amount_y):
       """Traslates this room, by traslating it's polygon and texts"""
-      self.polygon.anchor_point.traslate(amount_x, amount_y)
+      self.polygon.traslate_ac(amount_x, amount_y)
       for t in self.texts:
-         t.anchor_point.traslate(amount_x, amount_y)
+         t.traslate_ac(amount_x, amount_y)
       return self
 
-   def traslated(self, amount_x, amount_y):
-      return self.clone().anchor_point.traslate(amount_x, amount_y)
-
-   def reflected_y(self):
-      return self.clone().reflect_y()
-
    def reflect_y(self):
-      self.polygon.anchor_point.reflect_y()
+      self.polygon.reflect_y_ac()
       self.polygon.reflect_y()
       for t in self.texts:
-         t.anchor_point.reflect_y()
+         t.reflect_y_ac()
 
    def scale(self, amount):
       """TODO: accept amount_x and amount_y separeted"""
       self.polygon.scale(amount)
-      self.polygon.anchor_point.scale(amount)
+      self.polygon.scale_ac(amount)
       for t in self.texts:
-         t.anchor_point.scale(amount)
+         t.scale_ac(amount)
+
+   def rotate(self, grades):
+      self.polygon.rotate(grades)
+      self.polygon.rotate_ac(grades)
+      for t in self.texts:
+         t.rotate_ac(amount)

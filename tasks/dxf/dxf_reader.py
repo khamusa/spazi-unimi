@@ -8,7 +8,7 @@
 """
 
 import dxfgrabber
-import sys
+import sys, os, re
 from model import Room
 from model import Floor
 from model.drawable import Text
@@ -16,16 +16,19 @@ from model.drawable import Point
 from model.drawable import Polygon
 from dxfgrabber.entities import LWPolyline, Polyline, MText
 import dxfgrabber.entities
+from tasks.dxf.floor_inference import FloorInference
+from utils.logger import Logger
 
 class DxfReader():
    # Todo: extract to external config file
    valid_poly_layers = ["RM$"]
    valid_text_layers = ["NLOCALI", "RM$TXT"]
 
-   def __init__(self, filename, building_name, floor_name):
+   def __init__(self, filename):
       self._filename = filename;
-      self._grabber = dxfgrabber.readfile(self._filename)
-
+      self._basename = os.path.basename(filename)
+      self.floor = None
+      self._read_dxf(self._filename)
 
       def is_valid_room(ent):
          return type(ent) in [LWPolyline, Polyline] and ent.layer in self.valid_poly_layers
@@ -45,8 +48,53 @@ class DxfReader():
                ) for ent in self._grabber.entities if is_valid_text(ent)
             )
 
+      floor_name = FloorInference.get_identifier(
+                     self._basename,
+                     self._grabber
+                  )
+
+      if not floor_name:
+         Logger.error("It was not possible to identify the floor associated to the DXF file")
+         return None
+
+      building_name = self._get_building_name(self._basename)
+
+      if not building_name:
+         Logger.error("It was not possible to identify the building associated to the DXF file")
+         return None
+
       self.floor = Floor(building_name, floor_name, rooms)
+      if self.floor.n_rooms == 0:
+         Logger.error("The floor read has no rooms: " + self._filename)
+         raise RuntimeError("Floor read has no rooms")
       self.floor.associate_room_texts(texts)
       self.floor.normalize(0.3)
 
+   def _get_building_name(self, basename):
+      building_name = None
+      rm = re.match("(\w+)_(\w+)\.dxf", basename, re.I)
 
+      if rm:
+         building_name = rm.group(1)
+      else:
+         rm = re.match("(.+)\.dxf", basename, re.I)
+         if rm:
+            building_name = rm.group(1)
+
+      return building_name
+
+   def _read_dxf(self, filename):
+      try:
+         self._grabber = dxfgrabber.readfile(filename)
+      except PermissionError:
+         Logger.error("Permission error: cannot read file " + filename)
+         raise
+      except IsADirectoryError:
+         Logger.error("File is a directory error: cannot read file " + filename)
+         raise
+      except FileNotFoundError:
+         Logger.error("File not found error: cannot read file " + filename)
+         raise
+      except Exception as e:
+         Logger.error("Unknown exception on DXF file reading: " + str(e))
+         raise
