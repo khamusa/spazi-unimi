@@ -1,6 +1,4 @@
-from tasks.csv_data_updater import CSVDataUpdater
-
-class EdiliziaDataUpdater(CSVDataUpdater):
+class EdiliziaCSVTask():
 
    def perform_update(self, csvfile ):
          self._reader   = reader_class(csvfile)
