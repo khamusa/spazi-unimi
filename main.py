@@ -1,7 +1,7 @@
 from config_manager import ConfigManager
 
 # TODO cambiare import in tasks.*
-from tasks.dxf.dxf_task import DxfTask
+from tasks.dxf_task import DXFTask
 from tasks.csv_task import CSVTask
 from tasks.data_merger import DataMerger
 

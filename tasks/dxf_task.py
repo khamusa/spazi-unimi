@@ -1,5 +1,6 @@
 from tasks.dxf.dxf_reader import DxfReader
-import shutil, os
+from utils.logger import Logger
+import shutil, os, re
 
 class DXFTask:
 
@@ -35,7 +36,7 @@ class DXFTask:
          if not os.path.exists( backup_file_folder ):
             os.mkdir(backup_file_folder)
 
-         backup_filename = backup_file_folder + dx.floor.building_name+'_'+dx.floor.floor_name+'.dxf'
+         backup_filename = os.path.join(backup_file_folder ,dx.floor.building_name+'_'+dx.floor.floor_name+'.dxf')
          shutil.copy(dxf_file, backup_filename )
 
       else:
