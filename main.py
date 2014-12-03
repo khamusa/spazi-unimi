@@ -17,9 +17,6 @@ class Main():
    def __init__(self):
       self._config      = ConfigManager("config.json")
 
-   def save_file(self, file, dest, name):
-      shutil.copy(file, dest + "/" + name)
-
    def run_command(self, command, files):
       start_time = time.time()
 
@@ -47,12 +44,7 @@ class Main():
       persistence = MongoDBPersistenceManager(self._config)
       task        = CSVTask(self._config, persistence)
 
-      for filename in files:
-         Logger.info("Processing file " + filename)
-         with open(filename) as csvfile:
-            csv_name = task.perform_update(csvfile)
-            if csv_name is not None:
-               self.save_file(filename, self._config["folders"]["data_csv_sources"], csv_name + ".csv")
+      task.perform_updates_on_files(files)
 
 if __name__ == '__main__':
    import argparse

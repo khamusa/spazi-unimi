@@ -16,7 +16,11 @@ class CSVTaskTest(unittest.TestCase):
                "a": ["1", "2", "7"],
                "b": ["4", "5", "8"]
             }
-         }}, MagicMock(), MagicMock() )
+         },
+            "folders":{
+               "data_csv_sources" : "folder"
+               }
+         }, MagicMock(), MagicMock() )
 
 
    def test_header_inference(self):
