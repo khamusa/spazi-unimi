@@ -1,17 +1,10 @@
 from config_manager import ConfigManager
-
-# TODO cambiare import in tasks.*
-from tasks.dxf_task import DXFTask
-from tasks.csv_task import CSVTask
-from tasks.data_merger import DataMerger
-
+from tasks import *
 from persistence.json_persistence_manager import JSONPersistenceManager
 from persistence.db.mongo_db_persistence_manager import MongoDBPersistenceManager
-
 from persistence.svg_persistence_decorator import SVGPersistenceDecorator
 from utils.logger import Logger
-
-import sys, re, os, time, shutil
+import time
 
 class Main():
    def __init__(self):
