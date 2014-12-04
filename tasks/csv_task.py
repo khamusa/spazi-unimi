@@ -34,19 +34,23 @@ class CSVTask:
    def perform_updates_on_files(self,files):
       for filename in files:
          Logger.info("Processing file " + filename)
-         with open(filename) as csv_file:
-            self.perform_update(csv_file)
+         self.perform_update(filename)
 
-   def perform_update(self, csv_file):
+   def perform_update(self, filename):
+      csv_file = open(filename)
       reader   = self._reader_class(csv_file)
       res      = self.infer_csv_from_header(reader.header)
 
       if res == None:
          return
 
+      if not reader.content :
+         Logger.error("CVS file contains only header")
+         return
+
       (service, entities_type)   = res
       backup_filename            = os.path.join(self._backup_folder,service+'_'+entities_type+".csv")
-      shutil.copy(csv_file, backup_filename )
+      shutil.copy(filename, backup_filename )
 
 
 
