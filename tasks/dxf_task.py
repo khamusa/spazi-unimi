@@ -1,44 +1,34 @@
 from tasks.dxf.dxf_reader import DxfReader
+from tasks.task import Task, FileUpdateException
 from utils.logger import Logger
 import shutil, os, re
 
-class DXFTask:
+class DXFTask(Task):
 
    def __init__(self, config, persistence):
       self._persistence    = persistence
       self._backup_folder  = config["folders"]["data_dxf_sources"]
 
-
-   def perform_updates_on_files(self,files):
-      for filename in files:
-         self.perform_update(filename)
-
    def perform_update(self, dxf_file):
-      Logger.info("Processing file: " + dxf_file)
-
       rm = re.match(".+\.dxf", os.path.basename(dxf_file), re.I)
       if rm is None:
-         Logger.error("The supplied file extension is not DXF.")
-         return
+         raise FileUpdateException("The supplied file extension is not DXF.")
 
       try:
-         dx = DxfReader(dxf_file)
+         self.dx = DxfReader(dxf_file)
       except Exception:
-         Logger.error("File processing was not completed: " + dxf_file)
-         return
+         raise FileUpdateException("There was an error reading the DXF file.")
 
-      if( dx.floor ):
-         self._persistence.floor_write(dx.floor)
-         Logger.info("Completed - {} rooms founded in: {}".format(dx.floor.n_rooms, dxf_file))
+      if not self.dx.floor:
+         raise FileUpdateException("No floor found")
 
-         backup_file_folder  = os.path.join(self._backup_folder,dx.floor.building_name)
+      self._persistence.floor_write(self.dx.floor)
 
-         if not os.path.exists( backup_file_folder ):
-            os.mkdir(backup_file_folder)
 
-         backup_filename = os.path.join(backup_file_folder ,dx.floor.building_name+'_'+dx.floor.floor_name+'.dxf')
-         shutil.copy(dxf_file, backup_filename )
+   def get_backup_filepath(self, filename):
+      backup_file_folder  = os.path.join(self._backup_folder, self.dx.floor.building_name)
 
-      else:
-         Logger.error("File processing was not completed ( no floor found ): " + dxf_file)
+      if not os.path.exists( backup_file_folder ):
+         os.mkdir(backup_file_folder)
 
+      return os.path.join(backup_file_folder ,self.dx.floor.building_name+'_'+self.dx.floor.floor_name+'.dxf')
