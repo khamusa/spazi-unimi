@@ -5,14 +5,14 @@ class Task():
 
    def perform_updates_on_files(self,files):
       for filename in files:
-         Logger.info("Processing file " + filename)
-         try:
-            self.perform_update(filename)
-            self.perform_file_backup(filename)
-         except FileUpdateException as e:
-            Logger.error(e.msg)
-         else:
-            Logger.success("File processing complete.")
+         with Logger.info("Processing file " + filename):
+            try:
+               self.perform_update(filename)
+               self.perform_file_backup(filename)
+            except FileUpdateException as e:
+               Logger.error(e.msg)
+            else:
+               Logger.success("File processing complete.")
 
 
    def perform_file_backup(self, source_filepath):
