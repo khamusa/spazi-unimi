@@ -10,9 +10,9 @@ class BaseLoggingContext():
    def write(self, req_verbosity, *texts):
       """This is the method that actually writes to stdout"""
       if(Logger.verbosity >= req_verbosity):
-         str = " ".join(texts)
-         str = self.filter_colors(str, sys.stdout)
-         print(str, end="")
+         my_str = " ".join(str(t) for t in texts)
+         my_str = self.filter_colors(my_str, sys.stdout)
+         print(my_str, end="")
          return True
       return False
 
@@ -49,7 +49,7 @@ class LoggingContext(BaseLoggingContext):
    def write(self, req_verbosity, *texts):
       if(Logger.verbosity >= req_verbosity):
          self.verbosity = min(req_verbosity, self.verbosity)
-         self.buffer.write("".join(texts))
+         self.buffer.write("".join(str(t) for t in texts))
          return True
       return False
 
@@ -64,7 +64,7 @@ class LoggerMeta(type):
 
          def log_message(*texts):
             prefix = Logger._get_prefix(opts["default_prefix"], opts["color"])
-            return prefix+" ".join(texts)
+            return prefix+" ".join(str(t) for t in texts)
 
          # Apply the decorator to the message function
          verbosity_wrap = Logger.contextualized_print(opts["verbosity"])
@@ -126,14 +126,14 @@ class Logger(metaclass = LoggerMeta):
          def print_wrapper(*args, **kargs):
             cur_cont = Logger.context
 
-            str      = Logger._get_indent(cur_cont.indent_lvl)
-            str      = str + method(*args, **kargs)+"\n"
+            my_str      = Logger._get_indent(cur_cont.indent_lvl)
+            my_str      = my_str + method(*args, **kargs)+"\n"
 
             # Will return False if required level of verbosity is not satisfied
-            if(Logger.context.write(method_vlevel, str)):
-               str = ""
+            if(Logger.context.write(method_vlevel, my_str)):
+               my_str = ""
 
-            return LoggingContext(cur_cont.indent_lvl + 1, method_vlevel, str)
+            return LoggingContext(cur_cont.indent_lvl + 1, method_vlevel, my_str)
          return print_wrapper
       return decorator
 
