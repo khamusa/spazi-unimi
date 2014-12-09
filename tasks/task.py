@@ -16,10 +16,12 @@ class Task():
 
 
    def perform_file_backup(self, source_filepath):
-      target_filepath = self.get_backup_filepath(source_filepath)
-      if target_filepath:
-         shutil.copy(source_filepath, target_filepath)
-
+      try:
+         target_filepath = self.get_backup_filepath(source_filepath)
+         if target_filepath:
+            shutil.copy(source_filepath, target_filepath)
+      except Exception as e:
+         pass
 
    def get_backup_filepath(self, filename):
       return ""
