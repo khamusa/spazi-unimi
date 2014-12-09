@@ -38,14 +38,7 @@ class CSVTaskTest(unittest.TestCase):
 
       self.assertEqual( ("edilizia","a") , infer({"1", "2", "22", "3"}) )
 
-      with self.assertRaises(FileUpdateException):
-         infer({"1", "6" , "10"})
-      with self.assertRaises(FileUpdateException):
-         infer({"22", "10" , "33"})
-      with self.assertRaises(FileUpdateException):
-         infer({"1", "3", "10" })
+      self.assertEqual(None, infer({"1", "6" , "10"}))
+      self.assertEqual(None, infer({"22", "10" , "33"}))
+      self.assertEqual(None, infer({"1", "3", "10" }))
 
-
-   def test_error_on_csv_contains_header(self):
-      #TODO
-      pass

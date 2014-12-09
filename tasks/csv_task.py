@@ -18,16 +18,12 @@ class CSVTask(Task):
 
 
    def infer_csv_from_header(self, effective_header):
-      result = None
-
       for service in self._valid_headers:
          for entities_type in self._valid_headers[service]:
             if (self._valid_headers[service][entities_type].issubset(effective_header)):
-               result = (service,entities_type)
-               return result
+               return (service, entities_type)
 
-      if result == None:
-         raise FileUpdateException("Invalid CSV header file")
+      return None
 
    def perform_update(self, filename):
       rm = re.match(".+\.csv", os.path.basename(filename), re.I)
@@ -40,7 +36,7 @@ class CSVTask(Task):
       res      = self.infer_csv_from_header(reader.header)
 
       if res == None:
-         return
+         raise FileUpdateException("Invalid CSV header file")
 
       if not reader.content :
          raise FileUpdateException("CVS file contains only header")
