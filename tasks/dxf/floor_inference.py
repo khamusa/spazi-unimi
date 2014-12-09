@@ -20,24 +20,32 @@ class FloorInference:
       possible_ids   = self.from_cartiglio(grabber)
 
       if(len(possible_ids) > 1):
-         Logger.warning("Multiple floor identifiers inferred from layer \"CARTIGLIO\" ("+ str(", ".join(s for s in possible_ids)) +"):")
+         with Logger.warning(
+               "Multiple floor identifiers inferred from layer \"CARTIGLIO\" (",
+               str(", ".join(s for s in possible_ids)),
+               "):"
+            ):
 
-         if(filename_id in possible_ids):
-            Logger.warning("[SOLVED] One of them equals the id obtained from the filename: "+filename_id, indent = 8)
-            return filename_id
-         else:
-            Logger.warning("[UNDECIDABLE] Multiple cartiglios in file?", indent = 8)
-            return False
+            if(filename_id in possible_ids):
+               Logger.warning(
+                     "[SOLVED] One of them equals the id obtained from the filename: "+filename_id
+                  )
+               return filename_id
+            else:
+               Logger.warning(
+                     "[UNDECIDABLE] Multiple cartiglios in file?"
+                  )
+               return False
 
       cartiglio_id = len(possible_ids) and possible_ids.pop()
 
       if filename_id and cartiglio_id and (filename_id != cartiglio_id):
-         Logger.warning(
+         with Logger.warning(
             "The floor identification issues a conflict:", filename_id,
             "from filename suffix but", cartiglio_id, "from layer \"CARTIGLIO\"",
             out = sys.stdout
-            )
-         Logger.warning("[SOLVED]", cartiglio_id, "will be used", indent = 8)
+            ):
+            Logger.warning("[SOLVED]", cartiglio_id, "will be used")
 
       return cartiglio_id or filename_id
 
