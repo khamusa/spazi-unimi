@@ -1,6 +1,6 @@
 import re
 import json
-import os
+import os, sys
 from model.drawable     import Point, Text
 from utils.logger       import Logger
 
@@ -20,22 +20,32 @@ class FloorInference:
       possible_ids   = self.from_cartiglio(grabber)
 
       if(len(possible_ids) > 1):
-         msg = "Multiple floor identifiers inferred from layer \"CARTIGLIO\" ("+ str(", ".join(s for s in possible_ids)) +"):"
+         with Logger.warning(
+               "Multiple floor identifiers inferred from layer \"CARTIGLIO\" (",
+               str(", ".join(s for s in possible_ids)),
+               "):"
+            ):
 
-         if(filename_id in possible_ids):
-            Logger.warning(msg+"\n       : [SOLVED] One of them equals the id obtained from the filename: "+filename_id)
-            return filename_id
-         else:
-            Logger.warning(msg+"\n       : [UNDECIDABLE] Multiple cartiglios in file?")
-            return False
+            if(filename_id in possible_ids):
+               Logger.warning(
+                     "[SOLVED] One of them equals the id obtained from the filename: "+filename_id
+                  )
+               return filename_id
+            else:
+               Logger.warning(
+                     "[UNDECIDABLE] Multiple cartiglios in file?"
+                  )
+               return False
 
       cartiglio_id = len(possible_ids) and possible_ids.pop()
 
       if filename_id and cartiglio_id and (filename_id != cartiglio_id):
-         Logger.warning(
-            "The floor identification issues a conflict:", filename_id, "from filename suffix but", cartiglio_id, "from layer \"CARTIGLIO\"",
-            "\n       : [SOLVED]", cartiglio_id, "will be used"
-            )
+         with Logger.warning(
+            "The floor identification issues a conflict:", filename_id,
+            "from filename suffix but", cartiglio_id, "from layer \"CARTIGLIO\"",
+            out = sys.stdout
+            ):
+            Logger.warning("[SOLVED]", cartiglio_id, "will be used")
 
       return cartiglio_id or filename_id
 
@@ -48,7 +58,7 @@ class FloorInference:
       suffix_match = re.match(".+_([^_]+)\.dxf", filename, re.I)
       if(suffix_match):
          suffix   = suffix_match.group(1)
-         f_id     = self._floor_id_from_name_or_file_suffix(suffix, regex_key="suffix_regex")
+         f_id     = self._fid_from_string(suffix, regex_key="suffix_regex")
          return f_id
 
       return False
@@ -57,42 +67,44 @@ class FloorInference:
    def from_cartiglio(self, grabber):
       """From a dxfgrabber instance, reads the information on layer CARTIGLIO,
       trying to figure out which floor the dxf file refer to"""
-      texts = self._extract_texts_from_cartiglio(grabber)
+      texts          = self._extract_texts_from_cartiglio(grabber)
+      possible_ids   = set()
 
-      label_position = None
-      possible_ids = set()
       for t in texts:
+         strategy_1  = re.match("(pianta\s+)?piano\s+((\w+\.?\s*)+)", t.text, re.I)
+         strategy_2  = t.text == "PIANO"
 
-         m = re.match("(pianta\s+)?piano\s+((\w+\.?\s*)+)", t.text, re.I)
-         new_id = None
-         if(m):
-            new_id = self._floor_id_from_name_or_file_suffix(m.group(2))
-         elif(t.text == "PIANO"):
-            new_id = self._find_text_value_for_piano_label(t.anchor_point, texts)
+         found = None
 
-         if(new_id):
-            possible_ids.add(new_id)
+         if strategy_1:
+            found = self._fid_from_string(strategy_1.group(2))
+         elif strategy_2:
+            found = self._fid_from_piano_label(t.anchor_point, texts)
+
+         if found:
+            possible_ids.add(found)
 
       return possible_ids
 
    @classmethod
-   def _find_text_value_for_piano_label(self, label_ac, texts):
+   def _fid_from_piano_label(self, label_ac, texts):
       possible_texts = [
             t for t in texts
-            if self._is_possible_text_for_label(t.anchor_point, label_ac) and
-               self._floor_id_from_name_or_file_suffix(t.text) and
+            if self._points_are_close_enough(t.anchor_point, label_ac) and
                t.text != "PIANO"
          ]
 
       possible_texts.sort( key = lambda s : abs(label_ac.x - s.anchor_point.x) )
 
-      if len(possible_texts) > 0:
-         return self._floor_id_from_name_or_file_suffix(possible_texts[0].text)
+      for pt in possible_texts:
+         fid = self._fid_from_string(pt.text)
+         if(fid):
+            return fid
 
       return False
 
    @classmethod
-   def _is_possible_text_for_label(self, insert_point, label_point):
+   def _points_are_close_enough(self, insert_point, label_point):
       """Auxiliary method for inference from cartiglio"""
       return (
           (label_point.x + 300 >= insert_point.x >= label_point.x - 100)  and
@@ -125,7 +137,13 @@ class FloorInference:
       return name.strip()
 
    @classmethod
-   def _floor_id_from_name_or_file_suffix(self, name, regex_key = "name_regexes"):
+   def _fid_from_string(self, name, regex_key = "name_regexes"):
+      """Given a potential string, tests wether or not the string is a valid floor
+      name or filename suffix, according to the regex_key to be used
+
+      If the string IS valid, returns the floor_id associated, else it returns
+      False"""
+
       for floor_info in self.FLOOR_DICT:
          patterns = floor_info[regex_key]
          for p in patterns:

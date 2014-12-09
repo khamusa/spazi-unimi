@@ -1,15 +1,19 @@
 from tasks.dxf.floor_inference import FloorInference
+import sys, dxfgrabber, shutil, os
 
 
 if __name__ == "__main__":
-   import sys, dxfgrabber, shutil, os
    files = sys.argv[1:]
 
    for i in range(len(files)):
       f = files[i]
 
       print(i, " - Processing file", os.path.basename(f))
-      grabber  = dxfgrabber.readfile(f, { "resolve_text_styles": False } )
+
+      try:
+         grabber  = dxfgrabber.readfile(f, { "resolve_text_styles": False } )
+      except Exception:
+         print("[ERROR] Eccezione non gestita")
 
       n        = str(FloorInference.get_identifier(f, grabber)).lower()
 
