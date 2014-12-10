@@ -30,10 +30,10 @@ class CSVTask(Task):
       if rm is None:
          raise FileUpdateException("The supplied file extension is not CSV.")
 
-      #TODO: cambiare sintassi pe with open... as csv_file:
-      csv_file = open(filename)
-      reader   = self._reader_class(csv_file)
-      res      = self.infer_csv_from_header(reader.header)
+      with open(filename) as csv_file:
+         reader   = self._reader_class(csv_file)
+
+      res = self.infer_csv_from_header(reader.header)
 
       if res == None:
          raise FileUpdateException("Invalid CSV header file")
@@ -42,9 +42,22 @@ class CSVTask(Task):
          raise FileUpdateException("CVS file contains only header")
 
       (service, entities_type)   = res
+      self._dispatch_update(service, entities_type, reader.content)
+
+      """Used by backup logic (get_backup_filepath)"""
       self.backup_filepath       = os.path.join(self._backup_folder,service + '_' + entities_type + ".csv")
 
+   def _dispatch_update(self, service, entities_type, content):
+      if (service == "edilizia"):
+         updater = EdiliziaDataUpdater()
+         updater.perform_update(entities_type, content)
+      elif (service == "easyroom"):
+         raise FileUpdateException("Service "+ service +" not yet implemented")
+      else:
+         raise FileUpdateException("Unknown service type: "+str(service))
+
    def get_backup_filepath(self, filename):
+      """Hook method to implement file backup (logic defined in super Task class)"""
       return self.backup_filepath
 
 
