@@ -114,6 +114,14 @@ class ORMModel:
       return ORMAttrs.sanitize_id(id)
 
 
+   @classmethod
+   def find_or_create_by_bid(klass, id):
+      res = klass.find(id)
+      if not res:
+         res = klass({"_id":id})
+      return res
+
+
    """
 
       ORM INTERFACE METHODS
