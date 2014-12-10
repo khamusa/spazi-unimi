@@ -64,8 +64,8 @@ class ORMAttrs:
 
 class ORMModel:
 
-   def __init__(self, new_attrs = None):
-      self._attrs    = ORMAttrs(new_attrs)
+   def __init__(self, new_attrs = None, external_id = "_id"):
+      self._attrs    = ORMAttrs(new_attrs, external_id = external_id)
       self._changed  = False
 
    """Double semantics: this method behaves both as a getter of
@@ -92,7 +92,7 @@ class ORMModel:
    def get_collection(klass_or_instance):
       """Explicit reference to ORMModel so that the method behaves
       the same being called both on instances and class"""
-      return ORMModel._pm[klass.collection_name()]
+      return ORMModel._pm.get_collection(klass_or_instance.collection_name())
 
    @classmethod # can actually be called on instances
    def collection_name(klass_or_instance):
@@ -114,7 +114,8 @@ class ORMModel:
    Returns none if query returns no results"""
    @classmethod
    def find(klass, id):
-      obj = klass.get_collection().find( { "_id" : klass.sanitize_id(id) })
+      obj = klass.get_collection().find_one( { "_id" : klass.sanitize_id(id) })
+
       if(obj):
          return klass(obj)
 
