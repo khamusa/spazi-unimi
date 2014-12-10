@@ -13,6 +13,10 @@ class ORMAttrs:
 
       self._changed  = True
 
+
+   def __eq__(self, other):
+      return self._attrs == other._attrs
+
    """Decorator that ensure external_id is treated transparently, but always
    saved to internal id (_id as used in mongo)"""
    def replace_external_key(decorated_method):
@@ -61,11 +65,18 @@ class ORMAttrs:
    def sanitize_id(klass_or_instance, id):
       return str(id).strip()
 
+   def as_dict(self):
+      return self._attrs
+
+
 
 class ORMModel:
 
    def __init__(self, new_attrs = None, external_id = "_id"):
       self._attrs    = ORMAttrs(new_attrs, external_id = external_id)
+
+   def __eq__(self, other):
+      return ( self._attrs == other._attrs )
 
    """Double semantics: this method behaves both as a getter of
    attributes (if no argument is supplied) and as a setter of attrs,
@@ -88,11 +99,17 @@ class ORMModel:
       for k in new_attrs:
          self._attrs[k] = new_attrs[k]
 
-   def set_changed(self,value=True):
+   def set_changed(self, value=True):
       self._attrs._changed = value
 
    def is_changed(self):
       return self._attrs._changed
+
+   """
+
+      GENERAL CLASS METHODS
+
+   """
 
    """Sets the class Persistence Manager to be used"""
    @classmethod
@@ -126,8 +143,9 @@ class ORMModel:
          res = klass({"_id":id})
       return res
 
-   """def save(self):
-      if self.is_changed :"""
+   def save(self):
+      if self.is_changed :
+         self._pm.save(self.collection_name(), self._attrs.as_dict())
 
 
    """Retrieves from database a document and returns an instance representing it.

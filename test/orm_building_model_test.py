@@ -44,6 +44,15 @@ class ORMBuildingModelTest(unittest.TestCase):
       self.assertEqual(b.attr("_id"), "12" )
       self.assertEqual(b.attr("b_id"), "12" )
 
+   def test_find_and_update(self):
+      b1 = Building.find_or_create_by_id(12)
+      b1.attr("pippo", "paperino")
+      b1.save()
+
+      b2 = Building.find_or_create_by_id(12)
+
+      self.assertEqual(b1, b2)
+
 
 
 
