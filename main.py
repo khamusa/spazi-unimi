@@ -4,6 +4,7 @@ from persistence.json_persistence_manager import JSONPersistenceManager
 from persistence.db.mongo_db_persistence_manager import MongoDBPersistenceManager
 from persistence.svg_persistence_decorator import SVGPersistenceDecorator
 from utils.logger import Logger
+from model import ORMModel
 import time
 
 class Main():
@@ -28,9 +29,10 @@ class Main():
       task.perform_updates_on_files(files)
 
    def run_csv(self, files):
-      persistence = MongoDBPersistenceManager(self._config)
-      task        = CSVTask(self._config, persistence)
+      persistence       = MongoDBPersistenceManager(self._config)
+      ORMModel.set_pm( persistence )
 
+      task              = CSVTask(self._config, persistence)
       task.perform_updates_on_files(files)
 
 if __name__ == '__main__':
@@ -45,6 +47,8 @@ if __name__ == '__main__':
                       help='I file su cui lavorare, a seconda del comando scelto.')
 
    args = parser.parse_args()
+
+
 
    if(args.command in ["csv", "dxf"] and len(args.files) == 0):
       print("Errore: Il comando "+args.command+" richiede almeno un file ."+args.command+" su cui lavorare.\n")

@@ -1,5 +1,5 @@
 from utils.csv_reader import CSVReader
-from tasks.task import Task, FileUpdateException
+from tasks import Task, FileUpdateException, EdiliziaDataUpdater
 from utils.logger import Logger
 from persistence.db.mongo_db_persistence_manager import MongoDBPersistenceManager
 import os, re

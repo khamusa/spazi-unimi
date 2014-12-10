@@ -1,6 +1,8 @@
 from utils.logger import Logger
+import re
+from model import Building
 
-class EdiliziaDataUpdater(QualchePadre):
+class EdiliziaDataUpdater:
 
    def perform_update(self, entities_type, content ):
       {
