@@ -33,5 +33,21 @@ class ORMBuildingModelTest(unittest.TestCase):
       b = Building.find(123)
       self.assertEqual(b.attrs()["pluto"], 333)
 
+      self.assertEqual( b.is_changed() , False )
+
+   def test_find_if_building_not_exists(self):
+      b = Building.find(12)
+      self.assertEqual(b, None)
+
+      b     = Building.find_or_create_by_bid(12)
+      self.assertEqual(b.is_changed(), True )
+      self.assertEqual(b.attr("_id"), "12" )
+      self.assertEqual(b.attr("b_id"), "12" )
+
+
+
+
+
+
 
 

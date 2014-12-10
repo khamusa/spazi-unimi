@@ -11,7 +11,7 @@ class ORMAttrs:
       to manually ensure id sanitization"""
       self._ensure_sanitize_id()
 
-      self._changed  = False
+      self._changed  = True
 
    """Decorator that ensure external_id is treated transparently, but always
    saved to internal id (_id as used in mongo)"""
@@ -66,7 +66,6 @@ class ORMModel:
 
    def __init__(self, new_attrs = None, external_id = "_id"):
       self._attrs    = ORMAttrs(new_attrs, external_id = external_id)
-      self._changed  = False
 
    """Double semantics: this method behaves both as a getter of
    attributes (if no argument is supplied) and as a setter of attrs,
@@ -78,10 +77,22 @@ class ORMModel:
       else:
          return self._attrs
 
+   def attr(self, key, value = None):
+      if value :
+         self._attrs[key] = value
+         return
+      return self._attrs.get(key,None)
+
    """Merges a dictionary with current instances attributes, key by key"""
    def _merge_new_attrs(self, new_attrs):
       for k in new_attrs:
          self._attrs[k] = new_attrs[k]
+
+   def set_changed(self,value=True):
+      self._attrs._changed = value
+
+   def is_changed(self):
+      return self._attrs._changed
 
    """Sets the class Persistence Manager to be used"""
    @classmethod
@@ -116,10 +127,14 @@ class ORMModel:
    def find(klass, id):
       obj = klass.get_collection().find_one( { "_id" : klass.sanitize_id(id) })
 
+      res = None
       if(obj):
-         return klass(obj)
+         res = klass(obj)
+         res.set_changed(False)
 
-      return None
+      return res
+
+
 
 
 

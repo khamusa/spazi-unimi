@@ -25,6 +25,21 @@ class ORMModelTest(unittest.TestCase):
       self.assertEqual(self.orm.collection_name(), 'ormmodel')
       self.assertEqual(ORMModel.collection_name(), 'ormmodel')
 
+   def test_attr_getter_method(self):
+      self.assertEqual(self.orm.attr("pippuzzo"), None)
+      self.assertEqual(self.orm.attr("pippo"), "pluto")
+
+   def test_attr_setter_method(self):
+      self.orm.attr("pippuzzo","ciao")
+      self.assertEqual(self.orm.attr("pippuzzo") ,"ciao")
+
+   def test_is_changed(self):
+      self.assertEqual(self.orm.is_changed(), True)
+      self.orm.set_changed(False)
+      self.orm.attr("pippo","ciao")
+      self.assertEqual(self.orm.is_changed(), True)
+
+
    def test_external_id_handling(self):
       attrs = ORMAttrs({ "bid": 123, "pippo": 123 }, external_id = "bid")
 
