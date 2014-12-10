@@ -17,8 +17,9 @@ class EdiliziaDataUpdater(QualchePadre):
             Logger.warning("Invalid building ID: \"{}\"".format(b_id))
             continue
 
-         persisted = Building.find_or_create_building(b_id, { "edilizia" : b })
-         persisted.save()
+         building = Building.find_or_create_by_id(b_id)
+         building.attr( "edilizia", b )
+         building.save()
 
    def _is_valid_b_id(self, b_id):
       return b_id and re.match("\d+", b_id)

@@ -20,9 +20,9 @@ class ORMBuildingModelTest(unittest.TestCase):
    def test_building_creation(self):
       b = Building({ "_id" : 123, "height" : "everest" })
 
-      self.assertEqual(b.attrs()["b_id"], "123")
-      self.assertEqual(b.attrs()["_id"], "123")
-      self.assertEqual(b.attrs()["height"], "everest")
+      self.assertEqual(b.attr("b_id"), "123")
+      self.assertEqual(b.attr("_id"), "123")
+      self.assertEqual(b.attr("height"), "everest")
 
    def test_building_find(self):
       b = Building.find(12)
@@ -31,7 +31,7 @@ class ORMBuildingModelTest(unittest.TestCase):
       self._pm.save("building", { "_id" : "123", "pluto" : 333 } )
 
       b = Building.find(123)
-      self.assertEqual(b.attrs()["pluto"], 333)
+      self.assertEqual(b.attr("pluto"), 333)
 
       self.assertEqual( b.is_changed() , False )
 
@@ -39,7 +39,7 @@ class ORMBuildingModelTest(unittest.TestCase):
       b = Building.find(12)
       self.assertEqual(b, None)
 
-      b     = Building.find_or_create_by_bid(12)
+      b = Building.find_or_create_by_id(12)
       self.assertEqual(b.is_changed(), True )
       self.assertEqual(b.attr("_id"), "12" )
       self.assertEqual(b.attr("b_id"), "12" )

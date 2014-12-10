@@ -113,20 +113,22 @@ class ORMModel:
    def sanitize_id(klass_or_instance, id):
       return ORMAttrs.sanitize_id(id)
 
-
-   @classmethod
-   def find_or_create_by_bid(klass, id):
-      res = klass.find(id)
-      if not res:
-         res = klass({"_id":id})
-      return res
-
-
    """
 
       ORM INTERFACE METHODS
 
    """
+
+   @classmethod
+   def find_or_create_by_id(klass, id):
+      res = klass.find(id)
+      if not res:
+         res = klass({"_id":id})
+      return res
+
+   """def save(self):
+      if self.is_changed :"""
+
 
    """Retrieves from database a document and returns an instance representing it.
 
