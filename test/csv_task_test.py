@@ -21,7 +21,7 @@ class CSVTaskTest(unittest.TestCase):
             "folders":{
                "data_csv_sources" : "folder"
                }
-         }, MagicMock(), MagicMock() )
+         }, MagicMock() )
 
 
    def test_header_inference(self):

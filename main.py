@@ -32,7 +32,7 @@ class Main():
       persistence       = MongoDBPersistenceManager(self._config)
       ORMModel.set_pm( persistence )
 
-      task              = CSVTask(self._config, persistence)
+      task              = CSVTask(self._config)
       task.perform_updates_on_files(files)
 
 if __name__ == '__main__':

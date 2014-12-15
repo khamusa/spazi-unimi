@@ -1,15 +1,13 @@
 from utils.csv_reader import CSVReader
 from tasks import Task, FileUpdateException, EdiliziaDataUpdater
 from utils.logger import Logger
-from persistence.db.mongo_db_persistence_manager import MongoDBPersistenceManager
 import os, re
 
 class CSVTask(Task):
-   def __init__(self, config, persistence, reader_class = CSVReader):
+   def __init__(self, config, reader_class = CSVReader):
       """Init a CSVTask """
       headers_dict         = config["csv_headers"]
       self._backup_folder  = config["folders"]["data_csv_sources"]
-      self._persistence    = persistence
       self._reader_class   = reader_class
       self._valid_headers  = {}
 
