@@ -17,3 +17,15 @@ class CSVReader:
          self.content.append({ c: l.strip() for c,l in zip(self.header, line) if columns is None or c in columns})
 
       self.header = [ h for h in self.header if columns is None or h in columns ]
+
+
+   def apply_column_filter(self, valid_headers):
+      # TODO filtrare già nell'init
+      """ Function for filter valid headers and column in content """
+      self.header = [ s for s in self.header if s in valid_headers ]
+
+      self.content = [
+         { k: v for k, v in el.items() if k in self.header }
+         for el in self.content
+      ]
+

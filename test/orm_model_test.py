@@ -76,8 +76,8 @@ class ORMModelTest(unittest.TestCase):
    def test_clean(self):
       pm = MongoDBPersistenceManager({
          "db": {
-               "url"    : "localhost",
-               "port"   : 27017,
+               "url"     : "localhost",
+               "port"    : 27017,
                "db_name" : "campus_unimi_test"
             }
       })

@@ -1,6 +1,7 @@
 from utils.logger import Logger
-import re
-from model import Building, RoomCategory
+import re, itertools
+from model        import Building, RoomCategory
+from operator     import attrgetter
 
 class EdiliziaDataUpdater:
 
@@ -20,7 +21,9 @@ class EdiliziaDataUpdater:
             continue
 
          building = Building.find_or_create_by_id(b_id)
-         building.attr( "edilizia", b )
+         edilizia = building.attr("edilizia") or {}
+         edilizia.update(b)
+         building.attr("edilizia", edilizia )
          building.save()
 
    def _is_valid_b_id(self, b_id):
@@ -33,4 +36,22 @@ class EdiliziaDataUpdater:
          cat.save()
 
    def update_rooms(self,rooms):
-      pass
+      keyfunc = lambda s: (s["b_id"], s["l_floor"])
+      rooms.sort(key = keyfunc)
+      rooms = itertools.groupby(rooms, key = keyfunc)
+      building = None
+
+      for ((b_id, floor), floor_rooms) in rooms:
+         if not building or building.attr("b_id") != b_id:
+            building and building.save()
+            building = Building.find_or_create_by_id(b_id)
+            edilizia = building.attr("edilizia") or {}
+            edilizia["floors"] = []
+            building.attr("edilizia", edilizia)
+
+         edilizia["floors"].append( {
+               "f_id"   : floor,
+               "rooms"  : list(floor_rooms)
+            } )
+
+      building and building.save()

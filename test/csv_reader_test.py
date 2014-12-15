@@ -56,3 +56,17 @@ class CSVReaderTest(unittest.TestCase):
       self.assertEqual("d", csv.content[1]["codice"])
       self.assertFalse("tipologia" in csv.content[1])
       self.assertEqual("f", csv.content[1]["pippo"])
+
+   def test_apply_column_filter(self):
+      csv = CSVReader(io.StringIO("codice,tipologia,pippo\na,b,c\nd,e,f"), ["codice", "pippo"])
+      csv.apply_column_filter(["codice", "pippo"])
+      self.assertTrue("tipologia" not in csv.header)
+      self.assertTrue("pippo" in csv.header)
+      self.assertTrue("codice" in csv.header)
+
+      self.assertTrue("pippo" in csv.content[0])
+      self.assertTrue("tipologia" not in csv.content[0])
+      self.assertTrue("codice" in csv.content[0])
+      self.assertTrue("pippo" in csv.content[1])
+      self.assertTrue("tipologia" not in csv.content[1])
+      self.assertTrue("codice" in csv.content[1])

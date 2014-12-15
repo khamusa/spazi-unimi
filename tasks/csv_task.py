@@ -40,6 +40,7 @@ class CSVTask(Task):
          raise FileUpdateException("CVS file contains only header")
 
       (service, entities_type)   = res
+      reader.apply_column_filter(self._valid_headers[service][entities_type])
       self._dispatch_update(service, entities_type, reader.content)
 
       """Used by backup logic (get_backup_filepath)"""
