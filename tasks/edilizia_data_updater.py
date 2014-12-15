@@ -1,6 +1,6 @@
 from utils.logger import Logger
 import re
-from model import Building
+from model import Building, RoomCategory
 
 class EdiliziaDataUpdater:
 
@@ -27,7 +27,10 @@ class EdiliziaDataUpdater:
       return b_id and re.match("\d+", b_id)
 
    def update_room_categories(self, categories):
-      pass
+      RoomCategory.clean()
+      for c in categories:
+         cat = RoomCategory(c)
+         cat.save()
 
    def update_rooms(self,rooms):
       pass

@@ -1,5 +1,6 @@
 import unittest
-from model.orm_model import ORMModel, ORMAttrs
+from model.orm_model    import ORMModel, ORMAttrs
+from persistence.db     import MongoDBPersistenceManager
 
 class ORMModelTest(unittest.TestCase):
    def setUp(self):
@@ -72,5 +73,20 @@ class ORMModelTest(unittest.TestCase):
       self.assertEqual(attrs.get("bid"), "123")
 
 
+   def test_clean(self):
+      pm = MongoDBPersistenceManager({
+         "db": {
+               "url"    : "localhost",
+               "port"   : 27017,
+               "db_name" : "campus_unimi_test"
+            }
+      })
+      ORMModel.set_pm(pm)
+      dic = {"_id" : "2323", "pippo" : "pluto"}
+      orm = ORMModel(dic)
+      orm.save()
+      self.assertEqual(ORMModel._pm.get_collection("ormmodel").find_one({"_id" : "2323"}), dic)
+      orm.clean()
+      self.assertEqual(ORMModel._pm.get_collection("ormmodel").find_one({"_id" : "2323"}), None)
 
 

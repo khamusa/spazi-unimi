@@ -147,6 +147,9 @@ class ORMModel:
       if self.is_changed :
          self._pm.save(self.collection_name(), self._attrs.as_dict())
 
+   @classmethod
+   def clean(self):
+      self._pm.clean_collection(self.collection_name())
 
    """Retrieves from database a document and returns an instance representing it.
 
