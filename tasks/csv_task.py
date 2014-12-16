@@ -35,9 +35,12 @@ class CSVTask(Task):
          raise FileUpdateException("CSV file contains only header")
 
    def _read_csv_file(self, filename):
-      """Wraps the open son that it becomes easily mockable. Yeah, we know.. xD"""
-      with open(filename) as csv_file:
-         return self._reader_class(csv_file, self._valid_headers)
+      """Wraps the open so that it becomes easily mockable. Yeah, we know.. xD"""
+      try:
+         with open(filename) as csv_file:
+            return self._reader_class(csv_file, self._valid_headers)
+      except Exception:
+         raise FileUpdateException("There was an error reading the CSV file.")
 
    def _dispatch_update(self, service, entities_type, content):
       """Requests the appropriate class for the appropriate update service,
