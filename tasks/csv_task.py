@@ -1,5 +1,5 @@
 from utils.csv_reader import CSVReader
-from tasks import Task, FileUpdateException, EdiliziaDataUpdater
+from tasks import Task, FileUpdateException, EdiliziaDataUpdater, EasyroomDataUpdater
 from utils.logger import Logger
 import os, re
 
@@ -47,11 +47,12 @@ class CSVTask(Task):
       according to the inferred csv type"""
       if (service == "edilizia"):
          updater = EdiliziaDataUpdater()
-         updater.perform_update(entities_type, content)
       elif (service == "easyroom"):
-         raise FileUpdateException("Service "+ service +" not yet implemented")
+         updater = EasyroomDataUpdater()
       else:
          raise FileUpdateException("Unknown service type: "+str(service))
+
+      updater.perform_update(entities_type, content)
 
    def get_backup_filepath(self, filename):
       """Hook method to implement file backup (logic defined in super Task class)"""
