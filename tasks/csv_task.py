@@ -14,15 +14,6 @@ class CSVTask(Task):
       for key in headers_dict :
          self._valid_headers[key] = { k : set(v) for k, v in headers_dict[key].items() }
 
-
-   def infer_csv_from_header(self, effective_header):
-      for service in self._valid_headers:
-         for entities_type in self._valid_headers[service]:
-            if (self._valid_headers[service][entities_type].issubset(effective_header)):
-               return (service, entities_type)
-
-      return None
-
    def perform_update(self, filename):
       rm = re.match(".+\.csv", os.path.basename(filename), re.I)
       if rm is None:
@@ -31,17 +22,13 @@ class CSVTask(Task):
       with open(filename) as csv_file:
          reader   = self._reader_class(csv_file)
 
-      res = self.infer_csv_from_header(reader.header)
-
-      if res == None:
+      if not reader.service :
          raise FileUpdateException("Invalid CSV header file")
 
       if not reader.content :
          raise FileUpdateException("CVS file contains only header")
 
-      (service, entities_type)   = res
-      reader.apply_column_filter(self._valid_headers[service][entities_type])
-      self._dispatch_update(service, entities_type, reader.content)
+      self._dispatch_update(reader.service, reader.entities_type, reader.content)
 
       """Used by backup logic (get_backup_filepath)"""
       self.backup_filepath       = os.path.join(self._backup_folder,service + '_' + entities_type + ".csv")
