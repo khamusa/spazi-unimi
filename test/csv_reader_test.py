@@ -46,30 +46,32 @@ class CSVReaderTest(unittest.TestCase):
       self.assertEqual("f", csv.content[1]["pippo"])
 
    def test_column_filter(self):
-      available_headers = {
-         "edilizia":{
-            "rooms"              : ["codice", "filipippo", "pluto"],
-            "room_categories"    : ["verdi", "codice", "gialli"],
-            "buildings"          : ["codice", "pippo"]
-         },
-         "easyroom":{
-            "buildings"          : ["b_id", "address", "building_name", "n_floors"],
-            "rooms"              : ["r_id", "b_id", "room_name", "capacity", "floor", "accessibility", "equipments" ]
+      headers = {
+            "edilizia":{
+               "a": ["col1", "col2", "col3"],
+               "b": ["col4", "col5", "col6"]
+            },
+            "easyroom":{
+               "a": ["col1", "col2", "col7"],
+               "b": ["col4", "col5", "col8"]
+            }
          }
-      }
 
-      csv = CSVReader(io.StringIO("codice,tipologia,pippo\na,b,c\nd,e,f"), available_headers)
+      csv = CSVReader(io.StringIO("col1,col2,col3,col4\na,b,c,c2\nd,e,f,f2"), headers)
 
-      self.assertTrue("tipologia" not in csv.header)
-      self.assertTrue("pippo" in csv.header)
-      self.assertTrue("codice" in csv.header)
+      self.assertTrue("col4" not in csv.header)
+      self.assertTrue("col1" in csv.header)
+      self.assertTrue("col2" in csv.header)
+      self.assertTrue("col3" in csv.header)
 
-      self.assertTrue("pippo" in csv.content[0])
-      self.assertTrue("tipologia" not in csv.content[0])
-      self.assertTrue("codice" in csv.content[0])
-      self.assertTrue("pippo" in csv.content[1])
-      self.assertTrue("tipologia" not in csv.content[1])
-      self.assertTrue("codice" in csv.content[1])
+      self.assertTrue("col4" not in csv.content[0])
+      self.assertTrue("col4" not in csv.content[1])
+
+      self.assertTrue("col1" in csv.content[0])
+      self.assertTrue("col2" in csv.content[0])
+
+      self.assertTrue("col2" in csv.content[1])
+      self.assertTrue("col3" in csv.content[1])
 
    def test_header_inference(self):
 
