@@ -90,7 +90,7 @@ class DataMergerTest(unittest.TestCase):
       merged = DataMerger.merge_building_address(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
       self.assertEqual(merged, "Via Celoria, 2, Milano, 20133")
 
-   def test_merge_bulding_l_b_id(self):
+   def test_merge_building_l_b_id(self):
       """ Merge without edilizia data """
       merged = DataMerger.merge_building_l_b_id(easyroom=self.db_building["easyroom"])
       self.assertEqual(merged,"")
@@ -130,6 +130,50 @@ class DataMergerTest(unittest.TestCase):
       self.db_building["edilizia"].pop("lat")
       coordinates = DataMerger.merge_building_coordinates(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
       self.assertEqual(coordinates,{"lat" : 45.476739, "lng" : 9.227256})
+
+
+   def test_merge_building(self):
+
+      """ Merge without edilizia data """
+      merged = DataMerger.merge_building(easyroom=self.db_building["easyroom"])
+
+      self.assertEqual(merged["coordinates"],{ "type": "Point", "coordinates": [9.227256, 45.476739] })
+      self.assertEqual(merged["l_b_id"],"")
+      self.assertEqual(merged["address"],self.db_building["easyroom"]["address"])
+      self.assertEqual(merged["building_name"],self.db_building["easyroom"]["building_name"])
+
+
+      """ Merge without easyroom data """
+      merged = DataMerger.merge_building(edilizia=self.db_building["edilizia"])
+
+      self.assertEqual(merged["coordinates"],
+         { "type": "Point", "coordinates": [
+            float(self.db_building["edilizia"]["lon"]),
+            float(self.db_building["edilizia"]["lat"])
+            ]
+         })
+      self.assertEqual(merged["l_b_id"], self.db_building["edilizia"]["l_b_id"])
+      self.assertEqual(merged["address"],"Via Giovanni Celoria, 2, 20133 Milano")
+      self.assertEqual(merged["building_name"],self.db_building["edilizia"]["address"])
+
+
+      """ Merge with easyroom and edilizia data """
+      merged = DataMerger.merge_building(edilizia=self.db_building["edilizia"],easyroom=self.db_building["easyroom"])
+
+      self.assertEqual(merged["l_b_id"], self.db_building["edilizia"]["l_b_id"])
+      self.assertEqual(merged["address"], self.db_building["easyroom"]["address"])
+      self.assertEqual(merged["building_name"], self.db_building["easyroom"]["building_name"])
+      self.assertEqual(merged["coordinates"],
+         { "type": "Point", "coordinates": [
+            float(self.db_building["edilizia"]["lon"]),
+            float(self.db_building["edilizia"]["lat"])
+            ]
+         })
+
+
+
+
+
 
 
 

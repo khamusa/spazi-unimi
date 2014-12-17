@@ -11,9 +11,9 @@ class DataMerger():
 
    @classmethod
    def merge(self,field,edilizia,easyroom):
-      strategy_name   = "merge_"+field
-      merge_strategy  = getattr(self,strategy_name,self.raise_exception)
-      merge_strategy(edilizia,easyroom)
+      strategy_name   = "merge_building_"+field
+      merge_strategy  = getattr(DataMerger, strategy_name, DataMerger.raise_exception)
+      return merge_strategy(edilizia,easyroom)
 
    @classmethod
    def raise_exception(self,field,data):
@@ -74,6 +74,13 @@ class DataMerger():
 
          return { "lat" : None , "lng" : None }
 
+   @classmethod
+   def prepare_GeoJson_coordinates(self,coordinates):
+      return {
+            "type"         : "Point",
+            "coordinates"  : [ coordinates["lng"] , coordinates["lat"] ]
+         }
+
 
    @classmethod
    def merge_building_address(self, edilizia=None, easyroom=None):
@@ -92,20 +99,21 @@ class DataMerger():
          return g.formatted_address[:-len(g.country)-2]
 
 
+
    @classmethod
-   def merge_building(self,edilizia,easyroom):
+   def merge_building(self,edilizia=None,easyroom=None):
       """Merge easyroom and edilizia data"""
-
       Logger.info("Merge building")
+      """merged = { key:DataMerger.merge(key,edilizia,easyroom) for key in ["l_b_id","b_id","address","building_name","coordinates"] }"""
 
-      coordinate_merged = self.merge_coordinates(edilizia,easyroom)
-      merged_data       = { key : self.merge(key,edilizia,easyroom) for key in ["building_name","address"] }
-      merged_data["lat"] = coordinate_merged["lat"]
-      merged_data["lng"] = coordinate_merged["lng"]
+      coordinates = DataMerger.merge_building_coordinates(edilizia, easyroom)
 
-      merged = { "l_b_id":edilizia["l_b_id"],"b_id":edilizia["b_id"],"payload": {}, "date":time.strftime("%Y-%m-%d")}
-      merged["payload"]["edilizia"] = { key:edilizia[key] for key in edilizia if key != "b_id" and key != "l_b_id" }
-      merged["payload"]["easyroom"] = { key:easyroom[key] for key in easyroom if key != "b_id" }
-      merged["payload"]["merged"]   =  merged_data
+      merged = {
+         "l_b_id"          : DataMerger.merge_building_l_b_id(edilizia, easyroom),
+         "address"         : DataMerger.merge_building_address(edilizia, easyroom),
+         "building_name"   : DataMerger.merge_building_name(edilizia, easyroom),
+         "coordinates"     : DataMerger.prepare_GeoJson_coordinates(coordinates)
+
+      }
 
       return merged
