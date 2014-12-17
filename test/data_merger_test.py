@@ -7,7 +7,6 @@ from tasks.data_merger import InvalidMergeStrategy
 class DataMergerTest(unittest.TestCase):
 
    def setUp(self):
-      self.dm           = DataMerger()
       self.db_building  = {
           "_id" : "21030",
           "edilizia" : {
@@ -67,70 +66,71 @@ class DataMergerTest(unittest.TestCase):
 
    def test_merge_building_name(self):
       """ Merge without edilizia data """
-      merged = self.dm.merge_building_name(edilizia=None, easyroom=self.db_building["easyroom"])
+      merged = DataMerger.merge_building_name(edilizia=None, easyroom=self.db_building["easyroom"])
       self.assertEqual(merged,"Agraria Edificio 3")
 
       """ Merge without easyroom data """
-      merged = self.dm.merge_building_name(edilizia=self.db_building["edilizia"], easyroom=None)
+      merged = DataMerger.merge_building_name(edilizia=self.db_building["edilizia"], easyroom=None)
       self.assertEqual(merged,"Milano - Via Celoria 2_Ed 3")
 
       """ Merge with edilizia and easyroom data """
-      merged = self.dm.merge_building_name(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
+      merged = DataMerger.merge_building_name(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
       self.assertEqual(merged,"Agraria Edificio 3")
 
    def test_merge_building_address(self):
       """ Merge without edilizia data """
-      merged = self.dm.merge_building_address(easyroom=self.db_building["easyroom"])
+      merged = DataMerger.merge_building_address(easyroom=self.db_building["easyroom"])
       self.assertEqual(merged, "Via Celoria, 2, Milano, 20133")
 
       """ Merge without easyroom data """
-      merged = self.dm.merge_building_address(edilizia=self.db_building["edilizia"])
+      merged = DataMerger.merge_building_address(edilizia=self.db_building["edilizia"])
       self.assertEqual(merged, "Via Giovanni Celoria, 2, 20133 Milano")
 
       """ Merge with edilizia and easyroom data """
-      merged = self.dm.merge_building_address(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
+      merged = DataMerger.merge_building_address(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
       self.assertEqual(merged, "Via Celoria, 2, Milano, 20133")
 
    def test_merge_bulding_l_b_id(self):
       """ Merge without edilizia data """
-      merged = self.dm.merge_building_l_b_id(easyroom=self.db_building["easyroom"])
+      merged = DataMerger.merge_building_l_b_id(easyroom=self.db_building["easyroom"])
       self.assertEqual(merged,"")
 
       """ Merge without easyroom data """
-      merged = self.dm.merge_building_l_b_id(edilizia=self.db_building["edilizia"])
+      merged = DataMerger.merge_building_l_b_id(edilizia=self.db_building["edilizia"])
       self.assertEqual(merged,"5703")
 
       """ Merge with edilizia and easyroom data """
-      merged = self.dm.merge_building_l_b_id(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
+      merged = DataMerger.merge_building_l_b_id(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
       self.assertEqual(merged,"5703")
 
    def test_coordinates_are_valid(self):
-      self.assertTrue(  self.dm.coordinates_are_valid( { "lat" :  "45.1234"  , "lon" : "10.132" } ) )
-      self.assertFalse( self.dm.coordinates_are_valid( { "lat" :  "pippo"  , "lon" : "10.132" } ) )
-      self.assertFalse( self.dm.coordinates_are_valid( { "lat" :  "pippo"  , "lon" : "10.132" } ) )
-      self.assertFalse( self.dm.coordinates_are_valid( { "lat" :  "pippo"  , "lon" : "pluto" } ) )
-      self.assertFalse( self.dm.coordinates_are_valid( { "lat" :  "pippo" } ) )
-      self.assertFalse( self.dm.coordinates_are_valid( { "lon" :  "pippo" } ) )
-      self.assertFalse( self.dm.coordinates_are_valid( { "plut" :  "pippo" } ) )
+      self.assertTrue(  DataMerger.coordinates_are_valid( { "lat" :  "45.1234"  , "lon" : "10.132" } ) )
+      self.assertFalse( DataMerger.coordinates_are_valid( { "lat" :  "pippo"  , "lon" : "10.132" } ) )
+      self.assertFalse( DataMerger.coordinates_are_valid( { "lat" :  "pippo"  , "lon" : "10.132" } ) )
+      self.assertFalse( DataMerger.coordinates_are_valid( { "lat" :  "pippo"  , "lon" : "pluto" } ) )
+      self.assertFalse( DataMerger.coordinates_are_valid( { "lat" :  "pippo" } ) )
+      self.assertFalse( DataMerger.coordinates_are_valid( { "lon" :  "pippo" } ) )
+      self.assertFalse( DataMerger.coordinates_are_valid( { "plut" :  "pippo" } ) )
 
    def test_merge_coordinates(self):
       """ Merge without edilizia data """
-      coordinates = self.dm.merge_building_coordinates(easyroom=self.db_building["easyroom"])
+      coordinates = DataMerger.merge_building_coordinates(easyroom=self.db_building["easyroom"])
       self.assertEqual(coordinates,{"lat" : 45.476739, "lng" : 9.227256})
 
       """ Merge without easyroom data """
-      coordinates = self.dm.merge_building_coordinates(edilizia=self.db_building["edilizia"])
+      coordinates = DataMerger.merge_building_coordinates(edilizia=self.db_building["edilizia"])
       self.assertEqual(coordinates,{"lat" : 45.476098, "lng" : 9.227756})
 
       """ Merge with edilizia and easyroom data """
-      coordinates = self.dm.merge_building_coordinates(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
+      coordinates = DataMerger.merge_building_coordinates(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
       self.assertEqual(coordinates,{"lat" : 45.476098, "lng" : 9.227756})
 
       """ Merge with edilizia and easyroom data ( edilizia has no coordinates ) """
       self.db_building["edilizia"].pop("lon")
       self.db_building["edilizia"].pop("lat")
-      coordinates = self.dm.merge_building_coordinates(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
+      coordinates = DataMerger.merge_building_coordinates(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
       self.assertEqual(coordinates,{"lat" : 45.476739, "lng" : 9.227256})
+
 
 
 

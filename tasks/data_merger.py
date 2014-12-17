@@ -8,15 +8,19 @@ class InvalidMergeStrategy(RuntimeError):
    pass
 
 class DataMerger():
+
+   @classmethod
    def merge(self,field,edilizia,easyroom):
       strategy_name   = "merge_"+field
       merge_strategy  = getattr(self,strategy_name,self.raise_exception)
       merge_strategy(edilizia,easyroom)
 
+   @classmethod
    def raise_exception(self,field,data):
       raise InvalidMergeStrategy(field)
 
    # Helpers
+   @classmethod
    def coordinates_are_valid(self,data):
       """ check if coordinates keys "lat" and "lon" are present and if their values are floats """
 
@@ -32,12 +36,14 @@ class DataMerger():
 
    # Strategies
 
+   @classmethod
    def merge_building_l_b_id(self, edilizia=None, easyroom=None):
       if edilizia :
          return edilizia.get("l_b_id", "")
       else:
          return ""
 
+   @classmethod
    def merge_building_name(self, edilizia=None, easyroom=None):
       """Building name merge strategy"""
       if easyroom :
@@ -46,6 +52,7 @@ class DataMerger():
          return edilizia.get("address",None)
 
 
+   @classmethod
    def merge_building_coordinates(self, edilizia=None, easyroom=None):
       """Coordinates merge strategy: return lat and lng if are present and valid
          in the edilizia data, otherwhise make a reverse geocoding request"""
@@ -68,6 +75,7 @@ class DataMerger():
          return { "lat" : None , "lng" : None }
 
 
+   @classmethod
    def merge_building_address(self, edilizia=None, easyroom=None):
       """Address merge strategy: use easyroom field if is present,
          otherwhise use Geocoder in order to obtain a well-formed address"""
@@ -84,6 +92,7 @@ class DataMerger():
          return g.formatted_address[:-len(g.country)-2]
 
 
+   @classmethod
    def merge_building(self,edilizia,easyroom):
       """Merge easyroom and edilizia data"""
 

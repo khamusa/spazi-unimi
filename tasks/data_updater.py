@@ -1,5 +1,6 @@
-from model           import Building
-from utils.logger    import Logger
+from model              import Building
+from utils.logger       import Logger
+from tasks.data_merger  import DataMerger
 import itertools
 
 class DataUpdater():
@@ -16,6 +17,11 @@ class DataUpdater():
          namespaced_attr = building.attr(namespace) or {}
          namespaced_attr.update(b)
          building.attr(namespace, namespaced_attr )
+
+         edilizia = building.attr('edilizia')
+         easyroom = building.attr('easyroom')
+
+         building.attr('merged', self._dm.merge_building(edilizia, easyroom))
          building.save()
 
    def update_rooms(self,rooms):
