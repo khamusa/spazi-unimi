@@ -19,57 +19,69 @@ class DataMerger():
    # Helpers
    def coordinates_are_valid(self,data):
       """ check if coordinates keys "lat" and "lon" are present and if their values are floats """
+
+      if not data:
+         return False
+
       try:
-         float(data["lat"])
-         float(data["lon"])
+         float(data.get("lat", ""))
+         float(data.get("lon", ""))
          return True
       except ValueError:
          return False
-      except KeyError:
-         return False
 
    # Strategies
-   def merge_building_name(self,edilizia,easyroom):
-      """Building name merge strategy"""
-      edilizia_is_valid                = any( x in edilizia["building_name"] for x in ["Dip","Polo","Dipartimento"] )
-      easyroom_is_not_address_subset   = easyroom["venue"] not in easyroom["address"]
 
-      if( edilizia_is_valid ):
-         return edilizia["building_name"]
-      elif( easyroom_is_not_address_subset ):
-         return easyroom["venue"]
+   def merge_building_l_b_id(self, edilizia=None, easyroom=None):
+      if edilizia :
+         return edilizia.get("l_b_id", "")
       else:
-         return edilizia["building_name"]
+         return ""
+
+   def merge_building_name(self, edilizia=None, easyroom=None):
+      """Building name merge strategy"""
+      if easyroom :
+         return easyroom.get("building_name", None)
+      else :
+         return edilizia.get("address",None)
 
 
-
-   def merge_coordinates(self,edilizia,easyroom):
+   def merge_building_coordinates(self, edilizia=None, easyroom=None):
       """Coordinates merge strategy: return lat and lng if are present and valid
          in the edilizia data, otherwhise make a reverse geocoding request"""
-      if( self.coordinates_are_valid(edilizia) ):
-         lat = round(float(edilizia["lat"]),5)
-         lng = round(float(edilizia["lon"]),5)
+      if self.coordinates_are_valid(edilizia) :
+         lat = round(float(edilizia["lat"]), 6)
+         lng = round(float(edilizia["lon"]), 6)
+
          return { "lat" :  lat, "lng" : lng }
-      else:
-         try:
-            (lat,lng)   = (Geocoder.geocode(easyroom["address"])).coordinates
-            lat         = round(lat,5)
-            lng         = round(lng,5)
+
+      elif easyroom :
+         address     =  easyroom.get("address", None) or edilizia.get("address", None)
+         try :
+            (lat,lng)   = (Geocoder.geocode(address)).coordinates
+            lat         = round(lat,6)
+            lng         = round(lng,6)
             return { "lat" : lat, "lng" : lng }
-         except KeyError:
-            Logger.warning("Address not found in easyroom data")
          except GeocoderError:
             Logger.warning("Coordinates parsing error")
 
-      return { "lat" : None , "lng" : None }
+         return { "lat" : None , "lng" : None }
 
-   def merge_address(self,edilizia,easyroom):
+
+   def merge_building_address(self, edilizia=None, easyroom=None):
       """Address merge strategy: use easyroom field if is present,
          otherwhise use Geocoder in order to obtain a well-formed address"""
-      if( "address" in easyroom ):
+
+      if easyroom:
          return easyroom["address"]
+
+      elif "lon" in edilizia and "lat" in edilizia:
+         g = Geocoder.reverse_geocode( float(edilizia["lat"]) , float(edilizia["lon"]) )
+         return g.formatted_address[:-len(g.country)-2]
+
       else:
-         return (Geocoder.geocode(edilizia["address"])).formatted_address
+         g = Geocoder.geocode( edilizia["address"] )
+         return g.formatted_address[:-len(g.country)-2]
 
 
    def merge_building(self,edilizia,easyroom):
@@ -83,7 +95,7 @@ class DataMerger():
       merged_data["lng"] = coordinate_merged["lng"]
 
       merged = { "l_b_id":edilizia["l_b_id"],"b_id":edilizia["b_id"],"payload": {}, "date":time.strftime("%Y-%m-%d")}
-      merged["payload"]["edilizia"] = { key:edilizia[key] for key in edilizia if key != "b_id" and key != "l_b_id" } 
+      merged["payload"]["edilizia"] = { key:edilizia[key] for key in edilizia if key != "b_id" and key != "l_b_id" }
       merged["payload"]["easyroom"] = { key:easyroom[key] for key in easyroom if key != "b_id" }
       merged["payload"]["merged"]   =  merged_data
 
