@@ -21,7 +21,7 @@ class DataUpdater():
          edilizia = building.attr('edilizia')
          easyroom = building.attr('easyroom')
 
-         building.attr('merged', self._dm.merge_building(edilizia, easyroom))
+         building.attr('merged', DataMerger.merge_building(edilizia, easyroom))
          building.save()
 
    def update_rooms(self,rooms):

@@ -76,6 +76,7 @@ class DataMerger():
 
    @classmethod
    def prepare_GeoJson_coordinates(self,coordinates):
+      coordinates = coordinates or { "lng" : 0 , "lat" : 0 }
       return {
             "type"         : "Point",
             "coordinates"  : [ coordinates["lng"] , coordinates["lat"] ]
@@ -87,24 +88,32 @@ class DataMerger():
       """Address merge strategy: use easyroom field if is present,
          otherwhise use Geocoder in order to obtain a well-formed address"""
 
-      if easyroom:
-         return easyroom["address"]
+      try:
+         if easyroom:
+            return easyroom["address"]
 
-      elif "lon" in edilizia and "lat" in edilizia:
-         g = Geocoder.reverse_geocode( float(edilizia["lat"]) , float(edilizia["lon"]) )
-         return g.formatted_address[:-len(g.country)-2]
+         elif len(edilizia["lon"].strip())>0 and len(edilizia["lat"].strip())>0 :
 
-      else:
-         g = Geocoder.geocode( edilizia["address"] )
-         return g.formatted_address[:-len(g.country)-2]
+            g = Geocoder.reverse_geocode( float(edilizia["lat"]) , float(edilizia["lon"]) )
+            return g.formatted_address[:-len(g.country)-2]
+
+         else:
+            g = Geocoder.geocode( edilizia["address"] )
+            return g.formatted_address[:-len(g.country)-2]
+
+      except GeocoderError as error:
+         if error.status == GeocoderError.G_GEO_ZERO_RESULTS :
+            Logger.warning("Address not valid " , edilizia["address"] )
+
+         elif error.status == GeocoderError.G_GEO_OVER_QUERY_LIMIT :
+            time.sleep(1)
+            DataMerger.merge_building_address(edilizia, easyroom)
 
 
 
    @classmethod
    def merge_building(self,edilizia=None,easyroom=None):
       """Merge easyroom and edilizia data"""
-      Logger.info("Merge building")
-      """merged = { key:DataMerger.merge(key,edilizia,easyroom) for key in ["l_b_id","b_id","address","building_name","coordinates"] }"""
 
       coordinates = DataMerger.merge_building_coordinates(edilizia, easyroom)
 
