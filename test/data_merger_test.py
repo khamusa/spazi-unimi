@@ -171,11 +171,43 @@ class DataMergerTest(unittest.TestCase):
          })
 
 
+   def test_merge_room(self):
+      """ Merge with easyroom and edilizia data """
+      merged = DataMerger.merge_room(
+         edilizia = self.db_building["edilizia"]["floors"][0]["rooms"][0],
+         easyroom = self.db_building["easyroom"]["floors"][0]["rooms"][0]
+         )
+
+      self.assertEqual(merged, {
+         "r_id"            : self.db_building["edilizia"]["floors"][0]["rooms"][0]["r_id"],
+         "room_name"       : self.db_building["edilizia"]["floors"][0]["rooms"][0]["room_name"],
+         "capacity"        : self.db_building["edilizia"]["floors"][0]["rooms"][0]["capacity"],
+         "type_name"       : self.db_building["edilizia"]["floors"][0]["rooms"][0]["type_name"],
+         "accessibility"   : self.db_building["easyroom"]["floors"][0]["rooms"][0]["accessibility"],
+         "equipments"      : ["Lavagna luminosa", "Internet", "Impianto audio"]
+         })
+
+      """ Merge without easyroom"""
+      merged = DataMerger.merge_room(edilizia = self.db_building["edilizia"]["floors"][0]["rooms"][0])
+
+      self.assertEqual(merged, {
+         "r_id"            : self.db_building["edilizia"]["floors"][0]["rooms"][0]["r_id"],
+         "room_name"       : self.db_building["edilizia"]["floors"][0]["rooms"][0]["room_name"],
+         "capacity"        : self.db_building["edilizia"]["floors"][0]["rooms"][0]["capacity"],
+         "type_name"       : self.db_building["edilizia"]["floors"][0]["rooms"][0]["type_name"],
+         "accessibility"   : "",
+         "equipments"      : []
+         })
 
 
+      """ Merge without edilizia"""
+      merged = DataMerger.merge_room(easyroom = self.db_building["easyroom"]["floors"][0]["rooms"][0])
 
-
-
-
-
-
+      self.assertEqual(merged, {
+         "r_id"            : "R014",
+         "room_name"       : self.db_building["easyroom"]["floors"][0]["rooms"][0]["room_name"],
+         "capacity"        : self.db_building["easyroom"]["floors"][0]["rooms"][0]["capacity"],
+         "type_name"       : "",
+         "accessibility"   : self.db_building["easyroom"]["floors"][0]["rooms"][0]["accessibility"],
+         "equipments"      : ["Lavagna luminosa", "Internet", "Impianto audio"]
+         })
