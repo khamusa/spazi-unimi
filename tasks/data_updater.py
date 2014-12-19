@@ -33,6 +33,9 @@ class DataUpdater():
          building = None
 
          for ((b_id, floor), floor_rooms) in rooms:
+            if not self._is_valid_b_id(b_id):
+               Logger.warning("Invalid building ID: \"{}\"".format(b_id))
+               continue
             if not building or building.attr("b_id") != b_id:
                building and building.save()
                building = Building.find_or_create_by_id(b_id)
