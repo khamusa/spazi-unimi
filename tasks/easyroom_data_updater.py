@@ -19,4 +19,4 @@ class EasyroomDataUpdater(DataUpdater):
 
    def get_floor_key(self):
       """Hook method used by parent DataUpdater class"""
-      return "floor"
+      return "l_floor"
