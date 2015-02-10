@@ -32,12 +32,12 @@ class SVGPersistenceDecorator(PersistenceManager):
    def get_base_write_path(self, obj = None):
       return os.path.join(
             self._cm["folders"]["data_svg_preprocessed_output"],
-            obj.building_id
+            obj.b_id
             )
 
    def get_filename_format(self, obj = None):
       return self._cm["filepaths"]["preprocessed_floor_format"].format(
-         building_id    = obj.building_id,
+         b_id           = obj.b_id,
          floor_name     = obj.floor_name
       )
 
