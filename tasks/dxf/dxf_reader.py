@@ -16,7 +16,7 @@ from model.drawable import Point
 from model.drawable import Polygon
 from dxfgrabber.entities import LWPolyline, Polyline, MText
 import dxfgrabber.entities
-from tasks.dxf.floor_inference import FloorInference
+from tasks.floor_inference import FloorInference
 from utils.logger import Logger
 
 class DxfReader():

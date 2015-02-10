@@ -1,6 +1,7 @@
 import re
-from model           import RoomCategory
-from .data_updater   import DataUpdater
+from model              import RoomCategory
+from .data_updater      import DataUpdater
+from .floor_inference   import FloorInference
 
 class EdiliziaDataUpdater(DataUpdater):
 
@@ -28,3 +29,7 @@ class EdiliziaDataUpdater(DataUpdater):
       for c in categories:
          cat = RoomCategory(c)
          cat.save()
+
+   def sanitize_floor_id(self, l_floor):
+      f_id = FloorInference.fid_from_string(l_floor, "suffix_regex")
+      return super().sanitize_floor_id(f_id)

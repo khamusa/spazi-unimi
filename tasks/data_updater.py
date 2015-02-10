@@ -51,7 +51,7 @@ class DataUpdater():
                building.attr(namespace, namespaced_attr)
 
             namespaced_attr["floors"].append( {
-                  "f_id"   : floor,
+                  "f_id"   : self.sanitize_floor_id(floor),
                   "rooms"  : list(floor_rooms)
                } )
 
@@ -68,3 +68,11 @@ class DataUpdater():
       # remove the attribute b_id from the room
       del room["b_id"]
       return room
+
+
+   def sanitize_floor_id(self, floor_id):
+      """Effettua una pulizia del floor_id prima di salvarlo
+
+      Le sottoclassi devono assicurarsi di richiamare questa implementazione
+      attraverso l'uso di super e di restituire un riferimento all'oggetto aggiornato"""
+      return floor_id

@@ -1,4 +1,4 @@
-from tasks.dxf.floor_inference import FloorInference
+from tasks.floor_inference import FloorInference
 import sys, dxfgrabber, shutil, os
 
 

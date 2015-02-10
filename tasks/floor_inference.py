@@ -58,7 +58,7 @@ class FloorInference:
       suffix_match = re.match(".+_([^_]+)\.dxf", filename, re.I)
       if(suffix_match):
          suffix   = suffix_match.group(1)
-         f_id     = self._fid_from_string(suffix, regex_key="suffix_regex")
+         f_id     = self.fid_from_string(suffix, regex_key="suffix_regex")
          return f_id
 
       return False
@@ -77,7 +77,7 @@ class FloorInference:
          found = None
 
          if strategy_1:
-            found = self._fid_from_string(strategy_1.group(2))
+            found = self.fid_from_string(strategy_1.group(2))
          elif strategy_2:
             found = self._fid_from_piano_label(t.anchor_point, texts)
 
@@ -97,7 +97,7 @@ class FloorInference:
       possible_texts.sort( key = lambda s : abs(label_ac.x - s.anchor_point.x) )
 
       for pt in possible_texts:
-         fid = self._fid_from_string(pt.text)
+         fid = self.fid_from_string(pt.text)
          if(fid):
             return fid
 
@@ -137,7 +137,7 @@ class FloorInference:
       return name.strip()
 
    @classmethod
-   def _fid_from_string(self, name, regex_key = "name_regexes"):
+   def fid_from_string(self, name, regex_key = "name_regexes"):
       """Given a potential string, tests wether or not the string is a valid floor
       name or filename suffix, according to the regex_key to be used
 
