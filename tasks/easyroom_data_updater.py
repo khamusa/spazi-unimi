@@ -20,3 +20,11 @@ class EasyroomDataUpdater(DataUpdater):
    def get_floor_key(self):
       """Hook method used by parent DataUpdater class"""
       return "l_floor"
+
+   def sanitize_room(self, room):
+      """Richiamato dalla classe padre per ogni stanza da inserire nel DB"""
+      r_id = room.get("r_id", "")
+      r_id = ("#" in r_id) and r_id.split("#")[1] or r_id
+      room["r_id"] = r_id
+
+      return super().sanitize_room(room)

@@ -131,11 +131,6 @@ class DataMerger():
    @classmethod
    def merge_room(self, edilizia = None, easyroom = None):
       """Merge information of a single room"""
-      r_id = ""
-      if edilizia:
-         r_id = edilizia.get("r_id", "")
-      else:
-         r_id = easyroom.get("r_id", "").split("#")[1]
 
       eq = (easyroom and easyroom.get("equipments", "")) or ""
       if eq is "":
@@ -143,7 +138,7 @@ class DataMerger():
       else:
          eq = eq.split("/")
       return {
-         "r_id"            : r_id,
+         "r_id"            : (edilizia and edilizia.get("r_id", None) or easyroom["r_id"]),
          "room_name"       : (edilizia and edilizia.get("room_name", None) or easyroom.get("room_name", "")) or "",
          "capacity"        : (edilizia and edilizia.get("capacity", None) or easyroom.get("capacity", "")) or "",
          "type_name"       : (edilizia and edilizia.get("type_name", "")) or "",

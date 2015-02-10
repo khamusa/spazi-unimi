@@ -34,16 +34,10 @@ class DataUpdater():
          rooms = itertools.groupby(rooms, key = keyfunc)
          building = None
 
-         # remove the attribute b_id from the room
-         def remove_b_id(room):
-            del room["b_id"]
-            return room
-
-
          for ((b_id, floor), floor_rooms) in rooms:
 
             # remove the attribute b_id from the rooms
-            floor_rooms = map(remove_b_id, floor_rooms)
+            floor_rooms = map(self.sanitize_room, floor_rooms)
 
             if not self._is_valid_b_id(b_id):
                Logger.warning("Invalid building ID: \"{}\"".format(b_id))
@@ -62,3 +56,15 @@ class DataUpdater():
                } )
 
          building and building.save()
+
+
+   def sanitize_room(self, room):
+      """Effettua una pulizia delle stanze prima di salvarle
+
+      Di default rimuove la chiave b_id ridondante nel DB.
+      Le sottoclassi devono assicurarsi di richiamare questa implementazione
+      attraverso l'uso di super e di restituire un riferimento all'oggetto aggiornato"""
+
+      # remove the attribute b_id from the room
+      del room["b_id"]
+      return room
