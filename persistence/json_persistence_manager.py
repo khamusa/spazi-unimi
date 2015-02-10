@@ -20,13 +20,13 @@ class JSONPersistenceManager(PersistenceManager):
    def get_base_write_path(self, obj = None):
       return os.path.join(
             self._cm["folders"]["data_dxf_preprocessed_output"],
-            obj.building_name
+            obj.building_id
             )
 
    def get_filename_format(self, obj = None):
       return self._cm["filepaths"]["preprocessed_floor_format"].format(
-         building_name  = obj.building_name,
-         floor_name     = obj.floor_name
+         building_id    = obj.building_id,
+         f_id           = obj.f_id
       )
 
    def get_file_extension(self, obj = None):

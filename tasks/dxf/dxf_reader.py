@@ -48,40 +48,40 @@ class DxfReader():
                ) for ent in self._grabber.entities if is_valid_text(ent)
             )
 
-      floor_name = FloorInference.get_identifier(
+      f_id = FloorInference.get_identifier(
                      self._basename,
                      self._grabber
                   )
 
-      if not floor_name:
+      if not f_id:
          Logger.error("It was not possible to identify the floor associated to the DXF file")
          return None
 
-      building_name = self._get_building_name(self._basename)
+      b_id = self._get_b_id(self._basename)
 
-      if not building_name:
+      if not b_id:
          Logger.error("It was not possible to identify the building associated to the DXF file")
          return None
 
-      self.floor = Floor(building_name, floor_name, rooms)
+      self.floor = Floor(b_id, f_id, rooms)
       if self.floor.n_rooms == 0:
          Logger.error("The floor read has no rooms: " + self._filename)
          raise RuntimeError("Floor read has no rooms")
       self.floor.associate_room_texts(texts)
       self.floor.normalize(0.3)
 
-   def _get_building_name(self, basename):
-      building_name = None
-      rm = re.match("(\w+)_(\w+)\.dxf", basename, re.I)
+   def _get_b_id(self, basename):
+      b_id  = None
+      rm    = re.match("(\w+)_(\w+)\.dxf", basename, re.I)
 
       if rm:
-         building_name = rm.group(1)
+         b_id = rm.group(1)
       else:
          rm = re.match("(.+)\.dxf", basename, re.I)
          if rm:
-            building_name = rm.group(1)
+            b_id = rm.group(1)
 
-      return building_name
+      return b_id
 
    def _read_dxf(self, filename):
       try:

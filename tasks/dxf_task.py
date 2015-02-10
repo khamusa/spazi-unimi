@@ -26,9 +26,9 @@ class DXFTask(Task):
 
 
    def get_backup_filepath(self, filename):
-      backup_file_folder  = os.path.join(self._backup_folder, self.dx.floor.building_name)
+      backup_file_folder  = os.path.join(self._backup_folder, self.dx.floor.b_id)
 
       if not os.path.exists( backup_file_folder ):
          os.mkdir(backup_file_folder)
 
-      return os.path.join(backup_file_folder ,self.dx.floor.building_name+'_'+self.dx.floor.floor_name+'.dxf')
+      return os.path.join(backup_file_folder ,self.dx.floor.b_id+'_'+self.dx.floor.f_id+'.dxf')

@@ -3,9 +3,9 @@ from . import Room
 
 class Floor:
 
-   def __init__(self, building_name, floor_name = None, rooms = []):
-      self.building_name   = building_name
-      self.floor_name      = floor_name or ""
+   def __init__(self, b_id, f_id = None, rooms = []):
+      self.b_id            = b_id
+      self.f_id            = f_id or ""
       self.rooms           = []
       self.min_x           = float("+inf")
       self.min_y           = float("+inf")
@@ -17,8 +17,8 @@ class Floor:
    def __eq__(self,other):
       return (
          self.rooms == other.rooms and
-         self.building_name == other.building_name and
-         self.floor_name == other.floor_name
+         self.b_id == other.b_id and
+         self.f_id == other.f_id
       )
 
 
@@ -50,8 +50,8 @@ class Floor:
 
    def to_serializable(self):
       return {
-         "building_name"   : self.building_name,
-         "floor_name"      : self.floor_name,
+         "b_id"            : self.b_id,
+         "f_id"            : self.f_id,
          "date"            : time.strftime("%m/%d/%Y"),
          "payload"         : {
                                  "n_rooms": len(self.rooms),
@@ -61,4 +61,4 @@ class Floor:
 
    def from_serializable(data):
       rooms = ( Room.from_serializable(r) for r in  data["payload"]["rooms"])
-      return Floor( data["building_name"] , data["floor_name"] , rooms  )
+      return Floor( data["b_id"] , data["f_id"] , rooms  )
