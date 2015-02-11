@@ -72,6 +72,9 @@ class ORMAttrs:
 
 class ORMModel:
 
+   before_callbacks = {}
+   after_callbacks  = {}
+
    def __init__(self, new_attrs = None, external_id = "_id"):
       self._attrs    = ORMAttrs(new_attrs, external_id = external_id)
 
@@ -144,8 +147,20 @@ class ORMModel:
       return res
 
    def save(self):
+      klass_name = self.__class__.__name__
+
+      # run before callbacks
+      if klass_name in self.before_callbacks:
+         for callback in self.before_callbacks[klass_name]:
+            getattr(self, callback)() # esegue il metodo di nome callback
+
       if self.is_changed :
          self._pm.save(self.collection_name(), self._attrs.as_dict())
+
+      # run after callbacks
+      if klass_name in self.after_callbacks:
+         for callback in self.after_callbacks[klass_name]:
+            getattr(self, callback)() # esegue il metodo di nome callback
 
    @classmethod
    def clean(self):
@@ -170,6 +185,27 @@ class ORMModel:
       return res
 
 
+   """
+
+      CALLBACK POLICY METHODS
+
+   """
+
+   @classmethod
+   def before_save(klass, method_name):
+      klass_name = klass.__name__
+
+      if klass_name not in klass.before_callbacks:
+         klass.before_callbacks[klass_name] = []
+
+      klass.before_callbacks[klass_name].append(method_name)
 
 
+   @classmethod
+   def after_save(klass, method_name):
+      klass_name = klass.__name__
 
+      if klass_name not in klass.after_callbacks:
+         klass.after_callbacks[klass_name] = []
+
+      klass.after_callbacks[klass_name].append(method_name)
