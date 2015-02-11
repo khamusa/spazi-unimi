@@ -34,7 +34,10 @@ class DataUpdater():
          rooms = itertools.groupby(rooms, key = keyfunc)
          building = None
 
-         for ((b_id, floor), floor_rooms) in rooms:
+         for ((b_id, f_id), floor_rooms) in rooms:
+            if not(f_id and f_id.strip()):
+               Logger.warning("Empty floor id in building: \"{}\". \"{}\" rooms discarded".format(b_id, len(list(floor_rooms))))
+               continue
 
             # remove the attribute b_id from the rooms
             floor_rooms = map(self.sanitize_room, floor_rooms)
@@ -51,7 +54,7 @@ class DataUpdater():
                building.attr(namespace, namespaced_attr)
 
             namespaced_attr["floors"].append( {
-                  "f_id"   : self.sanitize_floor_id(floor),
+                  "f_id"   : self.sanitize_floor_id(f_id),
                   "rooms"  : list(floor_rooms)
                } )
 
