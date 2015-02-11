@@ -33,3 +33,29 @@ class EdiliziaDataUpdater(DataUpdater):
    def sanitize_floor_id(self, l_floor):
       f_id = FloorInference.fid_from_string(l_floor, "suffix_regex")
       return super().sanitize_floor_id(f_id)
+
+   def find_building_to_update(self, new_b):
+      b_id     = new_b["b_id"]
+      building = Building.find(f_id)
+
+      if building is None:
+
+
+      else:
+         # controllo di avere una mappatura tra b_id e l_b_id
+         if "l_b_id" not in building["merged"] or building["merged"]["l_b_id"] is "":
+            l_b_id   = new_b["l_b_id"]
+
+            if not self.is_valid_b_id(l_b_id):
+               return building
+
+            to_merge = Building.find(l_b_id)
+
+            if to_merge is not None:
+               # abbiamo trovato un building corrispondente all'id legacy
+               building["dxf"] = to_merge["dxf"]
+               to_merge.destroy() #TODO
+
+      return building
+
+

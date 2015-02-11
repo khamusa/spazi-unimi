@@ -7,13 +7,15 @@ class DataUpdater():
 
    def update_buildings(self, buildings):
       namespace = self.get_namespace()
+
       for b in buildings:
          b_id = b.get("b_id", "")
+
          if not self._is_valid_b_id(b_id):
             Logger.warning("Invalid building ID: \"{}\"".format(b_id))
             continue
 
-         building = Building.find_or_create_by_id(b_id)
+         building = self.find_building_to_update(b)
          namespaced_attr = building.attr(namespace) or {}
          namespaced_attr.update(b)
          building.attr(namespace, namespaced_attr )
@@ -79,3 +81,9 @@ class DataUpdater():
       Le sottoclassi devono assicurarsi di richiamare questa implementazione
       attraverso l'uso di super e di restituire un riferimento all'oggetto aggiornato"""
       return floor_id
+
+
+   def find_building_to_update(self, building):
+      b_id = building.get("b_id", "")
+
+      return Building.find_or_create_by_id(b_id)
