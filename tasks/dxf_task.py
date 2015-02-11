@@ -76,7 +76,6 @@ class DXFTask(Task):
             del floors[k]
 
       floors.append(new_floor)
-      floors.sort( key=lambda f: Decimal(f["f_id"]) )
 
       dxf["floors"] = floors
       building.attr("dxf", dxf)
