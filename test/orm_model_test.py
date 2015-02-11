@@ -1,10 +1,20 @@
 import unittest
 from model.orm_model    import ORMModel, ORMAttrs
 from persistence.db     import MongoDBPersistenceManager
+from mock               import MagicMock
 
 class ORMModelTest(unittest.TestCase):
    def setUp(self):
       self.orm = ORMModel( { "pippo" : "pluto", "mickey": "paperino" } )
+      self.old_before_callbacks    = ORMModel.before_callbacks
+      self.old_after_callbacks     = ORMModel.after_callbacks
+
+      ORMModel.before_callbacks    = {}
+      ORMModel.after_callbacks     = {}
+
+   def tearDown(self):
+      ORMModel.before_callbacks    = self.old_before_callbacks
+      ORMModel.after_callbacks     = self.old_after_callbacks
 
    def test_id_assignment_gets_sanitized(self):
       orm = ORMModel({ "_id": "   123 "})
@@ -89,4 +99,44 @@ class ORMModelTest(unittest.TestCase):
       orm.clean()
       self.assertEqual(ORMModel._pm.get_collection("ormmodel").find_one({"_id" : "2323"}), None)
 
+   def test_save_callbacks_are_saved(self):
+      ORMModel.before_save("pippo")
+      ORMModel.before_save("pluto")
+      ORMModel.before_save("sempronio")
 
+      self.assertTrue("pippo" in ORMModel.before_callbacks["ORMModel"])
+      self.assertTrue("pluto" in ORMModel.before_callbacks["ORMModel"])
+      self.assertTrue("sempronio" in ORMModel.before_callbacks["ORMModel"])
+
+      self.assertEqual(["pippo", "pluto", "sempronio"], ORMModel.before_callbacks["ORMModel"] )
+
+      ORMModel.after_save("pippo")
+      ORMModel.after_save("pluto")
+      ORMModel.after_save("sempronio")
+
+      self.assertTrue("pippo" in ORMModel.after_callbacks["ORMModel"])
+      self.assertTrue("pluto" in ORMModel.after_callbacks["ORMModel"])
+      self.assertTrue("sempronio" in ORMModel.after_callbacks["ORMModel"])
+
+      self.assertEqual(["pippo", "pluto", "sempronio"], ORMModel.after_callbacks["ORMModel"] )
+
+   def test_save_callbacks_are_called(self):
+      ORMModel.set_pm(MagicMock())
+
+      dic            = {"_id" : "2323", "pippo" : "pluto"}
+      orm            = ORMModel(dic)
+      orm.pippo      = MagicMock()
+      orm.pluto      = MagicMock()
+      orm.sempronio  = MagicMock()
+
+      ORMModel.before_save("pippo")
+      ORMModel.before_save("sempronio")
+
+      ORMModel.after_save("pluto")
+      ORMModel.after_save("sempronio")
+
+      orm.save()
+
+      orm.pippo.assert_called_once()
+      orm.pluto.assert_called_once()
+      orm.sempronio.assert_any_call()
