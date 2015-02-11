@@ -52,13 +52,9 @@ class Floor:
       return {
          "b_id"            : self.b_id,
          "f_id"            : self.f_id,
-         "date"            : time.strftime("%m/%d/%Y"),
-         "payload"         : {
-                                 "n_rooms": len(self.rooms),
-                                 "rooms"  : [ el.to_serializable() for el in self.rooms ]
-                              }
+         "rooms"           : [ el.to_serializable() for el in self.rooms ]
       }
 
    def from_serializable(data):
-      rooms = ( Room.from_serializable(r) for r in  data["payload"]["rooms"])
+      rooms = ( Room.from_serializable(r) for r in  data["rooms"])
       return Floor( data["b_id"] , data["f_id"] , rooms  )

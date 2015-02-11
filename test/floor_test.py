@@ -14,8 +14,8 @@ class FloorTest(unittest.TestCase):
       self.room1 = Room(self.polygon1)
 
    def test_floor_creation(self):
-      self.assertEqual(self.f.building_name, "Pippo")
-      self.assertEqual(self.f.floor_name, "disneyland")
+      self.assertEqual(self.f.b_id, "Pippo")
+      self.assertEqual(self.f.f_id, "disneyland")
       self.assertEqual(self.f.rooms, [])
 
    def test_floor_room_addition(self):

@@ -57,13 +57,9 @@ class JsonEncodingTest(unittest.TestCase):
 
       self.assertEqual( f.to_serializable() ,
          {
-            "building_name"   : f.building_name,
-            "floor_name"      : f.floor_name,
-            "date"            : time.strftime("%m/%d/%Y"),
-            "payload"         : {
-               "n_rooms" : 2,
-               "rooms"   : [self.room1.to_serializable(), r2.to_serializable()]
-            }
+            "b_id"            : f.b_id,
+            "f_id"            : f.f_id,
+            "rooms"           : [self.room1.to_serializable(), r2.to_serializable()]
          })
 
    def test_floor_encoding_and_decoding(self):
