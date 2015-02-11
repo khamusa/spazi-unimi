@@ -156,7 +156,11 @@ class ORMModel:
    Returns none if query returns no results"""
    @classmethod
    def find(klass, id):
-      obj = klass.get_collection().find_one( { "_id" : klass.sanitize_id(id) })
+      return klass.find_by_field("_id", klass.sanitize_id(id))
+
+   @classmethod
+   def find_by_field(klass, field_name, value):
+      obj = klass.get_collection().find_one( { field_name : value })
 
       res = None
       if(obj):

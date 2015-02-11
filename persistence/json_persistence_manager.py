@@ -7,6 +7,8 @@ class JSONPersistenceManager(PersistenceManager):
    def __init__(self, config):
       self._cm = config
 
+   # Deprecated (era usato prima per generare dei JSON con le info ottenute
+   # da un file DXF, ma adesso vanno inviate direttamente al DB)
    def floor_write(self, floor):
       self.write_data(floor)
 

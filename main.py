@@ -23,9 +23,11 @@ class Main():
          Logger.success("Arithmetic mean:", end_time / len(files), "seconds")
 
    def run_dxf(self, files):
-      persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
-      task        = DXFTask(self._config, persistence)
+      #persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
+      persistence       = MongoDBPersistenceManager(self._config)
+      ORMModel.set_pm( persistence )
 
+      task              = DXFTask(self._config)
       task.perform_updates_on_files(files)
 
    def run_csv(self, files):
