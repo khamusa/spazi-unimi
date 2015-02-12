@@ -2,6 +2,7 @@ import re
 from model              import RoomCategory
 from .data_updater      import DataUpdater
 from .floor_inference   import FloorInference
+from model.building     import Building
 
 class EdiliziaDataUpdater(DataUpdater):
 
@@ -36,25 +37,22 @@ class EdiliziaDataUpdater(DataUpdater):
 
    def find_building_to_update(self, new_b):
       b_id     = new_b["b_id"]
-      building = Building.find(f_id)
+      building = Building.find_or_create_by_id(b_id)
 
-      if building is None:
+      # controllo di avere una mappatura tra b_id e l_b_id
+      if not building.has_attr("merged") or building.attr("merged")["l_b_id"] is "":
+         l_b_id   = new_b["l_b_id"]
 
+         if not self._is_valid_b_id(l_b_id):
+            return building
 
-      else:
-         # controllo di avere una mappatura tra b_id e l_b_id
-         if "l_b_id" not in building["merged"] or building["merged"]["l_b_id"] is "":
-            l_b_id   = new_b["l_b_id"]
+         to_merge = Building.find(l_b_id)
 
-            if not self.is_valid_b_id(l_b_id):
-               return building
-
-            to_merge = Building.find(l_b_id)
-
-            if to_merge is not None:
-               # abbiamo trovato un building corrispondente all'id legacy
-               building["dxf"] = to_merge["dxf"]
-               to_merge.destroy() #TODO
+         if to_merge is not None:
+            # abbiamo trovato un building corrispondente all'id legacy
+            #building["dxf"] = to_merge["dxf"]
+            building.attr("dxf", to_merge.attr("dxf"))
+            to_merge.destroy()
 
       return building
 
