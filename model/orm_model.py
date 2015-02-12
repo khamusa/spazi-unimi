@@ -97,6 +97,10 @@ class ORMModel:
          return
       return self._attrs.get(key,None)
 
+   def has_attr(self, key):
+      return key in self._attrs
+
+
    """Merges a dictionary with current instances attributes, key by key"""
    def _merge_new_attrs(self, new_attrs):
       for k in new_attrs:

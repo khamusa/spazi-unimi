@@ -32,6 +32,11 @@ class ORMModelTest(unittest.TestCase):
 
       self.assertEqual(self.orm.attrs()["mickey"], "paperino")
 
+   def test_has_attr(self):
+      self.assertTrue(self.orm.has_attr("pippo"))
+      self.assertTrue(self.orm.has_attr("mickey"))
+      self.assertFalse(self.orm.has_attr("1234"))
+
    def test_collection_name(self):
       self.assertEqual(self.orm.collection_name(), 'ormmodel')
       self.assertEqual(ORMModel.collection_name(), 'ormmodel')
