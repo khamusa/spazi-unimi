@@ -4,6 +4,15 @@ from tasks.data_merger  import DataMerger
 import itertools
 
 class DataUpdater():
+   """
+   The DataUpdater class implements the behavior of updating and inserting
+   building and rooms information on the Database. It has no direct reference
+   to PersistenceManager, interacting with the Database only indirectly, through
+   the usage of the appropriate models.
+
+   The main entry points are the methods update_buildings and update_rooms, both
+   called by the appropriate Task Handler (mainly CSVTask).
+   """
 
    def update_buildings(self, buildings):
       """
@@ -72,7 +81,7 @@ class DataUpdater():
 
       Note that for each building that gets updated, it's floors will be emptied
       before adding the rooms information. Hence no partial updates are possible:
-      everytime this method is called, it must received the final list of rooms
+      everytime this method is called, it must receive the final list of rooms
       for each updated floor.
       """
       namespace = self.get_namespace() # che sorgente dati stiamo aggiornando?
