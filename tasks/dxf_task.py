@@ -6,12 +6,31 @@ from decimal import Decimal
 import shutil, os, re
 
 class DXFTask(Task):
+   """
+   Responsible for handling update of DXF files. Must be initialized with a
+   config manager from which to retrive the dxf backup folder.
+   """
 
    def __init__(self, config):
+      """
+      Arguments:
+      config: a dictionary-like object containing the source dxf backup path
+      (view code)
+      """
       self._backup_folder  = config["folders"]["data_dxf_sources"]
 
    def perform_update(self, dxf_file):
+      """
+      Main entry point, called once for every dxf file to be updated.
 
+      Arguments:
+      - dxf_file: full path to dxf file to process.
+
+      Returns: None
+      Throws FileUpdateException in case of unsolvable errors.
+
+      Called by parents perform_update_on_files method.
+      """
       # Valido che il file su cui lavoriamo sia effettivamente un DXF
       rm = re.match(".+\.dxf", os.path.basename(dxf_file), re.I)
       if rm is None:
@@ -47,6 +66,17 @@ class DXFTask(Task):
       # TODO: CALL A DATAMERGER
 
    def get_backup_filepath(self, filename):
+      """
+      Given a source filename, returns a full path for saving a backup file.
+
+      Arguments:
+      - filename: a string representing the source filename (with extension)
+
+      Returns: a string representing the destination backup path
+      (without filename).
+
+      Called by parent class (method perform_file_backup).
+      """
       backup_file_folder  = os.path.join(self._backup_folder, self.dx.fl9oor.b_id)
 
       if not os.path.exists( backup_file_folder ):
@@ -55,13 +85,34 @@ class DXFTask(Task):
       return os.path.join(backup_file_folder ,self.dx.floor.b_id+'_'+self.dx.floor.f_id+'.dxf')
 
    def sanitize_b_id(self, b_id):
-      """Dalla string che identifica il building estrae il suo ID"""
+      """
+      Sanitizes and validate the string identifying a building.
+
+      Arguments:
+      - b_id: a string representing a possible building id. Example: 5830_1p
+
+      Returns: a clean and digit-only version of the b_id. Example: 5830
+      """
       rm = re.match("(\d{4,})", b_id)
       return rm and rm.group(0)
 
    def save_floor(self, building, floor):
-      """Dato un oggetto di tipo Building e un oggetto di tipo Floor ottenuto a partire
-      da un file DXF, pulisce i dati e salva il building sul DB"""
+      """
+      Implements the DXF Data Update functionality, saving a floor information to
+      an existing building document.
+
+      Arguments:
+      - building: a Building object representing the database object to be
+      updated with the new floor information.
+      - floor: a Floor object representing the data to be updated / inserted into
+      database.
+
+      Returns: None
+
+      If a floor with the same f_id already exists on the current building, it
+      is replaced by the new one. The floor ordering is ensured by the Building
+      model itself.
+      """
 
       new_floor = floor.to_serializable()
       del new_floor["b_id"]
@@ -70,7 +121,7 @@ class DXFTask(Task):
       dxf         = building.attr("dxf") or {}
       floors      = dxf.get("floors", [])
 
-      # Se il floor corrente esiste gia' nel dataase, vogliamo sostituirlo
+      # Se il floor corrente esiste gia' nel database, vogliamo sostituirlo
       for k, f in enumerate(floors):
          if f["f_id"] == floor.f_id:
             del floors[k]
