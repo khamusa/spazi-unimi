@@ -104,6 +104,14 @@ class ORMModelTest(unittest.TestCase):
       orm.clean()
       self.assertEqual(ORMModel._pm.get_collection("ormmodel").find_one({"_id" : "2323"}), None)
 
+   def test_destroy(self):
+      pm = MagicMock()
+      ORMModel.set_pm(pm)
+      dic = {"_id" : "2323", "pippo" : "pluto"}
+      orm = ORMModel(dic)
+      orm.destroy()
+      pm.destroy_by_id.assert_called_once_with(orm.collection_name(), "2323")
+
    def test_save_callbacks_are_saved(self):
       ORMModel.before_save("pippo")
       ORMModel.before_save("pluto")

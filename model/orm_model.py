@@ -170,6 +170,9 @@ class ORMModel:
    def clean(self):
       self._pm.clean_collection(self.collection_name())
 
+   def destroy(self):
+      self._pm.destroy_by_id(self.collection_name(), self.attr("_id"))
+
    """Retrieves from database a document and returns an instance representing it.
 
    Returns none if query returns no results"""

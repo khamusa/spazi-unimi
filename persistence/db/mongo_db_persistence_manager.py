@@ -15,5 +15,9 @@ class MongoDBPersistenceManager:
    def save(self, collection_name, value):
       self.db[collection_name].save(value)
 
+   def destroy_by_id(self, collection_name, id):
+      self.db[collection_name].remove({"_id" : id})
+
    def get_collection(self, collection_name):
       return self.db[collection_name]
+
