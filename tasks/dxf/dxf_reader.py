@@ -9,15 +9,16 @@
 
 import dxfgrabber
 import sys, os, re
-from model import Room
-from model import Floor
-from model.drawable import Text
-from model.drawable import Point
-from model.drawable import Polygon
-from dxfgrabber.entities import LWPolyline, Polyline, MText
 import dxfgrabber.entities
+from model                 import Room
+from model                 import Floor
+from model.drawable        import Text
+from model.drawable        import Point
+from model.drawable        import Polygon
+from dxfgrabber.entities   import LWPolyline, Polyline, MText
 from tasks.floor_inference import FloorInference
-from utils.logger import Logger
+from utils.logger          import Logger
+from tasks.task            import FileUpdateException
 
 class DxfReader():
    # Todo: extract to external config file
@@ -48,25 +49,22 @@ class DxfReader():
                ) for ent in self._grabber.entities if is_valid_text(ent)
             )
 
+      b_id = self._get_b_id(self._basename)
+
+      if not b_id:
+         raise FileUpdateException("It was not possible to identify the building associated to the DXF file")
+
       f_id = FloorInference.get_identifier(
                      self._basename,
                      self._grabber
                   )
 
       if not f_id:
-         Logger.error("It was not possible to identify the floor associated to the DXF file")
-         return None
-
-      b_id = self._get_b_id(self._basename)
-
-      if not b_id:
-         Logger.error("It was not possible to identify the building associated to the DXF file")
-         return None
+         raise FileUpdateException("It was not possible to identify the floor associated to the DXF file")
 
       self.floor = Floor(b_id, f_id, rooms)
       if self.floor.n_rooms == 0:
-         Logger.error("The floor read has no rooms: " + self._filename)
-         raise RuntimeError("Floor read has no rooms")
+         raise FileUpdateException("The floor read has no rooms: " + self._filename)
       self.floor.associate_room_texts(texts)
       self.floor.normalize(0.3)
 
@@ -77,7 +75,7 @@ class DxfReader():
       if rm:
          b_id = rm.group(1)
       else:
-         rm = re.match("(.+)\.dxf", basename, re.I)
+         rm = re.match("(\d+)\.dxf", basename, re.I)
          if rm:
             b_id = rm.group(1)
 
