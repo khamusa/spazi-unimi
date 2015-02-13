@@ -1,12 +1,3 @@
-"""
-   TODO: SBAGLIATO! CORREGGERE QUESTO COMMENTO! xD
-   Stampa in stdout informazioni estratte da file dxf
-   Funziona con Python3, necessario installare dxfgrabber
-   Per eseguire, spostarsi nella cartella python del repo e eseguire
-      python3 dxf_info.py path_to_file
-
-"""
-
 import dxfgrabber
 import sys, os, re
 import dxfgrabber.entities
@@ -21,20 +12,64 @@ from utils.logger          import Logger
 from tasks.task            import FileUpdateException
 
 class DxfReader():
+   """
+      Class to read the dxf file with the dxfgrabber.
+   """
+
    # Todo: extract to external config file
    valid_poly_layers = ["RM$"]
    valid_text_layers = ["NLOCALI", "RM$TXT"]
 
    def __init__(self, filename):
+      """
+      Try reading a dxf file pointed by filename and save the floor in the
+      respective attribute.
+
+      Arguments:
+      - filename: string rapresents the filename with path of the dxf file.
+
+      Raise:
+      - FileUpdateException in case of impossibility to identify building, floor
+      or rooms.
+
+      Initialise a DxfReader, try to read a dxf file and associate the texts
+      found to the respective room. Call the FloorInference class to find a
+      standard floor id, and save the results of the operations in the floor
+      attribute as a Floor object.
+      """
+
       self._filename = filename;
       self._basename = os.path.basename(filename)
       self.floor = None
       self._read_dxf(self._filename)
 
       def is_valid_room(ent):
+         """
+         Method to validate a room entity.
+
+         Arguments:
+         - ent: an entity read from the dxf file.
+
+         Returns: True or False.
+
+         If ent is a valid polyline in the polylines layer returns True else
+         returns False.
+         """
+
          return type(ent) in [LWPolyline, Polyline] and ent.layer in self.valid_poly_layers
 
       def is_valid_text(ent):
+         """
+         Method to validate a text entity.
+
+         Arguments:
+         - ent: an entity read from the dxf file.
+
+         Returns: True or False.
+
+         If ent is a text in the text layers returns True else return False.
+         """
+
          return type(ent) in [MText, dxfgrabber.entities.Text] and ent.layer in self.valid_text_layers
 
       rooms = (
@@ -69,6 +104,15 @@ class DxfReader():
       self.floor.normalize(0.3)
 
    def _get_b_id(self, basename):
+      """
+      Method to extract the building id from the filename.
+
+      Arguments:
+      - basename: a string representing the name of the dxf file.
+
+      Returns: a string.
+      """
+
       b_id  = None
       rm    = re.match("(\w+)_(\w+)\.dxf", basename, re.I)
 
@@ -82,6 +126,20 @@ class DxfReader():
       return b_id
 
    def _read_dxf(self, filename):
+      """
+         Read the dxf file with the dxf grabber.
+
+         Arguments:
+         - filename: representing the path and the name  of the dxf file.
+
+         Returns: None.
+
+         Raise: PermissionError, IsADirectoryError, FileNotFoundError or generic
+         Exception in case of reading failure.
+
+         Try to read the dxf file with the grabber.
+      """
+
       try:
          self._grabber = dxfgrabber.readfile(filename)
       except PermissionError:
