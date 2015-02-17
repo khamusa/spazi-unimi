@@ -4,7 +4,12 @@ from model                       import Building
 import unittest
 
 class DXFDataUpdaterTest(unittest.TestCase):
+   """
+   Test the room merging procedures of DXFDataUpdater, i.e, the ability of
+   associating DXF rooms with other souces rooms.
+   """
    def setUp(self):
+      # Usato come parametro nelle chiamate
       self.db_building  = {
           "dxf" : {
             "floors" : [
@@ -108,6 +113,9 @@ class DXFDataUpdaterTest(unittest.TestCase):
           }
       }
 
+      # usato come parametro di comparazione per il successo dell'esecuzione
+      # rappresenta ciò che ce ne aspettiamo alla fine dell'update su entrambe
+      # sorgenti dati: edilizia e easyroom
       self.final_rooms = [
          [
             { # Room 1, matcha con easyroom
@@ -163,15 +171,14 @@ class DXFDataUpdaterTest(unittest.TestCase):
             }
          ]
       ]
-
-      self.dxf_updater  = DXFDataUpdater()
       self.building     = Building(self.db_building)
 
    def test_resolve_rooms_id_floor_by_floor_edilizia(self):
-      """Test resolving with edilizia data, one floor at a time"""
+      """Test r_id resolving with edilizia data, one floor at a time"""
+
 
       floor = self.db_building["dxf"]["floors"][0]
-      self.dxf_updater.resolve_rooms_id(
+      DXFDataUpdater.resolve_rooms_id(
          self.building,
          floor,
          "edilizia"
@@ -181,20 +188,21 @@ class DXFDataUpdaterTest(unittest.TestCase):
 
 
       floor = self.db_building["dxf"]["floors"][1]
-      self.dxf_updater.resolve_rooms_id(
+      DXFDataUpdater.resolve_rooms_id(
          self.building,
          floor,
          "edilizia"
       )
 
       self.assertEqual(floor["rooms"][2], self.final_rooms[1][2])
-
+      self.assertNotEqual(floor["rooms"][0], self.final_rooms[0][0])
+      self.assertNotEqual(floor["rooms"][0], self.final_rooms[1][0])
 
    def test_resolve_rooms_id_floor_by_floor_easyroom(self):
-      """Test resolving with easyroom data, one floor at a time"""
+      """Test r_id resolving with easyroom data, one floor at a time"""
 
       floor = self.db_building["dxf"]["floors"][0]
-      self.dxf_updater.resolve_rooms_id(
+      DXFDataUpdater.resolve_rooms_id(
          self.building,
          floor,
          "easyroom"
@@ -204,18 +212,20 @@ class DXFDataUpdaterTest(unittest.TestCase):
 
 
       floor = self.db_building["dxf"]["floors"][1]
-      self.dxf_updater.resolve_rooms_id(
+      DXFDataUpdater.resolve_rooms_id(
          self.building,
          floor,
          "easyroom"
       )
 
       self.assertEqual(floor["rooms"][0], self.final_rooms[1][0])
+      self.assertNotEqual(floor["rooms"][2], self.final_rooms[0][2])
+      self.assertNotEqual(floor["rooms"][2], self.final_rooms[1][2])
 
    def test_resolve_rooms_id_all_at_once(self):
-      """Test resolving with all sources and for all floors"""
+      """Test r_id resolving with all sources and for all floors"""
 
-      self.dxf_updater.resolve_rooms_id(
+      DXFDataUpdater.resolve_rooms_id(
          self.building,
          None,
          None

@@ -1,8 +1,85 @@
+from itertools import chain
+
 
 class DXFDataUpdater:
 
-   def resolve_rooms_id(self, building, floor_dict, source_name):
-      pass
+   @staticmethod
+   def resolve_rooms_id(building, floor_dict = None, source_name = None):
+      """
+      Associates r_id to rooms obtained by dxf file processing, by comparing
+      texts with r_id information retrieved from easyroom or edilizia.
+
+      Arguments:
+      - target_building: a Building object whose dxf rooms we want to associate
+      (i.e find their respective r_id).
+      - floor_dict: the floor to process, as a list of dictionaries,
+      each one representing a room. It may be None, in which case all
+      target_building dxf floors will be processed.
+      - source_name: a string indicating what namespace to use when looking
+      for room identifiers. Must be either "edilizia" or "easyroom". If it is
+      none, both will be used for searching the room id.
+
+      Return value:
+      - None, associations are made directly on the floor_dict dictionary items.
+
+      """
+      target_floors = (
+                  floor_dict and [floor_dict] or
+                  building.attr("dxf") and building.attr("dxf")["floors"] or
+                  []
+               )
+
+      source_floors = DXFDataUpdater._get_source_floors(building, source_name)
+
+      for floor_dict in target_floors:
+         # Ordino i piani per priorita'. E' piu probabile trovare le informazioni
+         # per una stanza che e' nel piano 0 su un piano 0 o 0.5 che sul piano 3
+         def sortfunc(f):
+            return abs( float(floor_dict["f_id"]) - float(f["f_id"]) )
+         source_floors = sorted(source_floors, key=sortfunc)
+
+
+         for target_room in floor_dict["rooms"]:
+
+            # La stanza e' gia' identificata ?
+            if "r_id" in target_room:
+               continue
+
+            possible_ids = [ r["text"].strip().lower() for r in target_room["texts"] ]
+            r_id = DXFDataUpdater._find_r_id_on_source(source_floors, possible_ids)
+
+            # Se la ricerca mi ha restituito un r_id, lo salvo nel dizionario r,
+            # che rappresenta la target_room
+            if r_id:
+               target_room["r_id"] = r_id
+
+   @staticmethod
+   def _find_r_id_on_source(source_floors, possible_ids):
+      for source_floor in source_floors:
+         for source_room in source_floor["rooms"]:
+            if source_room["r_id"].lower() in possible_ids:
+               return source_room["r_id"]
+
+      return None
+
+   @staticmethod
+   def _get_source_floors(building, source_name):
+      sources = (
+               source_name and [source_name] or
+               ["easyroom", "edilizia"]
+               )
+
+      def extract_floors_from_source(source):
+            floors = building.attr(source) or []
+            if floors:
+               return floors.get("floors", [])
+            return []
+
+      # mettiamo tutti i piani in una sola lista sequenziale
+      source_floors = [ extract_floors_from_source(s) for s in sources ]
+      source_floors = list( chain(*source_floors) )
+
+      return source_floors
 
    def find_building_to_update(self, building_dict):
       """
