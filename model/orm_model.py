@@ -1,3 +1,42 @@
+
+
+def around_callbacks(funz):
+   """
+   Decorator that, given a function, adds before and after callbacks to it.
+
+   The implementing class must define a before_callbacks and after_callbacks
+   dictionary in which the callbacks may be found. Can only be used over
+   instance methods.
+   """
+
+   def _dispatch_callback(the_self, callback):
+      if isinstance(callback, str):
+         getattr(the_self, callback)()
+      else:
+         callback(the_self)
+
+   def wrapper(self, *args, **kargs):
+      context = funz.__name__
+      klass_name = self.__class__.__name__
+      #1 - fire all before callbacks
+      if klass_name in self.before_callbacks and context in self.before_callbacks[klass_name]:
+         for callback in self.before_callbacks[klass_name][context]:
+            _dispatch_callback(self, callback)
+
+      #2 - call original save function
+      ret = funz(self, *args, **kargs)
+
+      #3 - fire all after callbacks
+      if klass_name in self.after_callbacks and context in self.after_callbacks[klass_name]:
+         for callback in self.after_callbacks[klass_name][context]:
+            _dispatch_callback(self, callback)
+
+      #4 - make sure to return the same thing as the original function
+      #returned
+      return ret
+   return wrapper
+
+
 class ORMAttrs:
    def __init__(self, attrs = None, external_id = "_id"):
       if external_id is not "_id" and external_id in attrs:
@@ -69,7 +108,6 @@ class ORMAttrs:
       return self._attrs
 
 
-
 class ORMModel:
 
    before_callbacks = {}
@@ -115,7 +153,7 @@ class ORMModel:
    """
 
       GENERAL CLASS METHODS
-
+# Building, RoomCategory
    """
 
    """Sets the class Persistence Manager to be used"""
@@ -150,26 +188,18 @@ class ORMModel:
          res = klass({"_id":id})
       return res
 
+   @around_callbacks
    def save(self):
       klass_name = self.__class__.__name__
 
-      # run before callbacks
-      if klass_name in self.before_callbacks:
-         for callback in self.before_callbacks[klass_name]:
-            getattr(self, callback)() # esegue il metodo di nome callback
-
       if self.is_changed :
          self._pm.save(self.collection_name(), self._attrs.as_dict())
-
-      # run after callbacks
-      if klass_name in self.after_callbacks:
-         for callback in self.after_callbacks[klass_name]:
-            getattr(self, callback)() # esegue il metodo di nome callback
 
    @classmethod
    def clean(self):
       self._pm.clean_collection(self.collection_name())
 
+   @around_callbacks
    def destroy(self):
       self._pm.destroy_by_id(self.collection_name(), self.attr("_id"))
 
@@ -199,20 +229,70 @@ class ORMModel:
    """
 
    @classmethod
-   def before_save(klass, method_name):
+   def listen(klass, event, callback_name_or_callable):
+      """
+      Adds a before or after callback to function calls.
+
+      Arguments:
+      - event: a string representing the event to listen to. Must be on the
+      format before_<methodname> or after_<methodname> where <methodname>
+      is the name of the instance method whose calls you want to listen to.
+      - callback_name_or_callable: either a string representing the method to be
+      called or a callable object. If a string is used, It MUST be an instance
+      method. If a callable is supplied, it must accept exactly one argument,
+      which will be a reference to the instance itself.
+
+      Return value: None
+
+      Usage:
+      ORMModel.listen("after_save", "nice_method")
+      ORMModel.listen("before_destroy", "other_beautiful_method")
+
+      Example:
+      >>> from model import ORMModel
+      >>> from mock import MagicMock
+      >>> ORMModel.set_pm(MagicMock())
+      >>> b = ORMModel({ "_id": 123 })
+      >>> before = lambda s: print("Before Save executed")
+      >>> after  = lambda s: print("After Save executed")
+      >>> ORMModel.listen("before_save", before)
+      >>> ORMModel.listen("after_save", after)
+      >>> b.save()
+      Before Save executed
+      After Save executed
+
+      Note: the second part of the event name identifies a method name. The
+      callbacks will be executed before/after that method is executed. In order
+      for it to be possible, the method must have been DECORATED with
+      @around_callbacks. Currently only before_save and before_update are
+      supported.
+      """
+      before = event.startswith("before_")
+      after  = event.startswith("after_")
+
+      if not(before) and not(after):
+         raise RuntimeException("Not implemented event type: "+event)
+
+      if before:
+         callbacks = klass.before_callbacks
+         action    = event[7:]
+      else:
+         callbacks = klass.after_callbacks
+         action    = event[6:]
+
       klass_name = klass.__name__
+      if klass_name not in callbacks:
+         callbacks[klass_name] = {}
 
-      if klass_name not in klass.before_callbacks:
-         klass.before_callbacks[klass_name] = []
+      if action not in callbacks[klass_name]:
+         callbacks[klass_name][action] = []
 
-      klass.before_callbacks[klass_name].append(method_name)
-
+      callbacks[klass_name][action].append(callback_name_or_callable)
 
    @classmethod
-   def after_save(klass, method_name):
-      klass_name = klass.__name__
+   def before_save(klass, callback_name):
+      klass.listen("before_save", callback_name)
 
-      if klass_name not in klass.after_callbacks:
-         klass.after_callbacks[klass_name] = []
-
-      klass.after_callbacks[klass_name].append(method_name)
+   @classmethod
+   def after_save(klass, callback_name):
+      klass.listen("after_save", callback_name)
