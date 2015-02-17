@@ -110,10 +110,10 @@ class RoomTest(unittest.TestCase):
 
       self.room1.reflect_y()
 
-      self.polygon1.anchor_point.reflect_y.assert_called_once()
-      self.polygon1.reflect_y.assert_called_once()
+      self.polygon1.anchor_point.reflect_y.assert_called_once_with()
+      self.polygon1.reflect_y.assert_called_once_with()
       for t in self.room1.texts:
-         t.anchor_point.reflect_y.assert_called_once()
+         t.anchor_point.reflect_y.assert_called_once_with()
 
    def test_room_scale(self):
       self.room1.polygon = MagicMock()
