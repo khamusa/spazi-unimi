@@ -1,21 +1,32 @@
-import re
-import json
-import os, sys
 from model.drawable     import Point, Text
 from utils.logger       import Logger
+import re, json, os, sys
 
 class FloorInference:
-   """This class supplies auxiliary methods to infer the floor name / identification"""
-
+   """
+   This class supplies auxiliary methods to infer the floor name/identification.
+   """
    config_file = "config/floor_inference.json"
    with open(config_file) as cf:
       FLOOR_DICT = json.load(cf)
 
    @classmethod
    def get_identifier(self, filename, grabber):
-      """Given two potential floor identifiers, choose the best one, or return
-      None if they're conflicting"""
+      """
+      Given two potential floor identifiers and choose the best one.
 
+      Arguments:
+      - filename: name of the dxf floor file;
+      - grabber: dxfgrabber istance result of the dxf parsing.
+
+      Returns:
+      - a string representing the best id fouded for the floor;
+      - False in case of conflict.
+
+      Take an id from the filename and a group of ids from the "cartiglio"
+      layers. Returns the best id and in case of conflicts prints messages with
+      the logger.
+      """
       filename_id    = self.from_filename(filename)
       possible_ids   = self.from_cartiglio(grabber)
 
@@ -51,10 +62,19 @@ class FloorInference:
 
    @classmethod
    def from_filename(self, filename):
-      """Reads REGEX json file and applies each REGEX to the filename suffix.
+      """
+      Reads REGEX json file and applies each REGEX to the filename suffix.
 
-      Returns a floor identifier if any match is found, None otherwise."""
+      Arguments:
+      - filename: name of the dxf floor file.
 
+      Returns:
+      - a string representing a floor identifier;
+      - False.
+
+      Returns a floor id if any match is found applying the regex, None
+      otherwise.
+      """
       suffix_match = re.match(".+_([^_]+)\.dxf", filename, re.I)
       if(suffix_match):
          suffix   = suffix_match.group(1)
@@ -65,8 +85,19 @@ class FloorInference:
 
    @classmethod
    def from_cartiglio(self, grabber):
-      """From a dxfgrabber instance, reads the information on layer CARTIGLIO,
-      trying to figure out which floor the dxf file refer to"""
+      """
+      Match texts in the dxfgrabber and return a set of possible ids.
+
+      Arguments:
+      - grabber: instance of dxfgrabber result of the dxf parsing.
+
+      Returns:
+      - a set of possible ids.
+
+      From a dxfgrabber instance, reads the information on layer CARTIGLIO,
+      trying to find significative texts. Adds the possible floor id to a set
+      and return it, if possible texts not founded return an empty set.
+      """
       texts          = self._extract_texts_from_cartiglio(grabber)
       possible_ids   = set()
 
@@ -88,6 +119,18 @@ class FloorInference:
 
    @classmethod
    def _fid_from_piano_label(self, label_ac, texts):
+      """
+      Find a possible floor id matching texts near the "PIANO" text.
+
+      Arguments:
+      - label_ac: position of the "PIANO" text;
+      - texts: list of texts from the layer cartiglio.
+
+      Returns:
+      - a string representing a floor id;
+      - False.
+
+      """
       possible_texts = [
             t for t in texts
             if self._points_are_close_enough(t.anchor_point, label_ac) and
@@ -105,15 +148,36 @@ class FloorInference:
 
    @classmethod
    def _points_are_close_enough(self, insert_point, label_point):
-      """Auxiliary method for inference from cartiglio"""
+      """
+      Controls if a text is near the label_point.
+
+      Arguments:
+      - insert_point: position of the text;
+      - label_point: position of the "PIANO" text.
+
+      Returns:
+      - True if the text are close enough;
+      - False otherwise.
+
+      Auxiliary method for inference from cartiglio
+      """
       return (
-          (label_point.x + 300 >= insert_point.x >= label_point.x - 100)  and
-          (      label_point.y >  insert_point.y >= label_point.y - 100)
-         )
+         (label_point.x + 300 >= insert_point.x >= label_point.x - 100)  and
+         (label_point.y       >  insert_point.y >= label_point.y - 100)
+      )
 
    @classmethod
    def _extract_texts_from_cartiglio(self, grabber):
-      """Auxiliary method for inference from cartiglio"""
+      """
+      Returns text from the layers who contain the cartiglio.
+
+      Arguments:
+      - grabber: instance of dxfgrabber result of the dxf parsing.
+
+      Returns: a list of texts.
+
+      Auxiliary method for inference from cartiglio
+      """
       def get_text(p):
          return self.sanitize_layer_name(
                   ( hasattr(p, "text") and p.text or p.plain_text()) or
@@ -129,7 +193,17 @@ class FloorInference:
 
    @classmethod
    def sanitize_layer_name(self, name):
-      """Auxiliary method for inference from cartiglio"""
+      """
+      Sanitize the name of a layer.
+
+      Arguments:
+      - name: string representing the layer name.
+
+      Returns:
+      - a string representing the sanitized layer name.
+
+      Auxiliary method for inference from cartiglio.
+      """
       regex = "\{[^;]+;((\w+\s*)+)\.?\s*\}"
       m = re.match(regex, name)
       if(m):
@@ -138,11 +212,22 @@ class FloorInference:
 
    @classmethod
    def fid_from_string(self, name, regex_key = "name_regexes"):
-      """Given a potential string, tests wether or not the string is a valid floor
-      name or filename suffix, according to the regex_key to be used
+      """
+      Transform a string in a floor id using a regex.
 
+      Arguments:
+      - name: string we want match;
+      - regex_key: string representing the key in the regex dictionary.
+
+      Returns:
+      - a string representing a floor id;
+      - False.
+
+      Given a potential string, tests wether or not the string is a valid floor
+      name or filename suffix, according to the regex_key to be used.
       If the string IS valid, returns the floor_id associated, else it returns
-      False"""
+      False
+      """
 
       for floor_info in self.FLOOR_DICT:
          patterns = floor_info[regex_key]
