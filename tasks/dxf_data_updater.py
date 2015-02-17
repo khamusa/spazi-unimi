@@ -1,6 +1,9 @@
 
 class DXFDataUpdater:
 
+   def resolve_rooms_id(self, building, floor_dict, source_name):
+      pass
+
    def find_building_to_update(self, building_dict):
       """
       Finds on database or create a Buiding object to be updated with information
