@@ -46,7 +46,6 @@ class CSVTask(Task):
       self.backup_filepath = os.path.join(self._backup_folder, backup_filename)
 
    def _validate_csv(self, reader):
-      print(reader)
       """
       Ensure a csv file is valid
 
