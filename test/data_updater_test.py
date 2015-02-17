@@ -1,10 +1,10 @@
 import unittest
-from persistence.db     import MongoDBPersistenceManager
-from model.orm_model    import ORMModel
-from model.building     import Building
-from mock               import MagicMock
-from tasks.dxf_task     import DXFTask
+from persistence.db              import MongoDBPersistenceManager
+from model.orm_model             import ORMModel
+from model.building              import Building
+from mock                        import MagicMock
 
+from tasks.dxf_data_updater      import DXFDataUpdater
 from tasks.easyroom_data_updater import EasyroomDataUpdater
 from tasks.edilizia_data_updater import EdiliziaDataUpdater
 
@@ -39,9 +39,9 @@ class DataUpdaterTest(unittest.TestCase):
       }
 
       pm.clean_collection("building")
-      self.edil_up  = EdiliziaDataUpdater()
-      self.easy_up  = EasyroomDataUpdater()
-      self.dxf_task = DXFTask(MagicMock())
+      self.edil_up      = EdiliziaDataUpdater()
+      self.easy_up      = EasyroomDataUpdater()
+      self.dxf_updater  = DXFDataUpdater()
 
    def test_b_id_to_l_b_id_resolution_case_1(self):
       """Caso 1 - Dati inseriti nell'ordine DXF(l_b_id) -> Edilizia -> Easyroom"""
@@ -94,7 +94,7 @@ class DataUpdaterTest(unittest.TestCase):
          self.assertIsNotNone(b)
          floor_mock = MagicMock()
          floor_mock.to_serializable = MagicMock(return_value={ "b_id": "123", "f_id": "-0.5" })
-         self.dxf_task.save_floor( b, floor_mock )
+         self.dxf_updater.save_floor( b, floor_mock )
          self.validate_single_document(["dxf", "edilizia"])
       else:
          b = Building( {"_id" : self.db_building["dxf"]["l_b_id"] })

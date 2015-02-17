@@ -1,9 +1,11 @@
-from tasks.dxf.dxf_reader import DxfReader
-from tasks.task import Task, FileUpdateException
-from utils.logger import Logger
-from model.building import Building
-from decimal import Decimal
-import shutil, os, re
+from tasks.dxf.dxf_reader     import DxfReader
+from tasks.task               import Task, FileUpdateException
+from tasks.dxf_data_updater   import DXFDataUpdater
+from utils.logger             import Logger
+from model.building           import Building
+from decimal                  import Decimal
+
+import os, re
 
 class DXFTask(Task):
    """
@@ -54,17 +56,15 @@ class DXFTask(Task):
       if not floor.b_id:
          raise FileUpdateException("It was not possible to identify the building id.")
 
+      updater = DXFDataUpdater()
+
       # Trova un building su cui lavorare, cercando per diverse strategie:
       # Un building salvo con b_id corretto, con un legacy_building, oppure
       # un nuovo building creato con il building_id estratto dal floor.
-      building = (
-                  Building.find(floor.b_id) or
-                  Building.find_by_field("merged.l_b_id", floor.b_id) or
-                  Building( {"_id": floor.b_id} )
-                  )
+      building = updater.find_building_to_update({ "b_id": floor.b_id })
 
       # Pulisce i dati ed esegue il vero salvataggio sul DB
-      self.save_floor(building, floor)
+      updater.save_floor(building, floor)
       # TODO: CALL A DATAMERGER
 
    def get_backup_filepath(self, filename):
@@ -97,40 +97,4 @@ class DXFTask(Task):
       """
       rm = re.match("(\d{4,})", b_id)
       return rm and rm.group(0)
-
-   def save_floor(self, building, floor):
-      """
-      Implements the DXF Data Update functionality, saving a floor information to
-      an existing building document.
-
-      Arguments:
-      - building: a Building object representing the database object to be
-      updated with the new floor information.
-      - floor: a Floor object representing the data to be updated / inserted into
-      database.
-
-      Returns: None
-
-      If a floor with the same f_id already exists on the current building, it
-      is replaced by the new one. The floor ordering is ensured by the Building
-      model itself.
-      """
-
-      new_floor = floor.to_serializable()
-      del new_floor["b_id"]
-
-      # Non vogliamo cancellare quanto c'è nel database, soltanto lo stesso floor
-      dxf         = building.attr("dxf") or {}
-      floors      = dxf.get("floors", [])
-
-      # Se il floor corrente esiste gia' nel database, vogliamo sostituirlo
-      for k, f in enumerate(floors):
-         if f["f_id"] == floor.f_id:
-            del floors[k]
-
-      floors.append(new_floor)
-
-      dxf["floors"] = floors
-      building.attr("dxf", dxf)
-      building.save()
 
