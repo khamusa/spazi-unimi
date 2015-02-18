@@ -112,7 +112,7 @@ class ORMModelTest(unittest.TestCase):
       orm.destroy()
       pm.destroy_by_id.assert_called_once_with(orm.collection_name(), "2323")
 
-   def test_save_callbacks_are_saved(self):
+   def test_class_callbacks_are_saved(self):
       ORMModel.listen("before_save", "pippo")
       ORMModel.listen("before_save", "pluto")
       ORMModel.before_save("sempronio")
@@ -133,7 +133,7 @@ class ORMModelTest(unittest.TestCase):
 
       self.assertEqual(["pippo", "pluto", "sempronio"], ORMModel.after_callbacks["ORMModel"]["save"] )
 
-   def test_save_callbacks_are_called(self):
+   def test_class_callbacks_are_called(self):
       ORMModel.set_pm(MagicMock())
 
       dic            = {"_id" : "2323", "pippo" : "pluto"}
@@ -142,17 +142,17 @@ class ORMModelTest(unittest.TestCase):
       orm.pluto      = MagicMock()
       orm.sempronio  = MagicMock()
 
-      ORMModel.listen("before_save", "pippo")
       ORMModel.before_save("sempronio")
+      ORMModel.listen("before_save", "pippo")
 
       ORMModel.listen("after_save", "pluto")
       ORMModel.after_save("sempronio")
 
       orm.save()
 
-      MagicMock.assert_called_once_with(orm.pippo)
-      MagicMock.assert_called_once_with(orm.pluto)
-      MagicMock.assert_any_call(orm.sempronio)
+      MagicMock.assert_called_once_with(orm.pippo, orm)
+      MagicMock.assert_called_once_with(orm.pluto, orm)
+      self.assertEqual(orm.sempronio.call_count, 2)
 
    def test_destroy_callbacks_are_called(self):
       ORMModel.set_pm(MagicMock())
@@ -173,3 +173,60 @@ class ORMModelTest(unittest.TestCase):
       MagicMock.assert_called_once_with(pippo, orm)
       MagicMock.assert_called_once_with(pluto, orm)
       MagicMock.assert_any_call(sempronio, orm)
+
+   def test_instance_callbacks_are_saved(self):
+
+      ORMModel.set_pm(MagicMock())
+
+      dic            = {"_id" : "2323", "pippo" : "pluto"}
+      orm            = ORMModel(dic)
+      pippo          = MagicMock()
+      pluto          = MagicMock()
+      sempronio      = MagicMock()
+
+      orm.listen_once("before_save", "pippo")
+      orm.listen_once("before_save", "pluto")
+      orm.listen_once("before_save", "sempronio")
+      self.assertEqual(
+                        orm.before_callbacks_single["save"],
+                        ["pippo", "pluto", "sempronio"]
+                        )
+
+      orm.listen_once("after_save", "pippo")
+      orm.listen_once("after_save", "sempronio")
+      self.assertEqual(
+                        orm.after_callbacks_single["save"],
+                        ["pippo", "sempronio"]
+                        )
+
+   def test_instance_callbacks_are_executed_once(self):
+
+      ORMModel.set_pm(MagicMock())
+
+      dic            = {"_id" : "2323", "pippo" : "pluto"}
+      orm            = ORMModel(dic)
+      orm.pippo      = MagicMock()
+      orm.pluto      = MagicMock()
+      sempronio      = MagicMock()
+
+      orm.listen_once("before_save", "pippo")
+      orm.listen_once("before_save", "pluto")
+      orm.listen_once("before_save", sempronio)
+      orm.save()
+
+      MagicMock.assert_called_once_with(orm.pippo, orm)
+      MagicMock.assert_called_once_with(orm.pluto, orm)
+      MagicMock.assert_called_once_with(sempronio, orm)
+      self.assertEqual(orm.before_callbacks_single["save"], [])
+
+      orm.pippo.reset_mock()
+      orm.pluto.reset_mock()
+      sempronio.reset_mock()
+      orm.listen_once("after_destroy", "pippo")
+      orm.listen_once("after_destroy", sempronio)
+      orm.destroy()
+
+      MagicMock.assert_called_once_with(orm.pippo, orm)
+      MagicMock.assert_called_once_with(sempronio, orm)
+      self.assertEqual(orm.pluto.call_count, 0)
+      self.assertEqual(orm.after_callbacks_single["destroy"], [])
