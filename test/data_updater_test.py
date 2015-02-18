@@ -25,7 +25,7 @@ class DataUpdaterTest(unittest.TestCase):
           "dxf" : {
             "l_b_id" : "5703",
             "floors" : [
-               { "f_id" : "-0.5" },
+               { "f_id" : "-0.5", "rooms": [] },
             ]
           },
           "edilizia" : {
@@ -93,7 +93,7 @@ class DataUpdaterTest(unittest.TestCase):
       if b:
          self.assertIsNotNone(b)
          floor_mock = MagicMock()
-         floor_mock.to_serializable = MagicMock(return_value={ "b_id": "123", "f_id": "-0.5" })
+         floor_mock.to_serializable = MagicMock(return_value={ "b_id": "123", "f_id": "-0.5", "rooms": [] })
          self.dxf_updater.save_floor( b, floor_mock )
          self.validate_single_document(["dxf", "edilizia"])
       else:

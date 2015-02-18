@@ -1,6 +1,7 @@
 from model              import Building
 from utils.logger       import Logger
 from tasks.data_merger  import DataMerger
+from tasks.dxf_data_updater              import DXFDataUpdater
 import itertools
 
 class DataUpdater():
@@ -115,7 +116,14 @@ class DataUpdater():
          if not building or building.attr("b_id") != b_id:
             # Salviamo l'ultimo building contemplato, ormai avrà le info
             # aggiornate su tutte le sue stanze
-            building and building.save()
+
+            # Aggiungiamo prima il callback per l'associazione dei room_id
+            # dei file dxf
+            if building:
+               callback = lambda b: DXFDataUpdater.resolve_rooms_id(b, None, namespace)
+               building.listen_once("before_save", callback)
+               building.save()
+
             building = Building.find_or_create_by_id(b_id)
 
             # Namespaced_attr si riferisce a una sottoparte del dizionario

@@ -1,8 +1,9 @@
 import re
-from model              import RoomCategory
-from .data_updater      import DataUpdater
-from .floor_inference   import FloorInference
-from model.building     import Building
+from model                    import RoomCategory
+from .data_updater            import DataUpdater
+from .floor_inference         import FloorInference
+from model.building           import Building
+from tasks.dxf_data_updater   import DXFDataUpdater
 
 class EdiliziaDataUpdater(DataUpdater):
    """
@@ -112,8 +113,14 @@ class EdiliziaDataUpdater(DataUpdater):
          if to_merge is not None:
             # abbiamo trovato un building corrispondente all'id legacy
             #building["dxf"] = to_merge["dxf"]
+
             building.attr("dxf", to_merge.attr("dxf"))
-            to_merge.destroy()
+
+            def before_callback(b):
+               DXFDataUpdater.resolve_rooms_id(b, None, "edilizia")
+
+            building.listen_once("before_save", before_callback)
+            building.listen_once("after_save", lambda b: to_merge.destroy() )
 
       return building
 

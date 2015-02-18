@@ -1,6 +1,6 @@
-from itertools import chain
-
-
+from itertools    import chain
+from model        import Building
+from utils.logger import Logger
 class DXFDataUpdater:
 
    @staticmethod
@@ -51,6 +51,7 @@ class DXFDataUpdater:
             # Se la ricerca mi ha restituito un r_id, lo salvo nel dizionario r,
             # che rappresenta la target_room
             if r_id:
+               Logger.info("Found room: ", r_id)
                target_room["r_id"] = r_id
 
    @staticmethod
@@ -138,4 +139,7 @@ class DXFDataUpdater:
 
       dxf["floors"] = floors
       building.attr("dxf", dxf)
+
+      callback = lambda b: DXFDataUpdater.resolve_rooms_id(b, new_floor, source_name = None)
+      building.listen_once("before_save", callback)
       building.save()
