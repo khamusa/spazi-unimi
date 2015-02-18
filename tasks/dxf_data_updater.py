@@ -1,7 +1,39 @@
 from itertools    import chain
-from model        import Building
+from model        import Building, RoomCategory
 from utils.logger import Logger
 class DXFDataUpdater:
+
+   @staticmethod
+   def resolve_room_categories(building, floor_dict = None):
+      """
+      Given a building, perform the mapping between it's dxf rooms and their
+      relative categories.
+
+      It does not save the building, which is responsibility of the caller.
+
+      Arguments:
+      - building: a Building object whose dxf rooms we want to process.
+      - floor_dict: an (optional) dxf floor to limit the rooms to process. If
+      None, all the current building floors will be used instead.
+
+      Returns None, updates are performed directly on the dxf rooms.
+      """
+      target_floors = (
+                  floor_dict and [floor_dict] or
+                  building.attr("dxf") and building.attr("dxf")["floors"] or
+                  []
+               )
+
+      cats = { cat.attr("_id"): cat.attr("cat_name") for cat in RoomCategory.where({}) }
+      for floor_dict in target_floors:
+         for target_room in floor_dict["rooms"]:
+            if "cat_name" in target_room:
+               continue
+
+            for target_text in target_room["texts"]:
+               if target_text["text"].upper() in cats:
+                  target_room["cat_name"] = cats[target_text["text"]]
+
 
    @staticmethod
    def resolve_rooms_id(building, floor_dict = None, source_name = None):
@@ -142,4 +174,8 @@ class DXFDataUpdater:
 
       callback = lambda b: DXFDataUpdater.resolve_rooms_id(b, new_floor, source_name = None)
       building.listen_once("before_save", callback)
+
+      callback = lambda b: DXFDataUpdater.resolve_room_categories(b, new_floor)
+      building.listen_once("before_save", callback)
+
       building.save()

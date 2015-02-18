@@ -31,7 +31,12 @@ class EdiliziaDataUpdater(DataUpdater):
       RoomCategory.clean()
       for c in categories:
          cat = RoomCategory(c)
+         cat.attr("_id", cat.attr("_id").upper())
          cat.save()
+
+      for building in Building.where({}):
+         DXFDataUpdater.resolve_room_categories(building, None)
+         building.save()
 
    def get_namespace(self):
       """
