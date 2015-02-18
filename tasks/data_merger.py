@@ -9,7 +9,8 @@ class InvalidMergeStrategy(RuntimeError):
 
 class DataMerger():
 
-   skip_geocoding = False
+   skip_geocoding          = False
+   geocoding_retry_count   = 0
 
    @classmethod
    def merge(self,field,edilizia,easyroom):
@@ -91,20 +92,24 @@ class DataMerger():
       """Address merge strategy: use easyroom field if is present,
          otherwhise use Geocoder in order to obtain a well-formed address"""
 
+      if(self.geocoding_retry_count > 0):
+         time.sleep(self.geocoding_retry_count)
+
       try:
          if easyroom and easyroom.get("address", None):
             return easyroom["address"]
 
-         elif self.skip_geocoding:
+         elif self.skip_geocoding or self.geocoding_retry_count > 4:
             return ""
 
          elif len(edilizia["lon"].strip())>0 and len(edilizia["lat"].strip())>0 :
-
             g = Geocoder.reverse_geocode( float(edilizia["lat"]) , float(edilizia["lon"]) )
+            self.geocoding_retry_count = max(self.geocoding_retry_count-1, 0)
             return g.formatted_address[:-len(g.country)-2]
 
          else:
             g = Geocoder.geocode( edilizia["address"] )
+            self.geocoding_retry_count = max(self.geocoding_retry_count-1, 0)
             return g.formatted_address[:-len(g.country)-2]
 
       except GeocoderError as error:
@@ -112,10 +117,8 @@ class DataMerger():
             Logger.warning("Address not valid " , edilizia["address"] )
 
          elif error.status == GeocoderError.G_GEO_OVER_QUERY_LIMIT :
-            time.sleep(1)
-            DataMerger.merge_building_address(edilizia, easyroom)
-
-
+               self.geocoding_retry_count += 1
+               return DataMerger.merge_building_address(edilizia, easyroom)
 
    @classmethod
    def merge_building(self, edilizia=None, easyroom=None):

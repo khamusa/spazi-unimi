@@ -30,7 +30,10 @@ class DataUpdaterTest(unittest.TestCase):
           },
           "edilizia" : {
               "l_b_id"     : "5703",
-              "b_id"       : "21030"
+              "b_id"       : "21030",
+              "lat"        : "",
+              "lon"        : "",
+              "address"    : ""
           },
           "easyroom" : {
               "b_id"       : "21030",

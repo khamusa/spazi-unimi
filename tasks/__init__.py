@@ -6,11 +6,13 @@ from .easyroom_data_updater   import EasyroomDataUpdater
 from .csv_task                import CSVTask
 from .dxf_task                import DXFTask
 from .floor_inference         import FloorInference
+from .data_merger             import DataMerger
 __all__ = [
             "Task",
             "CSVTask",
             "DXFTask",
             "DXFDataUpdater",
+            "DataMerger",
             "DataUpdater",
             "EdiliziaDataUpdater",
             "EasyroomDataUpdater",
