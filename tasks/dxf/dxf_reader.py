@@ -86,7 +86,7 @@ class DxfReader():
 
       texts = (
                Text(
-                  ent.plain_text(), Point(ent.insert[0], -ent.insert[1])
+                  ent.plain_text().strip(), Point(ent.insert[0], -ent.insert[1])
                ) for ent in self._grabber.entities if is_valid_text(ent)
             )
 
