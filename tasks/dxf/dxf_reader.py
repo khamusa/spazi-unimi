@@ -70,7 +70,13 @@ class DxfReader():
          If ent is a text in the text layers returns True else return False.
          """
 
-         return type(ent) in [MText, dxfgrabber.entities.Text] and ent.layer in self.valid_text_layers
+         if type(ent) not in [MText, dxfgrabber.entities.Text]:
+            return False
+
+         if re.match("^\s*[a-zA-Z\d]*\d+[a-zA-Z\d]*\s*$", ent.plain_text()) is None:
+            return False
+
+         return ent.layer in self.valid_text_layers
 
       rooms = (
                Room(

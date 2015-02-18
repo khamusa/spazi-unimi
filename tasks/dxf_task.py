@@ -43,8 +43,8 @@ class DXFTask(Task):
          self.dx = DxfReader(dxf_file)
       except FileUpdateException:
          raise
-      except Exception:
-         raise FileUpdateException("There was an unknown error reading the DXF file.")
+      except Exception as e:
+         raise FileUpdateException("There was an unknown error reading the DXF file: "+ str(e))
 
       floor = self.dx.floor;
       if not floor:
