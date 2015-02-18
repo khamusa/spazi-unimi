@@ -238,6 +238,25 @@ class ORMModel:
 
       return res
 
+   @classmethod
+   def where(klass, query):
+      """
+      Retrieves a list of objects from database.
+
+      Arguments:
+      - query: a MONGO filtering query
+
+      Return value: a generator of ORMModel objects.
+      """
+      docs = klass.get_collection().find( query )
+
+      def generate_model_obj(document):
+         document = klass(document)
+         document.set_changed(False)
+         return document
+
+      results = ( generate_model_obj(doc) for doc in docs )
+      return results
 
    """
 
