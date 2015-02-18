@@ -94,7 +94,8 @@ if __name__ == '__main__':
 
    args = parser.parse_args()
 
-
+   # Development mode
+   DataMerger.skip_geocoding = True
 
    if(args.command in ["csv", "dxf"] and len(args.files) == 0):
       print("Errore: Il comando "+args.command+" richiede almeno un file ."+args.command+" su cui lavorare.\n")

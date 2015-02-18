@@ -5,6 +5,9 @@ from os import listdir
 import re
 from colour_runner.runner import ColourTextTestRunner
 
+from tasks.data_merger import DataMerger
+DataMerger.skip_geocoding = True
+
 if(len(sys.argv) == 1):
    files_list = listdir('test')
 else:

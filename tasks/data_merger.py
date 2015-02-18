@@ -9,6 +9,8 @@ class InvalidMergeStrategy(RuntimeError):
 
 class DataMerger():
 
+   skip_geocoding = False
+
    @classmethod
    def merge(self,field,edilizia,easyroom):
       strategy_name   = "merge_building_"+field
@@ -56,13 +58,14 @@ class DataMerger():
    def merge_building_coordinates(self, edilizia=None, easyroom=None):
       """Coordinates merge strategy: return lat and lng if are present and valid
          in the edilizia data, otherwhise make a reverse geocoding request"""
+
       if self.coordinates_are_valid(edilizia) :
          lat = round(float(edilizia["lat"]), 6)
          lng = round(float(edilizia["lon"]), 6)
 
          return { "lat" :  lat, "lng" : lng }
 
-      elif easyroom :
+      elif easyroom and not self.skip_geocoding:
          address     =  easyroom.get("address", None) or edilizia.get("address", None)
          try :
             (lat,lng)   = (Geocoder.geocode(address)).coordinates
@@ -72,7 +75,7 @@ class DataMerger():
          except GeocoderError:
             Logger.warning("Coordinates parsing error")
 
-         return { "lat" : None , "lng" : None }
+      return { "lat" : None , "lng" : None }
 
    @classmethod
    def prepare_GeoJson_coordinates(self,coordinates):
@@ -91,6 +94,9 @@ class DataMerger():
       try:
          if easyroom and easyroom.get("address", None):
             return easyroom["address"]
+
+         elif self.skip_geocoding:
+            return ""
 
          elif len(edilizia["lon"].strip())>0 and len(edilizia["lat"].strip())>0 :
 
