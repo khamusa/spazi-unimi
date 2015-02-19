@@ -32,7 +32,7 @@ class DXFDataUpdater:
 
             for target_text in target_room["texts"]:
                if target_text["text"].upper() in cats:
-                  target_room["cat_name"] = cats[target_text["text"]]
+                  target_room["cat_name"] = cats[target_text["text"].upper()]
 
 
    @staticmethod
