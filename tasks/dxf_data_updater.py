@@ -89,9 +89,9 @@ class DXFDataUpdater:
    @staticmethod
    def _find_r_id_on_source(source_floors, possible_ids):
       for source_floor in source_floors:
-         for source_room in source_floor["rooms"]:
-            if source_room["r_id"].lower() in possible_ids:
-               return source_room["r_id"]
+         for r_id in source_floor["rooms"]:
+            if r_id.lower() in possible_ids:
+               return r_id
 
       return None
 

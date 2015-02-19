@@ -100,8 +100,9 @@ class DataUpdater():
 
       for ((b_id, f_id), floor_rooms) in rooms:
 
+         f_id = self.sanitize_floor_id(f_id)
          # Controlliamo di avere almeno un floor id valido
-         if not(f_id and f_id.strip()):
+         if not f_id :
             Logger.warning("Empty floor id in building: \"{}\". \"{}\" rooms discarded".format(b_id, len(list(floor_rooms))))
             continue
 
@@ -133,10 +134,11 @@ class DataUpdater():
             namespaced_attr["floors"] = []
             building.attr(namespace, namespaced_attr)
 
+
          namespaced_attr["floors"].append( {
-               "f_id"   : self.sanitize_floor_id(f_id),
-               "rooms"  : list(floor_rooms)
-            } )
+               "f_id"   : f_id,
+               "rooms"  : self.prepare_rooms(f_id, floor_rooms)
+         } )
 
       building and building.save()
 
@@ -172,7 +174,7 @@ class DataUpdater():
 
       It is a good practice for subclasses to call this parent superclass.
       """
-      return floor_id
+      return type(floor_id) is str and floor_id.strip() or ""
 
 
    def find_building_to_update(self, building_dict):
@@ -192,3 +194,45 @@ class DataUpdater():
       b_id = building_dict.get("b_id", "")
 
       return Building.find_or_create_by_id(b_id)
+
+
+   def prepare_rooms(self, floor_id, rooms):
+      """
+      Transform a list of rooms in a dictionary indexed by room id.
+
+      Arguments:
+      - floor_id: a string representing the floor identifier,
+      - rooms: a list of rooms.
+
+      Returns: a dictionary of rooms.
+
+      Validate the r_id using _is_valid_r_id function and discard rooms have no
+      a correct id. Create and return a dictionary of validated rooms.
+      """
+      result = {}
+
+      for r in rooms:
+         if not self._is_valid_r_id(floor_id, r["r_id"]):
+            Logger.warning("Room discarded for invalid r_id:", r["r_id"])
+            continue
+
+         r_id = r["r_id"]
+         del r["r_id"]
+         result[r_id] = r
+
+      return result
+
+   def _is_valid_r_id(self, floor_id, room):
+      """
+      Called for every room before insertion, and must return True or False.
+
+      Arguments:
+      - floor_id: a string representing a floor id,
+      - room: a dictionary representing a room.
+
+      Returns:
+      - True if the room has a r_id an it's compatible with the floor_id,
+      - False otherwise.
+      """
+      #TODO
+      return True

@@ -73,21 +73,19 @@ class DXFDataUpdaterTest(unittest.TestCase):
             "floors": [
                {
                   "f_id"  : "0",
-                  "rooms" : [
-                     { "r_id": "PippoPelato" },
-                     { "r_id": "R002" },
-                     { "r_id": "PippoPelato2" }
-
-                  ]
+                  "rooms" : {
+                     "PippoPelato" : {},
+                     "R002": {},
+                     "PippoPelato2": {}
+                  }
                },
                {
                   "f_id"  : "0.5",
-                  "rooms" : [
-                     { "r_id": "PippoPelato" },
-                     { "r_id": "PippoPelato2" },
-                     { "r_id": "R022" }
-
-                  ]
+                  "rooms" : {
+                     "PippoPelato": {},
+                     "PippoPelato2": {},
+                     "R022": {}
+                  }
                }
             ]
           },
@@ -95,19 +93,19 @@ class DXFDataUpdaterTest(unittest.TestCase):
             "floors": [
                {
                   "f_id"  : "0",
-                  "rooms" : [
-                     { "r_id": "PippoSdentato" },
-                     { "r_id": "PippoSdentato2" },
-                     { "r_id": "R003" }
-                  ]
+                  "rooms" : {
+                     "PippoSdentato": {},
+                     "PippoSdentato2": {},
+                     "R003": {}
+                  }
                },
                {
                   "f_id"  : "1",
-                  "rooms" : [
-                     { "r_id": "PippoSdentato" },
-                     { "r_id": "PippoSdentato2" },
-                     { "r_id": "R023" }
-                  ]
+                  "rooms" : {
+                     "PippoSdentato": {},
+                     "PippoSdentato2": {},
+                     "R023": {}
+                  }
                }
             ]
           }
