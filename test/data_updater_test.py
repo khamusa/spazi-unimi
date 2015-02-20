@@ -25,7 +25,7 @@ class DataUpdaterTest(unittest.TestCase):
           "dxf" : {
             "l_b_id" : "5703",
             "floors" : [
-               { "f_id" : "-0.5", "rooms": [] },
+               { "f_id" : "-0.5", "rooms": {}, "unidentified_rooms": [] },
             ]
           },
           "edilizia" : {

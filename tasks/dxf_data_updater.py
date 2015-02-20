@@ -26,7 +26,12 @@ class DXFDataUpdater:
 
       cats = { cat.attr("_id"): cat.attr("cat_name") for cat in RoomCategory.where({}) }
       for floor_dict in target_floors:
-         for target_room in floor_dict["rooms"]:
+
+         all_rooms = chain(
+                           floor_dict["unidentified_rooms"],
+                           floor_dict["rooms"].values()
+                           )
+         for target_room in all_rooms:
             if "cat_name" in target_room:
                continue
 
@@ -71,20 +76,18 @@ class DXFDataUpdater:
          source_floors = sorted(source_floors, key=sortfunc)
 
 
-         for target_room in floor_dict["rooms"]:
-
-            # La stanza e' gia' identificata ?
-            if "r_id" in target_room:
-               continue
+         for target_room in floor_dict["unidentified_rooms"]:
 
             possible_ids = [ r["text"].strip().lower() for r in target_room["texts"] ]
             r_id = DXFDataUpdater._find_r_id_on_source(source_floors, possible_ids)
 
-            # Se la ricerca mi ha restituito un r_id, lo salvo nel dizionario r,
-            # che rappresenta la target_room
+            # Se la ricerca mi ha restituito un r_id, lo salvo nel dizionario
+            # rooms con r_id come chiave e rimuovo la stanza da
+            # unidentified_rooms
             if r_id:
                Logger.info("Found room: ", r_id)
-               target_room["r_id"] = r_id
+               floor_dict["rooms"][r_id] = target_room
+               floor_dict["unidentified_rooms"].remove(target_room)
 
    @staticmethod
    def _find_r_id_on_source(source_floors, possible_ids):
@@ -166,6 +169,11 @@ class DXFDataUpdater:
       for k, f in enumerate(floors):
          if f["f_id"] == floor.f_id:
             del floors[k]
+
+      # Inseriamo le stanze non ancora identificate in unidentified_rooms
+      # la chiave rooms conterrà un dizionario di stanze identificate
+      new_floor["unidentified_rooms"] = new_floor["rooms"]
+      new_floor["rooms"] = {}
 
       floors.append(new_floor)
 
