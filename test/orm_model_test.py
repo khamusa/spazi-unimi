@@ -89,8 +89,9 @@ class ORMModelTest(unittest.TestCase):
 
       # Test __setitem__
       attrs["bid"]   = "PIUFACILE"
-      attrs["pippo"] = "Sporcizia"
       verify_id("PIUFACILE")
+
+      attrs["pippo"] = "Sporcizia"
       self.assertEqual(attrs["pippo"], "Sporcizia")
 
       # Test __contains__
@@ -134,7 +135,7 @@ class ORMModelTest(unittest.TestCase):
    def test_class_callbacks_are_saved(self):
       ORMModel.listen("before_save", "pippo")
       ORMModel.listen("before_save", "pluto")
-      ORMModel.before_save("sempronio")
+      ORMModel.listen("before_save", "sempronio")
 
       self.assertTrue("pippo" in ORMModel.before_callbacks["ORMModel"]["save"])
       self.assertTrue("pluto" in ORMModel.before_callbacks["ORMModel"]["save"])
@@ -144,7 +145,7 @@ class ORMModelTest(unittest.TestCase):
 
       ORMModel.listen("after_save", "pippo")
       ORMModel.listen("after_save","pluto")
-      ORMModel.after_save("sempronio")
+      ORMModel.listen("after_save", "sempronio")
 
       self.assertTrue("pippo" in ORMModel.after_callbacks["ORMModel"]["save"])
       self.assertTrue("pluto" in ORMModel.after_callbacks["ORMModel"]["save"])
@@ -161,11 +162,11 @@ class ORMModelTest(unittest.TestCase):
       orm.pluto      = MagicMock()
       orm.sempronio  = MagicMock()
 
-      ORMModel.before_save("sempronio")
+      ORMModel.listen("before_save", "sempronio")
       ORMModel.listen("before_save", "pippo")
 
       ORMModel.listen("after_save", "pluto")
-      ORMModel.after_save("sempronio")
+      ORMModel.listen("after_save", "sempronio")
 
       orm.save()
 
