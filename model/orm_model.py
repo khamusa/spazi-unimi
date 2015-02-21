@@ -218,14 +218,6 @@ class ORMModel(ORMAttrs):
       callbacks[klass_name][evt_action].append(callback_name_or_callable)
 
    @classmethod
-   def before_save(klass, callback_name):
-      klass.listen("before_save", callback_name)
-
-   @classmethod
-   def after_save(klass, callback_name):
-      klass.listen("after_save", callback_name)
-
-   @classmethod
    def _listen_split_event(klass, event):
       """
       Given an event string in the format "type_method" (i.e. before_save,

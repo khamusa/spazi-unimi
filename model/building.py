@@ -13,4 +13,4 @@ class Building(ORMModel):
          if namespace and "floors" in namespace:
             namespace["floors"].sort(key=lambda s: float(s["f_id"]))
 
-Building.before_save("ensure_floors_sorting")
+Building.listen("before_save", "ensure_floors_sorting")
