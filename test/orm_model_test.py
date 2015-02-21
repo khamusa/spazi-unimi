@@ -18,43 +18,63 @@ class ORMModelTest(unittest.TestCase):
 
    def test_id_assignment_gets_sanitized(self):
       orm = ORMModel({ "_id": "   123 "})
-      self.assertEqual(orm.attrs()["_id"], "123")
+      self.assertEqual(orm["_id"], "123")
 
       orm.attrs({ "_id" : 13124 })
-      self.assertEqual(orm.attrs()["_id"], "13124")
+      self.assertEqual(orm["_id"], "13124")
+
+      orm["_id"] = 444
+      self.assertEqual(orm["_id"], "444")
 
    def test_attrs_get_and_set(self):
-      self.assertEqual(self.orm.attrs()["pippo"], "pluto")
+      self.assertEqual(self.orm["pippo"], "pluto")
 
       self.orm.attrs( { "pippo": "sempronio", "caio": "tizio"})
-      self.assertEqual(self.orm.attrs()["pippo"], "sempronio")
-      self.assertEqual(self.orm.attrs()["caio"], "tizio")
+      self.assertEqual(self.orm["pippo"], "sempronio")
+      self.assertEqual(self.orm["caio"], "tizio")
 
-      self.assertEqual(self.orm.attrs()["mickey"], "paperino")
+      self.assertEqual(self.orm["mickey"], "paperino")
 
    def test_has_attr(self):
-      self.assertTrue(self.orm.has_attr("pippo"))
-      self.assertTrue(self.orm.has_attr("mickey"))
-      self.assertFalse(self.orm.has_attr("1234"))
+      self.assertTrue("pippo"  in self.orm)
+      self.assertTrue("mickey" in self.orm)
+      self.assertFalse("1234"  in self.orm)
 
    def test_collection_name(self):
       self.assertEqual(self.orm.collection_name(), 'ormmodel')
       self.assertEqual(ORMModel.collection_name(), 'ormmodel')
 
    def test_attr_getter_method(self):
-      self.assertEqual(self.orm.attr("pippuzzo"), None)
-      self.assertEqual(self.orm.attr("pippo"), "pluto")
+      self.assertTrue("pippuzzo" not in self.orm)
+      self.assertEqual(self.orm["pippo"], "pluto")
 
    def test_attr_setter_method(self):
-      self.orm.attr("pippuzzo","ciao")
-      self.assertEqual(self.orm.attr("pippuzzo") ,"ciao")
+      self.orm["pippuzzo"] = "ciao"
+      self.assertEqual(self.orm["pippuzzo"] ,"ciao")
+
+   def test_set_changed(self):
+      self.orm.set_changed(False)
+      self.assertFalse(self.orm.is_changed())
+
+      self.orm.set_changed(True)
+      self.assertTrue(self.orm.is_changed())
+
+      self.orm.set_changed(False)
+      self.assertFalse(self.orm.is_changed())
 
    def test_is_changed(self):
-      self.assertEqual(self.orm.is_changed(), True)
+      self.assertTrue(self.orm.is_changed())
       self.orm.set_changed(False)
-      self.orm.attr("pippo","ciao")
-      self.assertEqual(self.orm.is_changed(), True)
+      self.orm.attr("pippo", "ciao")
+      self.assertTrue(self.orm.is_changed())
 
+      self.orm.set_changed(False)
+      self.orm["pippo"] = "ciao"
+      self.assertFalse(self.orm.is_changed())
+
+      self.orm.set_changed(False)
+      self.orm["pippo"] = "ciao2"
+      self.assertTrue(self.orm.is_changed())
 
    def test_external_id_handling(self):
       attrs = ORMAttrs({ "bid": 123, "pippo": 123 }, external_id = "bid")
@@ -68,16 +88,16 @@ class ORMModelTest(unittest.TestCase):
       verify_id("123")
 
       # Test __setitem__
-      attrs["bid"] = "PIUFACILE"
-      verify_id("PIUFACILE")
+      attrs["bid"]   = "PIUFACILE"
       attrs["pippo"] = "Sporcizia"
+      verify_id("PIUFACILE")
       self.assertEqual(attrs["pippo"], "Sporcizia")
 
       # Test __contains__
-      self.assertTrue("_id" in attrs)
-      self.assertTrue("bid" in attrs)
+      self.assertTrue("_id"   in attrs)
+      self.assertTrue("bid"   in attrs)
       self.assertTrue("pippo" in attrs)
-      self.assertFalse("pippow!" in attrs)
+      self.assertFalse("piw!" in attrs)
 
       # Test get
       attrs["_id"] = 123
@@ -86,7 +106,6 @@ class ORMModelTest(unittest.TestCase):
       self.assertEqual(attrs.get("_idzzzz"), None)
       self.assertEqual(attrs.get("_idbiz", "hahaha"), "hahaha")
       self.assertEqual(attrs.get("bid"), "123")
-
 
    def test_clean(self):
       pm = MongoDBPersistenceManager({
