@@ -128,3 +128,17 @@ class DataUpdaterTest(unittest.TestCase):
 
       # Non dev'esserci un documento con legacy building id
       self.assertIsNone( Building.find(self.db_building["dxf"]["l_b_id"]) )
+
+   def test_updated_at(self):
+      self.add_edil_data()
+      b = Building.find( self.db_building["_id"] )
+
+      self.assertEqual(b["edilizia"]["updated_at"], b["updated_at"])
+      self.assertTrue("easyroom" not in b)
+
+      self.add_easy_data()
+      b = Building.find( self.db_building["_id"] )
+
+      self.assertEqual(b["easyroom"]["updated_at"], b["updated_at"])
+      self.assertTrue(b["easyroom"]["updated_at"] > b["edilizia"]["updated_at"])
+
