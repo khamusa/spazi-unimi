@@ -1,8 +1,8 @@
-from model              import Building
-from utils.logger       import Logger
-from tasks.data_merger  import DataMerger
-from tasks.dxf_data_updater              import DXFDataUpdater
-import itertools
+from model                    import Building
+from utils.logger             import Logger
+from tasks.data_merger        import DataMerger
+from tasks.dxf_data_updater   import DXFDataUpdater
+import itertools, re
 
 class DataUpdater():
    """
@@ -100,45 +100,47 @@ class DataUpdater():
 
       for ((b_id, f_id), floor_rooms) in rooms:
 
-         f_id = self.sanitize_floor_id(f_id)
-         # Controlliamo di avere almeno un floor id valido
-         if not f_id :
-            Logger.warning("Empty floor id in building: \"{}\". \"{}\" rooms discarded".format(b_id, len(list(floor_rooms))))
-            continue
+         with Logger.info("Processing building {}, floor {}".format(b_id, f_id)):
 
-         # remove the attribute b_id from the rooms
-         floor_rooms = map(self.sanitize_room, floor_rooms)
+            f_id = self.sanitize_floor_id(f_id)
+            # Controlliamo di avere almeno un floor id valido
+            if not f_id :
+               Logger.warning("Empty floor id in building: \"{}\". \"{}\" rooms discarded".format(b_id, len(list(floor_rooms))))
+               continue
 
-         if not self._is_valid_b_id(b_id):
-            Logger.warning("Invalid building ID: \"{}\"".format(b_id))
-            continue
+            # remove the attribute b_id from the rooms
+            floor_rooms = map(self.sanitize_room, floor_rooms)
 
-         # Se b_id non si riferisce più allo stesso building ...
-         if not building or building.attr("b_id") != b_id:
-            # Salviamo l'ultimo building contemplato, ormai avrà le info
-            # aggiornate su tutte le sue stanze
+            if not self._is_valid_b_id(b_id):
+               Logger.warning("Invalid building ID: \"{}\"".format(b_id))
+               continue
 
-            # Aggiungiamo prima il callback per l'associazione dei room_id
-            # dei file dxf
-            if building:
-               callback = lambda b: DXFDataUpdater.resolve_rooms_id(b, None, namespace)
-               building.listen_once("before_save", callback)
-               building.save()
+            # Se b_id non si riferisce più allo stesso building ...
+            if not building or building.attr("b_id") != b_id:
+               # Salviamo l'ultimo building contemplato, ormai avrà le info
+               # aggiornate su tutte le sue stanze
 
-            building = Building.find_or_create_by_id(b_id)
+               # Aggiungiamo prima il callback per l'associazione dei room_id
+               # dei file dxf
+               if building:
+                  callback = lambda b: DXFDataUpdater.resolve_rooms_id(b, None, namespace)
+                  building.listen_once("before_save", callback)
+                  building.save()
 
-            # Namespaced_attr si riferisce a una sottoparte del dizionario
-            # che costituisce il documento del building: quella relativa
-            # alla sorgente che aggiorniamo in questo momento.
-            namespaced_attr = building.attr(namespace) or {}
-            namespaced_attr["floors"] = []
-            building.attr(namespace, namespaced_attr)
+               building = Building.find_or_create_by_id(b_id)
+
+               # Namespaced_attr si riferisce a una sottoparte del dizionario
+               # che costituisce il documento del building: quella relativa
+               # alla sorgente che aggiorniamo in questo momento.
+               namespaced_attr = building.attr(namespace) or {}
+               namespaced_attr["floors"] = []
+               building.attr(namespace, namespaced_attr)
 
 
-         namespaced_attr["floors"].append( {
-               "f_id"   : f_id,
-               "rooms"  : self.prepare_rooms(f_id, floor_rooms)
-         } )
+            namespaced_attr["floors"].append( {
+                  "f_id"   : f_id,
+                  "rooms"  : self.prepare_rooms(f_id, floor_rooms)
+            } )
 
       building and building.save()
 
@@ -212,7 +214,7 @@ class DataUpdater():
       result = {}
 
       for r in rooms:
-         if not self._is_valid_r_id(floor_id, r["r_id"]):
+         if not self._is_valid_r_id(r["r_id"]):
             Logger.warning("Room discarded for invalid r_id:", r["r_id"])
             continue
 
@@ -222,17 +224,24 @@ class DataUpdater():
 
       return result
 
-   def _is_valid_r_id(self, floor_id, room):
+   def _is_valid_r_id(self, room_id):
       """
       Called for every room before insertion, and must return True or False.
 
       Arguments:
-      - floor_id: a string representing a floor id,
-      - room: a dictionary representing a room.
+      - room: a string representing a room_id.
 
       Returns:
-      - True if the room has a r_id an it's compatible with the floor_id,
+      - True if the room has a valid r_id ,
       - False otherwise.
       """
-      #TODO
-      return True
+
+      if (
+         re.match("^[a-z]+\d+$", room_id.lower(),re.I) or
+         re.match("^\d{3,}$", room_id.lower(),re.I) or
+         re.match("^1i\d{3,}$", room_id.lower(),re.I)
+
+         ):
+         return True
+      else:
+         return False
