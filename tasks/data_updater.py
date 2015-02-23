@@ -2,7 +2,7 @@ from model                    import Building
 from utils.logger             import Logger
 from tasks.data_merger        import DataMerger
 from tasks.dxf_data_updater   import DXFDataUpdater
-import itertools, re
+import itertools, re, datetime
 
 class DataUpdater():
    """
@@ -37,7 +37,8 @@ class DataUpdater():
       If a building with the same b_id exists on the database, hence it will
       be updated, otherwise it will be replaced.
       """
-      namespace = self.get_namespace()
+      namespace   = self.get_namespace()
+      batch_date  = datetime.datetime.now()
 
       for b in buildings:
          b_id = b.get("b_id", "")
@@ -46,15 +47,17 @@ class DataUpdater():
             Logger.warning("Invalid building ID: \"{}\"".format(b_id))
             continue
 
-         building = self.find_building_to_update(b)
-         namespaced_attr = building.attr(namespace) or {}
+         building             = self.find_building_to_update(b)
+         namespaced_attr      = building.get(namespace, {})
          namespaced_attr.update(b)
-         building.attr(namespace, namespaced_attr )
+         building[namespace]  = namespaced_attr
 
-         edilizia = building.attr('edilizia')
-         easyroom = building.attr('easyroom')
+         edilizia = building.get('edilizia')
+         easyroom = building.get('easyroom')
 
-         building.attr('merged', DataMerger.merge_building(edilizia, easyroom))
+         building['merged']            = DataMerger.merge_building(edilizia, easyroom)
+         building['updated_at']        = batch_date
+         namespaced_attr["updated_at"] = batch_date
          building.save()
 
    def update_rooms(self,rooms):
