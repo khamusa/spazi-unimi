@@ -2,7 +2,8 @@ from model                    import Building
 from utils.logger             import Logger
 from tasks.data_merger        import DataMerger
 from tasks.dxf_data_updater   import DXFDataUpdater
-import itertools, re, datetime
+from datetime                 import datetime
+import itertools, re
 
 class DataUpdater():
    """
@@ -38,7 +39,7 @@ class DataUpdater():
       be updated, otherwise it will be replaced.
       """
       namespace   = self.get_namespace()
-      batch_date  = datetime.datetime.now()
+      batch_date  = datetime.now()
 
       for b in buildings:
          b_id = b.get("b_id", "")
@@ -101,6 +102,9 @@ class DataUpdater():
       # inizialmente non abbiamo un building su cui stiamo lavorando
       building          = None
 
+      # data di aggiornamento comune a tutti i palazzi
+      batch_date        = datetime.now()
+
       for ((b_id, f_id), floor_rooms) in rooms:
 
          with Logger.info("Processing building {}, floor {}".format(b_id, f_id)):
@@ -119,7 +123,7 @@ class DataUpdater():
                continue
 
             # Se b_id non si riferisce più allo stesso building ...
-            if not building or building.attr("b_id") != b_id:
+            if not building or building["b_id"] != b_id:
                # Salviamo l'ultimo building contemplato, ormai avrà le info
                # aggiornate su tutte le sue stanze
 
@@ -128,6 +132,8 @@ class DataUpdater():
                if building:
                   callback = lambda b: DXFDataUpdater.resolve_rooms_id(b, None, namespace)
                   building.listen_once("before_save", callback)
+                  building["updated_at"]        = batch_date
+                  namespaced_attr["updated_at"] = batch_date
                   building.save()
 
                building = Building.find_or_create_by_id(b_id)
