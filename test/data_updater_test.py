@@ -3,6 +3,7 @@ from persistence.db              import MongoDBPersistenceManager
 from model.orm_model             import ORMModel
 from model.building              import Building
 from mock                        import MagicMock
+from itertools                   import chain
 
 from tasks.dxf_data_updater      import DXFDataUpdater
 from tasks.easyroom_data_updater import EasyroomDataUpdater
@@ -41,11 +42,69 @@ class DataUpdaterTest(unittest.TestCase):
           }
       }
 
+      self.edil_rooms = [
+         {
+            'room_name' : 'Aula Seminari',
+            'type_name' : 'Aula',
+            'r_id'      : 'T-065',
+            'b_id'      : '21030',
+            'capacity'  : '52',
+            'l_floor'   : 'T'
+         },
+         {
+            'room_name' : 'Aula Pippo',
+            'type_name' : 'Aula',
+            'r_id'      : 'T066',
+            'b_id'      : '21030',
+            'capacity'  : '52',
+            'l_floor'   : 'T'
+         },
+         {
+            'room_name' : 'Aula Pippo Sdentato',
+            'type_name' : 'Aula',
+            'r_id'      : '1066',
+            'b_id'      : '21030',
+            'capacity'  : '52',
+            'l_floor'   : '1'
+         }
+      ]
+
+      self.easy_rooms = [
+         {
+            'room_name' : 'Aula Seminari',
+            'type_name' : 'Aula',
+            'r_id'      : '21030#T-065',
+            'b_id'      : '21030',
+            'capacity'  : '52',
+            'l_floor'   : '0'
+         },
+         {
+            'room_name' : 'Aula Pippo',
+            'type_name' : 'Aula',
+            'r_id'      : '21030#T066',
+            'b_id'      : '21030',
+            'capacity'  : '52',
+            'l_floor'   : '0'
+         },
+         {
+            'room_name' : 'Aula Pippo Sdentato',
+            'type_name' : 'Aula',
+            'r_id'      : '21030#1066',
+            'b_id'      : '21030',
+            'capacity'  : '52',
+            'l_floor'   : '1'
+         }
+      ]
+
       pm.clean_collection("building")
       self.edil_up      = EdiliziaDataUpdater()
       self.easy_up      = EasyroomDataUpdater()
       self.dxf_updater  = DXFDataUpdater()
 
+
+   ########################################
+   # Building id <= => Legacy Building Id #
+   ########################################
    def test_b_id_to_l_b_id_resolution_case_1(self):
       """Caso 1 - Dati inseriti nell'ordine DXF(l_b_id) -> Edilizia -> Easyroom"""
 
@@ -78,7 +137,6 @@ class DataUpdaterTest(unittest.TestCase):
       self.add_edil_data()
       self.validate_single_document()
 
-
    def test_b_id_to_l_b_id_resolution_case_3(self):
       """Caso 1 - Dati inseriti nell'ordine Edilizia -> DXF(l_b_id) -> Easyroom"""
 
@@ -91,7 +149,7 @@ class DataUpdaterTest(unittest.TestCase):
       self.validate_single_document()
 
    def add_dxf_data(self):
-      b = Building.find( self.db_building["_id"] )
+      b = self.retrieve_test_building()
 
       if b:
          self.assertIsNotNone(b)
@@ -110,9 +168,22 @@ class DataUpdaterTest(unittest.TestCase):
    def add_easy_data(self):
       self.easy_up.update_buildings( [self.db_building["easyroom"]] )
 
+   def retrieve_test_building(self):
+      b = Building.find( self.db_building["_id"] )
+
+      if not b:
+         return None
+
+      if "dxf" in b and "floors" in b["dxf"]:
+         for f in b["dxf"]["floors"]:
+               if "updated_at" in f:
+                  del f["updated_at"]
+
+      return b
+
    def validate_single_document(self, namespaces=None):
       """Valida che ci sia un documento che contiene tutte le info"""
-      b = Building.find( self.db_building["_id"] )
+      b = self.retrieve_test_building()
 
       if namespaces is None or ("edilizia" in namespaces):
          self.assertTrue( b.has_attr("edilizia") )
@@ -129,16 +200,92 @@ class DataUpdaterTest(unittest.TestCase):
       # Non dev'esserci un documento con legacy building id
       self.assertIsNone( Building.find(self.db_building["dxf"]["l_b_id"]) )
 
+   ####################################################################
+   # When updating building data the updated_at field must be changed #
+   ####################################################################
    def test_updated_at(self):
       self.add_edil_data()
-      b = Building.find( self.db_building["_id"] )
+      b = self.retrieve_test_building()
 
       self.assertEqual(b["edilizia"]["updated_at"], b["updated_at"])
       self.assertTrue("easyroom" not in b)
 
       self.add_easy_data()
-      b = Building.find( self.db_building["_id"] )
+      b = self.retrieve_test_building()
 
       self.assertEqual(b["easyroom"]["updated_at"], b["updated_at"])
       self.assertTrue(b["easyroom"]["updated_at"] > b["edilizia"]["updated_at"])
 
+   ##################
+   # Room Updating  #
+   ##################
+   def test_edilizia_floor_normalization(self):
+      self.edil_up.update_rooms(self.edil_rooms)
+
+      b = self.retrieve_test_building()
+      self.assertTrue("edilizia" in b)
+
+      first_floor    = b["edilizia"]["floors"][0]
+      second_floor   = b["edilizia"]["floors"][1]
+      self.assertEqual(first_floor["f_id"], "0")
+      self.assertEqual(second_floor["f_id"], "1")
+
+   def test_valid_rooms_get_saved(self):
+      self.edil_up.update_rooms(self.edil_rooms)
+
+      b = self.retrieve_test_building()
+      self.assertTrue("edilizia" in b)
+
+      first_floor    = b["edilizia"]["floors"][0]
+      second_floor   = b["edilizia"]["floors"][1]
+      self.assertTrue("T-065" not in first_floor["rooms"])
+      self.assertTrue("T-065" not in second_floor["rooms"])
+
+      self.assertTrue("T066" in first_floor["rooms"])
+      self.assertTrue("T066" not in second_floor["rooms"])
+
+      self.assertTrue("1066" not in first_floor["rooms"])
+      self.assertTrue("1066" in second_floor["rooms"])
+
+   def test_edil_sanitize_room(self):
+      self.edil_up.update_rooms(self.edil_rooms)
+
+      b = self.retrieve_test_building()
+      self.assertTrue("edilizia" in b)
+
+      first_floor    = b["edilizia"]["floors"][0]
+      second_floor   = b["edilizia"]["floors"][1]
+      all_rooms      = chain(
+                              first_floor["rooms"].items(),
+                              second_floor["rooms"].items()
+                              )
+
+      for r_id, room in all_rooms:
+         self.assertTrue("b_id" not in room)
+
+   def test_easy_sanitize_room(self):
+      self.easy_up.update_rooms(self.easy_rooms)
+
+      b = self.retrieve_test_building()
+      self.assertTrue("easyroom" in b)
+
+      first_floor    = b["easyroom"]["floors"][0]
+      second_floor   = b["easyroom"]["floors"][1]
+      all_rooms      = chain(
+                              first_floor["rooms"].items(),
+                              second_floor["rooms"].items()
+                              )
+
+      for r_id, room in all_rooms:
+         self.assertTrue("b_id" not in room)
+
+      self.assertTrue("21030#T-065" not in first_floor["rooms"])
+      self.assertTrue("21030#T-065" not in second_floor["rooms"])
+      self.assertTrue("T-065" not in first_floor["rooms"])
+      self.assertTrue("T-065" not in second_floor["rooms"])
+
+      self.assertTrue("T066" in first_floor["rooms"])
+      self.assertTrue("T066" not in second_floor["rooms"])
+
+      self.assertTrue("1066" not in first_floor["rooms"])
+      self.assertTrue("1066" in second_floor["rooms"])
