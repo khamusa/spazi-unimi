@@ -229,11 +229,10 @@ class FloorInference:
       False
       """
 
-      for floor_info in self.FLOOR_DICT:
-         patterns = floor_info[regex_key]
+      for floor_key in self.FLOOR_DICT:
+         patterns = self.FLOOR_DICT[floor_key][regex_key]
          for p in patterns:
             if( re.match(p, name.strip(), re.I) ):
-               return floor_info["id"]
+               return floor_key
 
       return False
-
