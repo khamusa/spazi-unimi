@@ -1,6 +1,8 @@
 from itertools    import chain
 from model        import Building, RoomCategory
 from utils.logger import Logger
+from datetime     import datetime
+
 class DXFDataUpdater:
 
    @staticmethod
@@ -158,11 +160,17 @@ class DXFDataUpdater:
       model itself.
       """
 
+
       new_floor = floor.to_serializable()
+      # Inseriamo le stanze non ancora identificate in unidentified_rooms
+      # la chiave rooms conterrà un dizionario di stanze identificate
+      new_floor["unidentified_rooms"]  = new_floor["rooms"]
+      new_floor["rooms"]               = {}
+      new_floor["updated_at"]          = datetime.now()
       del new_floor["b_id"]
 
       # Non vogliamo cancellare quanto c'è nel database, soltanto lo stesso floor
-      dxf         = building.attr("dxf") or {}
+      dxf         = building.get("dxf", {})
       floors      = dxf.get("floors", [])
 
       # Se il floor corrente esiste gia' nel database, vogliamo sostituirlo
@@ -170,15 +178,11 @@ class DXFDataUpdater:
          if f["f_id"] == floor.f_id:
             del floors[k]
 
-      # Inseriamo le stanze non ancora identificate in unidentified_rooms
-      # la chiave rooms conterrà un dizionario di stanze identificate
-      new_floor["unidentified_rooms"] = new_floor["rooms"]
-      new_floor["rooms"] = {}
-
       floors.append(new_floor)
 
-      dxf["floors"] = floors
-      building.attr("dxf", dxf)
+      dxf["floors"]           = floors
+      building["dxf"]         = dxf
+      building["updated_at"]  = new_floor["updated_at"]
 
       callback = lambda b: DXFDataUpdater.resolve_rooms_id(b, new_floor, source_name = None)
       building.listen_once("before_save", callback)
