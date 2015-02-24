@@ -14,7 +14,7 @@ class BuildingModelTest(unittest.TestCase):
       Building.remove_untouched_keys("edilizia", batch_date)
 
       query    = {
-         "edilizia" : {"$exists": "true"},
+         "edilizia" : {"$exists": True},
          "edilizia.updated_at" : { "$lt" : batch_date }
       }
       action   = {
@@ -28,7 +28,7 @@ class BuildingModelTest(unittest.TestCase):
       Building.remove_untouched_keys("easyroom", batch_date)
 
       query    = {
-         "easyroom" : {"$exists": "true"},
+         "easyroom" : {"$exists": True},
          "easyroom.updated_at" : { "$lt" : batch_date }
       }
       action   = {
@@ -38,7 +38,23 @@ class BuildingModelTest(unittest.TestCase):
       options  = {"multi" : True}
       self.pm.update.assert_called_once_with("building", query, action, options)
 
+   def test_remove_deleted_buildings(self):
+      Building.remove_deleted_buildings()
 
+      query    = {
+         "$or" : [
+            {
+               "edilizia" : {"$exists": False},
+               "deleted_easyroom" : True
+            },
+            {
+               "easyroom" : {"$exists": False},
+               "deleted_edilizia" : True
+            }
+         ]
+      }
+      options  = {"multi" : True}
+      self.pm.remove.assert_called_once_with("building", query, options)
 
    def tearDown(self):
       Building.set_pm(self.old_pm)

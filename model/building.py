@@ -16,7 +16,7 @@ class Building(ORMModel):
    @classmethod
    def remove_untouched_keys(klass, namespace, batch_date):
       query    = {
-         namespace : {"$exists": "true"},
+         namespace : {"$exists": True},
          namespace + ".updated_at" : { "$lt" : batch_date }
       }
       action   = {
@@ -25,5 +25,23 @@ class Building(ORMModel):
       }
       options  = {"multi" : True}
       klass._pm.update("building", query, action, options)
+
+   @classmethod
+   def remove_deleted_buildings(klass):
+      query    = {
+         "$or" : [
+            {
+               "edilizia" : {"$exists": False},
+               "deleted_easyroom" : True
+            },
+            {
+               "easyroom" : {"$exists": False},
+               "deleted_edilizia" : True
+            }
+         ]
+      }
+      options  = {"multi" : True}
+      klass._pm.remove("building", query, options)
+
 
 Building.listen("before_save", "ensure_floors_sorting")

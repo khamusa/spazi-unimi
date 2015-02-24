@@ -307,3 +307,15 @@ class DataUpdaterTest(unittest.TestCase):
       args = mock_obj.call_args_list[0][0]
       self.assertEqual(args[0], "easyroom")
       self.assertTrue( base_date <= args[1] <= datetime.now() )
+
+   def test_call_of_remove_deleted_buildings(self):
+      mock_obj    = MagicMock()
+      Building.remove_deleted_buildings = mock_obj
+
+      self.edil_up.update_buildings([self.db_building["edilizia"]])
+      mock_obj.assert_called_once_with()
+
+      mock_obj.reset_mock()
+      self.easy_up.update_buildings([self.db_building["easyroom"]])
+      mock_obj.assert_called_once_with()
+

@@ -22,4 +22,7 @@ class MongoDBPersistenceManager:
       return self.db[collection_name]
 
    def update(self, collection_name, query, action, options):
-      self.db[collection_name].update(query, action, **options)
+      return self.db[collection_name].update(query, action, **options)
+
+   def remove(self, collection_name, query, options):
+      return self.db[collection_name].remove(query, **options)

@@ -65,6 +65,7 @@ class DataUpdater():
          building.save()
 
       Building.remove_untouched_keys(namespace, batch_date)
+      Building.remove_deleted_buildings()
 
    def update_rooms(self,rooms):
       """
