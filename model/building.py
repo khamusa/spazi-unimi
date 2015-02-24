@@ -13,4 +13,17 @@ class Building(ORMModel):
          if namespace and "floors" in namespace:
             namespace["floors"].sort(key=lambda s: float(s["f_id"]))
 
+   @classmethod
+   def remove_untouched_keys(klass, namespace, batch_date):
+      query    = {
+         namespace : {"$exists": "true"},
+         namespace + ".updated_at" : { "$lt" : batch_date }
+      }
+      action   = {
+         "$unset" : {namespace : ""},
+         "$set"   : {"deleted_" + namespace : True}
+      }
+      options  = {"multi" : True}
+      klass._pm.update("building", query, action, options)
+
 Building.listen("before_save", "ensure_floors_sorting")

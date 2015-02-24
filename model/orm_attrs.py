@@ -63,6 +63,14 @@ class ORMAttrs:
       return self._attrs[key]
 
    @replace_external_key
+   def __delitem__(self, key):
+      """
+      Item deleter.
+      Just delegates attributes retrieval to native dictionary
+      """
+      del self._attrs[key]
+
+   @replace_external_key
    def __contains__(self, key):
       """
       Just delegates contains to native dictionary

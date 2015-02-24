@@ -4,7 +4,7 @@ from model.orm_model             import ORMModel
 from model.building              import Building
 from mock                        import MagicMock
 from itertools                   import chain
-
+from datetime                    import datetime, timedelta
 from tasks.dxf_data_updater      import DXFDataUpdater
 from tasks.easyroom_data_updater import EasyroomDataUpdater
 from tasks.edilizia_data_updater import EdiliziaDataUpdater
@@ -289,3 +289,21 @@ class DataUpdaterTest(unittest.TestCase):
 
       self.assertTrue("1066" not in first_floor["rooms"])
       self.assertTrue("1066" in second_floor["rooms"])
+
+   def test_call_of_remove_untouched_keys(self):
+      mock_obj    = MagicMock()
+      Building.remove_untouched_keys = mock_obj
+      base_date   = datetime.now()
+
+      self.edil_up.update_buildings([self.db_building["edilizia"]])
+      self.assertEqual(mock_obj.call_count, 1)
+      args = mock_obj.call_args_list[0][0]
+      self.assertEqual(args[0], "edilizia")
+      self.assertTrue( base_date <= args[1] <= datetime.now() )
+
+      mock_obj.reset_mock()
+      self.easy_up.update_buildings([self.db_building["easyroom"]])
+      self.assertEqual(mock_obj.call_count, 1)
+      args = mock_obj.call_args_list[0][0]
+      self.assertEqual(args[0], "easyroom")
+      self.assertTrue( base_date <= args[1] <= datetime.now() )

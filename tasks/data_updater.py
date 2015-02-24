@@ -50,6 +50,9 @@ class DataUpdater():
 
          building             = self.find_building_to_update(b)
          namespaced_attr      = building.get(namespace, {})
+         deleted_key          = "deleted_" + namespace
+         if deleted_key in building:
+            del building[deleted_key]
          namespaced_attr.update(b)
          building[namespace]  = namespaced_attr
 
@@ -60,6 +63,8 @@ class DataUpdater():
          building['updated_at']        = batch_date
          namespaced_attr["updated_at"] = batch_date
          building.save()
+
+      Building.remove_untouched_keys(namespace, batch_date)
 
    def update_rooms(self,rooms):
       """
