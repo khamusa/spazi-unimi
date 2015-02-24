@@ -291,7 +291,7 @@ class DataUpdaterTest(unittest.TestCase):
       self.assertTrue("1066" in second_floor["rooms"])
 
    def test_call_of_remove_untouched_keys(self):
-      mock_obj    = MagicMock()
+      mock_obj    = MagicMock(return_value=(0, []))
       Building.remove_untouched_keys = mock_obj
       base_date   = datetime.now()
 
@@ -309,7 +309,9 @@ class DataUpdaterTest(unittest.TestCase):
       self.assertTrue( base_date <= args[1] <= datetime.now() )
 
    def test_call_of_remove_deleted_buildings(self):
-      mock_obj    = MagicMock()
+      mock_obj    = MagicMock(return_value=(1, [ Building({"_id": "123"}) ]))
+      Building.remove_untouched_keys = mock_obj
+      mock_obj    = MagicMock(return_value=(1, [ Building({"_id": "123"}) ]))
       Building.remove_deleted_buildings = mock_obj
 
       self.edil_up.update_buildings([self.db_building["edilizia"]])

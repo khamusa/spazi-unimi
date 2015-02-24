@@ -19,7 +19,7 @@ class BuildingModelTest(unittest.TestCase):
       }
       action   = {
          "$unset" : {"edilizia" : ""},
-         "$set"   : {"deleted_edilizia" : True}
+         "$set"   : {"deleted_edilizia" : batch_date}
       }
       options  = {"multi" : True}
       self.pm.update.assert_called_once_with("building", query, action, options)
@@ -33,7 +33,7 @@ class BuildingModelTest(unittest.TestCase):
       }
       action   = {
          "$unset" : {"easyroom" : ""},
-         "$set"   : {"deleted_easyroom" : True}
+         "$set"   : {"deleted_easyroom" : batch_date}
       }
       options  = {"multi" : True}
       self.pm.update.assert_called_once_with("building", query, action, options)
@@ -45,11 +45,11 @@ class BuildingModelTest(unittest.TestCase):
          "$or" : [
             {
                "edilizia" : {"$exists": False},
-               "deleted_easyroom" : True
+               "deleted_easyroom" : { "$exists": True }
             },
             {
                "easyroom" : {"$exists": False},
-               "deleted_edilizia" : True
+               "deleted_edilizia" : { "$exists": True }
             }
          ]
       }

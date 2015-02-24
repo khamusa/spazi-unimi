@@ -64,8 +64,29 @@ class DataUpdater():
          namespaced_attr["updated_at"] = batch_date
          building.save()
 
-      Building.remove_untouched_keys(namespace, batch_date)
-      Building.remove_deleted_buildings()
+      # Make sure the current update is performed as a perfect snapshot,
+      # removing also "untouched" buildings
+      n_removed, b_removed = Building.remove_untouched_keys(namespace, batch_date)
+      b_removed            = [ b["b_id"] for b in b_removed ]
+
+      if b_removed:
+         Logger.info(
+                  n_removed,
+                  "previously existing buildings are not present",
+                  "in this snapshot:",
+                  ", ".join(b_removed)
+                  )
+
+         n_destroyed, b_destroyed   = Building.remove_deleted_buildings()
+         b_destroyed                = [ b["b_id"] for b in b_destroyed ]
+         if n_destroyed:
+            Logger.info(
+                     n_destroyed,
+                     "buildings were effectively removed from database",
+                     "since no data source affirms its existence:",
+                     ", ".join(b_destroyed)
+                     )
+
 
    def update_rooms(self,rooms):
       """
