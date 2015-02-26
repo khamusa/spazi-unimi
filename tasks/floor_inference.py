@@ -53,8 +53,8 @@ class FloorInference:
       if filename_id and cartiglio_id and (filename_id != cartiglio_id):
          with Logger.warning(
             "The floor identification issues a conflict:", filename_id,
-            "from filename suffix but", cartiglio_id, "from layer \"CARTIGLIO\"",
-            out = sys.stdout
+            "from filename suffix but", cartiglio_id,
+            "from layer \"CARTIGLIO\""
             ):
             Logger.warning("[SOLVED]", cartiglio_id, "will be used")
 
