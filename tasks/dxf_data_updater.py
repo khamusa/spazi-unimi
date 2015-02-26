@@ -77,8 +77,7 @@ class DXFDataUpdater:
             return abs( float(floor_dict["f_id"]) - float(f["f_id"]) )
          source_floors = sorted(source_floors, key=sortfunc)
 
-
-         for target_room in floor_dict["unidentified_rooms"]:
+         for i, target_room in enumerate(floor_dict["unidentified_rooms"]):
 
             possible_ids = [ r["text"].strip().lower() for r in target_room["texts"] ]
             r_id = DXFDataUpdater._find_r_id_on_source(source_floors, possible_ids)
@@ -89,7 +88,15 @@ class DXFDataUpdater:
             if r_id:
                Logger.info("Found room: ", r_id)
                floor_dict["rooms"][r_id] = target_room
-               floor_dict["unidentified_rooms"].remove(target_room)
+               # Marchiamo l'elemento corrente come "rimosso". Non lo
+               # rimuoviamo subito perché andremo ad alterare la lista su
+               # cui stiamo iterando.
+               floor_dict["unidentified_rooms"][i] = None
+
+         # "Sweep" delle stanze marcate come cancellate
+         floor_dict["unidentified_rooms"] = [
+                  r for r in floor_dict["unidentified_rooms"] if r is not None
+               ]
 
    @staticmethod
    def _find_r_id_on_source(source_floors, possible_ids):
