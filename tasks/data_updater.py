@@ -58,8 +58,9 @@ class DataUpdater():
 
          edilizia = building.get('edilizia')
          easyroom = building.get('easyroom')
+         dxf      = building.get('dxf')
 
-         building['merged']            = DataMerger.merge_building(edilizia, easyroom)
+         building['merged']            = DataMerger.merge_building(edilizia, easyroom, dxf)
          building['updated_at']        = batch_date
          namespaced_attr["updated_at"] = batch_date
          building.save()

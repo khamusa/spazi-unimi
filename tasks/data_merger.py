@@ -1,7 +1,8 @@
-from utils.logger import Logger
-from pygeocoder import Geocoder
-from pygeocoder import GeocoderError
-from utils.logger import Logger
+from utils.logger    import Logger
+from pygeocoder      import Geocoder
+from pygeocoder      import GeocoderError
+from utils.logger    import Logger
+from itertools       import chain
 import time
 
 class InvalidMergeStrategy(RuntimeError):
@@ -121,7 +122,7 @@ class DataMerger():
                return DataMerger.merge_building_address(edilizia, easyroom)
 
    @classmethod
-   def merge_building(self, edilizia=None, easyroom=None):
+   def merge_building(self, edilizia = None, easyroom = None, dxf = None):
       """Merge easyroom and edilizia data"""
 
       coordinates = DataMerger.merge_building_coordinates(edilizia, easyroom)
@@ -130,29 +131,94 @@ class DataMerger():
          "l_b_id"          : DataMerger.merge_building_l_b_id(edilizia, easyroom),
          "address"         : DataMerger.merge_building_address(edilizia, easyroom),
          "building_name"   : DataMerger.merge_building_name(edilizia, easyroom),
-         "coordinates"     : DataMerger.prepare_GeoJson_coordinates(coordinates)
-
+         "coordinates"     : DataMerger.prepare_GeoJson_coordinates(coordinates),
+         "floors"          : DataMerger.merge_floors(edilizia, easyroom, dxf)
       }
 
       return merged
 
 
    @classmethod
-   def merge_room(self, edilizia = None, easyroom = None):
+   def merge_room(klass, room1, room2):
       """Merge information of a single room"""
+      eq = room1["equipments"] or room2["equipments"] or ""
 
-      eq = (easyroom and easyroom.get("equipments", "")) or ""
-      if eq is "":
-         eq = []
-      else:
-         eq = eq.split("/")
-      return {
-         "r_id"            : (edilizia and edilizia.get("r_id", None) or easyroom["r_id"]),
-         "room_name"       : (edilizia and edilizia.get("room_name", None) or easyroom.get("room_name", "")) or "",
-         "capacity"        : (edilizia and edilizia.get("capacity", None) or easyroom.get("capacity", "")) or "",
-         "type_name"       : (edilizia and edilizia.get("type_name", "")) or "",
-         "accessibility"   : (easyroom and easyroom.get("accessibility", "")) or "",
-         "equipments"      : eq
+      result = {
+         "room_name"    : room1["room_name"]     or room2["room_name"]     or "",
+         "capacity"     : room1["capacity"]      or room2["capacity"]      or "",
+         "cat_name"     : room1["cat_name"]      or room2["cat_name"]      or "",
+         "accessibility": room1["accessibility"] or room2["accessibility"] or "",
+         "equipments"   : eq and eq.split("/")   or [],
+         "polygon"      : room1["polygon"]       or room2["polygon"]       or False,
          }
 
+      if not result["polygon"]:
+         del result["polygon"]
 
+      return result
+
+
+   @classmethod
+   def merge_floors(klass, edilizia, easyroom, dxf):
+      floors = [
+            dxf      and dxf["floors"],
+            edilizia and edilizia.get("floors"),
+            easyroom and easyroom.get("floors")
+         ]
+
+      floors = [ f for f in floors if f ]
+
+      while len(floors) >= 2:
+         result      = klass._match_and_merge_floors(floors[0], floors[1])
+         floors[0:2] = [result]
+
+      return floors and floors[0] or []
+
+
+   @classmethod
+   def _match_and_merge_floors(klass, base_floors, unmatched_floors):
+      #TODO: salvare copia originale di base_floors
+      for floor in chain(base_floors, unmatched_floors):
+         klass._prepare_room_ids_set(floor)
+
+      for unmatched in unmatched_floors:
+         klass._match_and_merge_a_floor(base_floors, unmatched)
+
+      for floor in chain(base_floors, unmatched_floors):
+         klass._remove_room_ids_set(floor)
+
+      #e adesso? esistono ancora unmatched floors con stanze?
+
+      return base_floors
+
+   @classmethod
+   def _match_and_merge_a_floor(klass, base_floors, unmatched):
+
+      for base in base_floors:
+         match = base["room_ids"].intersection(unmatched["room_ids"])
+
+         if match:
+            unmatched["room_ids"].difference_update(match)
+            merged_rooms = klass._merge_rooms_into_floor(base, unmatched, match)
+            result[""]       =
+
+   @classmethod
+   def _merge_rooms_into_floor(klass, base, unmatched, matched_rooms):
+      result = {}
+
+      for room_id in matched_rooms:
+         merged_room = klass.merge_room(
+               base["rooms"][room_id],
+               unmatched["rooms"][room_id]
+            )
+         result[room_id] = merged_room
+
+      return result
+
+   @classmethod
+   def _prepare_room_ids_set(klass, floor):
+      floor["room_ids"] = set(floor["rooms"].keys())
+
+   @classmethod
+   def _remove_room_ids_set(klass, floor):
+      del floor["room_ids"]
