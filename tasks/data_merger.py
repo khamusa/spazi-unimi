@@ -200,7 +200,7 @@ class DataMerger():
          if match:
             unmatched["room_ids"].difference_update(match)
             merged_rooms = klass._merge_rooms_into_floor(base, unmatched, match)
-            result[""]       =
+
 
    @classmethod
    def _merge_rooms_into_floor(klass, base, unmatched, matched_rooms):
@@ -222,3 +222,39 @@ class DataMerger():
    @classmethod
    def _remove_room_ids_set(klass, floor):
       del floor["room_ids"]
+
+   @classmethod
+   def _floors_copy(klass, floors):
+      return [ klass._floor_copy(floor) for floor in floors ]
+
+   @classmethod
+   def _floor_copy(klass, floor):
+      result            = {}
+      result["f_id"]    = floor["f_id"]
+      # 1- copia lista di stanze
+      final_room_keys   = [
+            "polygon",
+            "cat_name",
+            "room_name",
+            "equipments",
+            "accessibility",
+            "capacity"
+         ]
+      final_rooms_dict  = {}
+
+      for room_id in floor["rooms"]:
+         new_room = subtract_dict(floor["rooms"][room_id], final_room_keys)
+         final_rooms_dict[room_id] = new_room
+
+      result["rooms"]   = final_rooms_dict
+
+      # 2- copia lista di stanze non identificate
+      final_unidentified_rooms  = []
+
+      for room in floor["unidentified_rooms"]:
+         new_room = subtract_dict(room, final_room_keys)
+         final_unidentified_rooms.append(new_room)
+
+      result["unidentified_rooms"] = final_unidentified_rooms
+
+      return result
