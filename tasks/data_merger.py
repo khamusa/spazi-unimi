@@ -173,7 +173,19 @@ class DataMerger():
 
    @classmethod
    def _match_and_merge_a_floor(klass, base_floors, unmatched):
+      """
+      Given a list of base floors and a single unmatched floor, merge rooms
+      from the unmatched floor onto different base floors.
 
+      TODO: keep track of the mappings performed so that it can be used to match
+      rooms that do not get matched by room id.
+
+      Arguments:
+      - base_floors: a list of base floors;
+      - unmatched: a dictionary representing an unmatched floor.
+
+      Return Value: None
+      """
       for base in base_floors:
          match = base["room_ids"].intersection(unmatched["room_ids"])
 
