@@ -45,7 +45,7 @@ class FloorMergeTest(unittest.TestCase):
 
       # Mock the method to be called
       old_method                 = DataMerger._match_and_merge_a_floor
-      method_mock                = MagicMock()
+      method_mock                = MagicMock(return_value=[])
       DataMerger._match_and_merge_a_floor = method_mock
 
       # Call the main method
@@ -98,36 +98,41 @@ class FloorMergeTest(unittest.TestCase):
    def test_match_and_merge_a_floor(self):
       base_floors = [
          {
-            "room_ids" : set(["R001", "R002", "R003"])
+            "room_ids"  : set(["R001", "R002", "R003"])
          },
          {
-            "room_ids" : set(["R101", "R102", "R103"])
+            "room_ids"  : set(["1001", "1002", "1003"])
          },
          {
-            "room_ids" : set(["R201", "R202", "R203"])
+            "room_ids"  : set(["2001", "2002", "2003"])
          }
       ]
       unmatched_floor = {
-         "room_ids" : set(["R001", "R002", "R003", "R103", "R201", "R401"])
+         "room_ids" : set(["R001", "R002", "R003", "1003", "2001", "2002", "R401"])
       }
 
       old_merge_room_method              = DataMerger._merge_rooms_into_floor
       DataMerger._merge_rooms_into_floor = MagicMock()
 
-      DataMerger._match_and_merge_a_floor(base_floors, unmatched_floor)
+      mapping = DataMerger._match_and_merge_a_floor(base_floors, unmatched_floor)
+
+      # verifico la correttezza del mapping restituito
+      self.assertEqual(mapping[0], (set(["R001", "R002", "R003"]), base_floors[0]) )
+      self.assertEqual(mapping[1], (set(["2001", "2002"]),         base_floors[2]) )
+      self.assertEqual(mapping[2], (set(["1003"]),                 base_floors[1]) )
 
       # Controllo che il set di unmatched floor contenga solo la stanza che non
       # viene matchata
       self.assertEqual(unmatched_floor["room_ids"], set(["R401"]))
 
       # Controllo che merge_rooms_into_floor sia chiamato tre volte e che
-      # l'ultimo parametro paasato sia sempre il set di r_id matchati
+      # l'ultimo parametro passato sia sempre il set di r_id matchati
       self.assertEqual(DataMerger._merge_rooms_into_floor.call_count, 3)
 
       merge_rooms_args = DataMerger._merge_rooms_into_floor.call_args_list
       self.assertEqual(merge_rooms_args[0][0][2], set(["R001", "R002", "R003"]))
-      self.assertEqual(merge_rooms_args[1][0][2], set(["R103"]))
-      self.assertEqual(merge_rooms_args[2][0][2], set(["R201"]))
+      self.assertEqual(merge_rooms_args[1][0][2], set(["1003"]))
+      self.assertEqual(merge_rooms_args[2][0][2], set(["2001", "2002"]))
 
       DataMerger._merge_rooms_into_floor = old_merge_room_method
 

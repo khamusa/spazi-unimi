@@ -170,6 +170,13 @@ class DataUpdater():
                   building.listen_once("before_save", callback)
                   building["updated_at"]        = batch_date
                   namespaced_attr["updated_at"] = batch_date
+
+                  merged = building.get("merged", {})
+                  merged["floors"] = DataMerger.merge_floors(
+                     building.get("edilizia"),
+                     building.get("easyroom"),
+                     building.get("dxf")
+                  )
                   building.save()
 
                building = Building.find_or_create_by_id(b_id)

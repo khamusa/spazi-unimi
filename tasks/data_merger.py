@@ -154,18 +154,22 @@ class DataMerger():
       - a new list of floors containing the merge of all sources of information.
       """
       floors = [
-            dxf      and dxf["floors"],
-            edilizia and edilizia.get("floors"),
-            easyroom and easyroom.get("floors")
+            ("dxf",      dxf      and dxf["floors"]),
+            ("edilizia", edilizia and edilizia.get("floors")),
+            ("easyroom", easyroom and easyroom.get("floors"))
          ]
 
-      floors = [ f for f in floors if f ]
+      floors = [ f for f in floors if f[1] ]
 
       while len(floors) >= 2:
-         result      = klass._match_and_merge_floors(floors[0], floors[1])
-         floors[0:2] = [result]
+         source1, floor1 = floors[0]
+         source2, floor2 = floors[1]
 
-      return floors and floors[0] or []
+         with Logger.error_context("Merging floors: {}->{}".format(source1, source2)):
+            result      = klass._match_and_merge_floors(floor1, floor2)
+            floors[0:2] = [ (source1+"/"+source2, result) ]
+
+      return floors and floors[0][1] or []
 
 
    @classmethod
@@ -193,10 +197,28 @@ class DataMerger():
          floor["room_ids"] = set(floor["rooms"].keys())
 
       for unmatched in unmatched_floors:
-         klass._match_and_merge_a_floor(base_floors, unmatched)
+         mapping = klass._match_and_merge_a_floor(base_floors, unmatched)
+
+         if unmatched["room_ids"]:
+            with Logger.warning(
+                  "Some rooms were not directly mapped between two floors: ",
+                  unmatched["room_ids"]
+               ):
+
+               if mapping:
+                  rooms, base = mapping[0]
+                  klass._merge_rooms_into_floor(base, unmatched, unmatched["room_ids"])
+
+                  Logger.warning(
+                     "Conflict solved, rooms merged into floor ",
+                     base["f_id"]
+                  )
+               else:
+                  Logger.error("Cannot resolve, no mapping is possible for those rooms.")
 
       for floor in chain(base_floors, unmatched_floors):
          del floor["room_ids"]
+
 
       #e adesso? esistono ancora unmatched floors con stanze?
 
@@ -217,12 +239,18 @@ class DataMerger():
 
       Return Value: None
       """
+
+      mapping = []
       for base in base_floors:
          match = base["room_ids"].intersection(unmatched["room_ids"])
 
          if match:
+            mapping.append((match, base))
+
             unmatched["room_ids"].difference_update(match)
             merged_rooms = klass._merge_rooms_into_floor(base, unmatched, match)
+
+      return sorted(mapping, key=lambda s: len(s[0]), reverse=True)
 
 
    @classmethod
@@ -239,15 +267,16 @@ class DataMerger():
       - unmatched: a floor dictionary containing the rooms to be merged.
       - matched_rooms: a set containing the room ids that identifies the
       rooms from the unmatched floor to be merged onto the base floor.
-      Both floors MUST contain the rooms identified by those ids, otherwise
-      the function may cause an error.
+      The unmatched floor MUST contain the rooms identified by those ids,
+      otherwise the function may cause an error. If base floor does not contain,
+      an empty dictionary/room is used.
 
       Return Value: None
       """
 
       for room_id in matched_rooms:
          merged_room = klass.merge_room(
-               base["rooms"][room_id],
+               base["rooms"].get(room_id, {}),
                unmatched["rooms"][room_id]
             )
          base["rooms"][room_id] = merged_room

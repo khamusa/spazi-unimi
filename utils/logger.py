@@ -107,6 +107,11 @@ class Logger(metaclass = LoggerMeta):
          "color" : COLORS["BLUE"],
          "verbosity" : VERBOSITY_INFO
       },
+      "error_context" : {
+         "default_prefix" : "info",
+         "color" : COLORS["BLUE"],
+         "verbosity" : 99
+      },
       "warning" : {
          "default_prefix" : "warn",
          "color" : COLORS["YELLOW"],
