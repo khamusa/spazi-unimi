@@ -18,16 +18,7 @@ class DataMergerTest(unittest.TestCase):
               "floors" : [
                   {
                       "f_id" : "R",
-                      "rooms" : [
-                          {
-                              "capacity" : "100",
-                              "room_name" : "Aula 2",
-                              "r_id" : "R014",
-                              "type_name" : "Aula",
-                              "l_floor" : "R",
-                              "b_id" : "21030"
-                          }
-                      ]
+                      "rooms" : {}
                   }
               ]
           },
@@ -39,26 +30,7 @@ class DataMergerTest(unittest.TestCase):
               "floors" : [
                   {
                       "f_id" : "0",
-                      "rooms" : [
-                          {
-                              "capacity" : "100",
-                              "accessibility" : "0",
-                              "room_name" : "Aula 2 Ag",
-                              "r_id" : "R014",
-                              "floor" : "0",
-                              "b_id" : "21030",
-                              "equipments" : "Lavagna luminosa/Internet/Impianto audio"
-                          },
-                          {
-                              "capacity" : "40",
-                              "accessibility" : "0",
-                              "room_name" : "Aula Pellizzi",
-                              "r_id" : "R029",
-                              "floor" : "0",
-                              "b_id" : "21030",
-                              "equipments" : ""
-                          }
-                      ]
+                      "rooms" : {}
                   }
               ]
           }
