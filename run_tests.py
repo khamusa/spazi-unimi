@@ -4,9 +4,13 @@ import sys
 from os import listdir
 import re
 from colour_runner.runner import ColourTextTestRunner
+from utils.logger import Logger
 
 from tasks.data_merger import DataMerger
 DataMerger.skip_geocoding = True
+
+
+Logger.verbosity = 0
 
 if(len(sys.argv) == 1):
    files_list = listdir('test')
