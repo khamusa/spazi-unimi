@@ -79,6 +79,10 @@ class FloorMergeTest(unittest.TestCase):
             "R003" : {}
          }
       }
+
+      old_r01 = base_floor["rooms"]["R001"]
+      old_r02 = base_floor["rooms"]["R002"]
+
       DataMerger._merge_rooms_into_floor(
          base_floor,
          unmatched_floor,
@@ -92,9 +96,12 @@ class FloorMergeTest(unittest.TestCase):
       r01 = base_floor["rooms"]["R001"]
       r02 = base_floor["rooms"]["R002"]
 
+      self.assertFalse(r01 is old_r01)
+      self.assertFalse(r02 is old_r02)
+
       # Ensure priority has been kept on a per-attribute basis
-      self.assertEqual(r01["cat_name"], "Aula")
-      self.assertEqual(r01["room_name"], "Aula 01")
+      self.assertEqual(r01["cat_name"], old_r01["cat_name"])
+      self.assertEqual(r01["room_name"], old_r01["room_name"])
       self.assertEqual(r02["cat_name"], "Aula Nuova")
       self.assertEqual(r02["capacity"], "22")
 
