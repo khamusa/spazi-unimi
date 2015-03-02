@@ -184,16 +184,30 @@ class DataMerger():
 
    @classmethod
    def _merge_rooms_into_floor(klass, base, unmatched, matched_rooms):
-      result = {}
+      """
+      Given two floors (base, unmatched) and a set of room ids (matched_rooms),
+      merge the rooms indicated by the set from the unmatched floor into the
+      base floor.
+
+      The changes will be performed in place in the base floor.
+
+      Arguments
+      - base: a floor dictionary onto which merged rooms will be placed.
+      - unmatched: a floor dictionary containing the rooms to be merged.
+      - matched_rooms: a set containing the room ids that identifies the
+      rooms from the unmatched floor to be merged onto the base floor.
+      Both floors MUST contain the rooms identified by those ids, otherwise
+      the function may cause an error.
+
+      Return Value: None
+      """
 
       for room_id in matched_rooms:
          merged_room = klass.merge_room(
                base["rooms"][room_id],
                unmatched["rooms"][room_id]
             )
-         result[room_id] = merged_room
-
-      return result
+         base["rooms"][room_id] = merged_room
 
    @classmethod
    def merge_room(klass, room1, room2):

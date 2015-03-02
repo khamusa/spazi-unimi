@@ -1,9 +1,10 @@
 import unittest
-from tasks.data_merger import DataMerger
+from tasks.data_merger  import DataMerger
+from mock               import MagicMock
 
 class FloorMergeTest(unittest.TestCase):
-   def test_floor_copy(self):
-      floor       = {
+   def setUp(self):
+      self.floor = {
             "f_id"  : "1",
             "rooms" : {
                "R001" : {
@@ -28,6 +29,8 @@ class FloorMergeTest(unittest.TestCase):
             ]
          }
 
+   def test_floor_copy(self):
+      floor = self.floor
       copy_floor  = DataMerger._floor_copy(floor)
 
       # Il floor restituito deve essere una copia e avere stesso f_id
@@ -58,6 +61,53 @@ class FloorMergeTest(unittest.TestCase):
       self.assertTrue("pippo" not in unidentified_copy1)
       self.assertTrue("pluto" not in unidentified_copy1)
 
+
+   def test_merge_specified_rooms_from_two_floors_into_one(self):
+      base_floor                    = self.floor
+      base_floor["rooms"]["R002"]   = {}
+      unmatched_floor   = {
+         "f_id"  : "333",
+         "rooms" : {
+            "R001" : {
+               "cat_name"     : "Pippo",
+               "room_name"    : "Aula 777"
+            },
+            "R002" : {
+               "cat_name"     : "Aula Nuova",
+               "capacity"     : "22"
+            },
+            "R003" : {}
+         }
+      }
+      DataMerger._merge_rooms_into_floor(
+         base_floor,
+         unmatched_floor,
+         set(["R001", "R002"])
+      )
+      self.assertEqual(base_floor["f_id"], "1")
+      self.assertTrue("R001" in base_floor["rooms"])
+      self.assertTrue("R002" in base_floor["rooms"])
+      self.assertFalse("R003" in base_floor["rooms"])
+
+      r01 = base_floor["rooms"]["R001"]
+      r02 = base_floor["rooms"]["R002"]
+
+      # Ensure priority has been kept on a per-attribute basis
+      self.assertEqual(r01["cat_name"], "Aula")
+      self.assertEqual(r01["room_name"], "Aula 01")
+      self.assertEqual(r02["cat_name"], "Aula Nuova")
+      self.assertEqual(r02["capacity"], "22")
+
+      old_merge_room_method = DataMerger.merge_room
+      DataMerger.merge_room = MagicMock()
+      DataMerger._merge_rooms_into_floor(
+         base_floor,
+         unmatched_floor,
+         set(["R001", "R002"])
+      )
+
+      self.assertEqual(DataMerger.merge_room.call_count, 2)
+      DataMerger.merge_room = old_merge_room_method
 
    def test_merge_room(self):
 
