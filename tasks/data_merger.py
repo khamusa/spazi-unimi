@@ -253,7 +253,9 @@ class DataMerger():
       Returns:
       - a new room dictionary obtained by merging together room1 and room2.
       """
-      eq = room1.get("equipments") or room2.get("equipments", "")
+      eq = room1.get("equipments") or room2.get("equipments")
+      if getattr(eq, "split", None):
+         eq = eq.split("/")
 
       result = {
          "room_name"    : room1.get("room_name")     or room2.get("room_name", ""),
@@ -261,7 +263,7 @@ class DataMerger():
          "cat_name"     : room1.get("cat_name")      or room2.get("cat_name", ""),
          "accessibility": room1.get("accessibility") or room2.get("accessibility", ""),
          "polygon"      : room1.get("polygon")       or room2.get("polygon", False),
-         "equipments"   : eq and eq.split("/")       or []
+         "equipments"   : eq                         or []
          }
 
       if result["polygon"] is False:
