@@ -180,13 +180,13 @@ class DataMerger():
    def _match_and_merge_floors(klass, base_floors, unmatched_floors):
       #TODO: salvare copia originale di base_floors
       for floor in chain(base_floors, unmatched_floors):
-         klass._prepare_room_ids_set(floor)
+         floor["room_ids"] = set(floor["rooms"].keys())
 
       for unmatched in unmatched_floors:
          klass._match_and_merge_a_floor(base_floors, unmatched)
 
       for floor in chain(base_floors, unmatched_floors):
-         klass._remove_room_ids_set(floor)
+         del floor["room_ids"]
 
       #e adesso? esistono ancora unmatched floors con stanze?
 
@@ -215,14 +215,6 @@ class DataMerger():
          result[room_id] = merged_room
 
       return result
-
-   @classmethod
-   def _prepare_room_ids_set(klass, floor):
-      floor["room_ids"] = set(floor["rooms"].keys())
-
-   @classmethod
-   def _remove_room_ids_set(klass, floor):
-      del floor["room_ids"]
 
    @classmethod
    def _floors_copy(klass, floors):
