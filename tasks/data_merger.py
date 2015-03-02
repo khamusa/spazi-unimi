@@ -140,6 +140,19 @@ class DataMerger():
 
    @classmethod
    def merge_floors(klass, edilizia, easyroom, dxf):
+      """
+      Merge floors information from the three supplied sources.
+
+      Merging happens giving priority for dxf, edilizia and lastly easyroom.
+
+      Arguments:
+      - edilizia: a dictionary representing a building information from edilizia;
+      - easyroom: a dictionary representing a building information from easyroom;
+      - dxf: a dictionary representing a building information from dxf.
+
+      Return Value:
+      - a new list of floors containing the merge of all sources of information.
+      """
       floors = [
             dxf      and dxf["floors"],
             edilizia and edilizia.get("floors"),
