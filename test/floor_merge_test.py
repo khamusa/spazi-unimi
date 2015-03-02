@@ -29,6 +29,40 @@ class FloorMergeTest(unittest.TestCase):
             ]
          }
 
+   def test_match_and_merge_floors_returns_copy(self):
+      base_floors = [self.floor, self.floor]
+
+      merged_floors = DataMerger._match_and_merge_floors(base_floors, [])
+
+      self.assertFalse(merged_floors is base_floors)
+      self.assertFalse(merged_floors[0] is base_floors[0])
+      self.assertFalse(merged_floors[1] is base_floors[1])
+
+   def test_match_and_merge_floors_calls_match_and_merge_a_floor(self):
+      # call arguments
+      base_floors                = [self.floor, self.floor]
+      unmatched_floors           = [MagicMock(), MagicMock(), MagicMock()]
+
+      # Mock the method to be called
+      old_method                 = DataMerger._match_and_merge_a_floor
+      method_mock                = MagicMock()
+      DataMerger._match_and_merge_a_floor = method_mock
+
+      # Call the main method
+      merged_floors = DataMerger._match_and_merge_floors(
+         base_floors,
+         unmatched_floors
+      )
+
+      # Ensure sub-method has been called
+      self.assertEqual(method_mock.call_count, 3)
+      self.assertEqual(method_mock.call_args_list[0][0][1], unmatched_floors[0])
+      self.assertEqual(method_mock.call_args_list[1][0][1], unmatched_floors[1])
+      self.assertEqual(method_mock.call_args_list[2][0][1], unmatched_floors[2])
+
+      # Teardown, resetting original tested method
+      DataMerger._match_and_merge_a_floor = old_method
+
    def test_floor_copy(self):
       floor = self.floor
       copy_floor  = DataMerger._floor_copy(floor)

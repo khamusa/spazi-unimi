@@ -157,7 +157,25 @@ class DataMerger():
 
    @classmethod
    def _match_and_merge_floors(klass, base_floors, unmatched_floors):
-      #TODO: salvare copia originale di base_floors
+      """
+      Given a list of base floors, and a list of unmatched floors,
+      analyze each unmatched floor trying to associate its rooms
+      to base floors rooms.
+
+      TODO: decide what to do in the end if there are still unmatched floors
+      with rooms
+
+      Arguments:
+      - base_floors: a list of dictionaries representing floors
+      - unmatched_floors: a list of dictionaries representing floors
+        which will be merged onto base_floors.
+
+      Return value: a new list of new floors, representing the result
+      of the merge operation.
+      """
+      # Ensure we work on a COPY of base floors.
+      base_floors = [ klass._floor_copy(f) for f in base_floors ]
+
       for floor in chain(base_floors, unmatched_floors):
          floor["room_ids"] = set(floor["rooms"].keys())
 
@@ -250,10 +268,6 @@ class DataMerger():
          del result["polygon"]
 
       return result
-
-   @classmethod
-   def _floors_copy(klass, floors):
-      return [ klass._floor_copy(floor) for floor in floors ]
 
    @classmethod
    def _floor_copy(klass, floor):
