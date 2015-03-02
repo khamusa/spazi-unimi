@@ -222,9 +222,28 @@ class DataMerger():
 
    @classmethod
    def _floor_copy(klass, floor):
-      result            = {}
-      result["f_id"]    = floor["f_id"]
-      # 1- copia lista di stanze
+      """
+      Given a floor, perform a pseudo-deep copy, filtering unnecessary keys
+      for floor merging.
+
+      For pseudo-deep we mean that fields in the dictionary are copied on a
+      per-case basis. In particular, rooms are merged together into a new
+      room object, so that further processing algorithms won't change the
+      original ones.
+
+      Arguments:
+      - floor: a dictionary containing a floor information
+
+      Return Value: a new foor object that copies information from the original
+      floor, ignoring however unused keys.
+      """
+      result                        = {}
+      result["f_id"]                = floor["f_id"]
+      result["rooms"]               = {}
+      result["unidentified_rooms"]  = []
+
+      # 1 - copia lista di stanze, creando copie e lasciando soltanto le
+      #     chiavi necessarie per il merging.
       final_room_keys   = [
             "polygon",
             "cat_name",
@@ -233,21 +252,14 @@ class DataMerger():
             "accessibility",
             "capacity"
          ]
-      final_rooms_dict  = {}
 
-      for room_id in floor["rooms"]:
-         new_room = subtract_dict(floor["rooms"][room_id], final_room_keys)
-         final_rooms_dict[room_id] = new_room
+      for room_id, room in floor.get("rooms", {}).items():
+         result["rooms"][room_id] = subtract_dict(room, final_room_keys)
 
-      result["rooms"]   = final_rooms_dict
-
-      # 2- copia lista di stanze non identificate
-      final_unidentified_rooms  = []
-
-      for room in floor["unidentified_rooms"]:
+      # 2- copia lista di stanze non identificate, creando copie e lasciando
+      #    soltanto le chiavi necessarie per il merging.
+      for room in floor.get("unidentified_rooms", []):
          new_room = subtract_dict(room, final_room_keys)
-         final_unidentified_rooms.append(new_room)
-
-      result["unidentified_rooms"] = final_unidentified_rooms
+         result["unidentified_rooms"].append(new_room)
 
       return result
