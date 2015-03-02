@@ -42,28 +42,36 @@ class DataUpdater():
       batch_date  = datetime.now()
 
       for b in buildings:
-         b_id = b.get("b_id", "")
+         b_id     = b.get("b_id", "")
+         l_b_id   = b.get("l_b_id", "")
 
-         if not self._is_valid_b_id(b_id):
-            Logger.warning("Invalid building ID: \"{}\"".format(b_id))
-            continue
+         message = ["Processing building"]
+         if b_id:
+            message.append("BID: {}".format(b_id))
+         if l_b_id:
+            message.append("L_BID: {}".format(l_b_id))
 
-         building             = self.find_building_to_update(b)
-         namespaced_attr      = building.get(namespace, {})
-         deleted_key          = "deleted_" + namespace
-         if deleted_key in building:
-            del building[deleted_key]
-         namespaced_attr.update(b)
-         building[namespace]  = namespaced_attr
+         with Logger.info(" ".join(message)):
+            if not self._is_valid_b_id(b_id):
+               Logger.warning("Invalid building ID: \"{}\"".format(b_id))
+               continue
 
-         edilizia = building.get('edilizia')
-         easyroom = building.get('easyroom')
-         dxf      = building.get('dxf')
+            building             = self.find_building_to_update(b)
+            namespaced_attr      = building.get(namespace, {})
+            deleted_key          = "deleted_" + namespace
+            if deleted_key in building:
+               del building[deleted_key]
+            namespaced_attr.update(b)
+            building[namespace]  = namespaced_attr
 
-         building['merged']            = DataMerger.merge_building(edilizia, easyroom, dxf)
-         building['updated_at']        = batch_date
-         namespaced_attr["updated_at"] = batch_date
-         building.save()
+            edilizia = building.get('edilizia')
+            easyroom = building.get('easyroom')
+            dxf      = building.get('dxf')
+
+            building['merged']            = DataMerger.merge_building(edilizia, easyroom, dxf)
+            building['updated_at']        = batch_date
+            namespaced_attr["updated_at"] = batch_date
+            building.save()
 
       # Make sure the current update is performed as a perfect snapshot,
       # removing also "untouched" buildings
