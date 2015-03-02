@@ -57,3 +57,66 @@ class FloorMergeTest(unittest.TestCase):
       self.assertEqual(unidentified1["cat_name"], unidentified_copy1["cat_name"])
       self.assertTrue("pippo" not in unidentified_copy1)
       self.assertTrue("pluto" not in unidentified_copy1)
+
+
+   def test_merge_room(self):
+
+      dxf_room = {
+         "cat_name"     : "Aula",
+         "polygon"      : {
+            "anchor_point" : [],
+            "points"       : []
+         },
+         "texts"        : []
+      }
+
+      edil_room = {
+         "room_name"    : "Aula 01 ed",
+         "capacity"     : "44",
+         "cat_name"     : "Aula Edil",
+         "l_floor"      :"T"
+      }
+
+      easy_room = {
+         "room_name"    : "Aula 01 easy",
+         "capacity"     : "45",
+         "accessibility": True,
+         "equipments"   : "PC/Lavagna/Wi-fi",
+         "l_floor"      : "T"
+      }
+
+      # Test del merge di una stanza dxf e di un edilizia
+      result = DataMerger.merge_room(dxf_room, edil_room)
+
+      self.assertEqual(result["room_name"], edil_room["room_name"])
+      self.assertEqual(result["capacity"], edil_room["capacity"])
+      self.assertEqual(result["cat_name"], dxf_room["cat_name"])
+      self.assertEqual(result["accessibility"], "")
+      self.assertEqual(result["equipments"], [])
+      self.assertEqual(result["polygon"], dxf_room["polygon"])
+      self.assertFalse("texts" in result)
+      self.assertFalse("l_floor" in result)
+
+      # Test del merge di una stanza dxf e di un easyroom
+      result = DataMerger.merge_room(dxf_room, easy_room)
+
+      self.assertEqual(result["room_name"], easy_room["room_name"])
+      self.assertEqual(result["capacity"], easy_room["capacity"])
+      self.assertEqual(result["cat_name"], dxf_room["cat_name"])
+      self.assertEqual(result["accessibility"], easy_room["accessibility"])
+      self.assertEqual(result["equipments"], easy_room["equipments"].split("/"))
+      self.assertEqual(result["polygon"], dxf_room["polygon"])
+      self.assertFalse("texts" in result)
+      self.assertFalse("l_floor" in result)
+
+      # Test del merge di una stanza edilizia e di un easyroom
+      result = DataMerger.merge_room(edil_room, easy_room)
+
+      self.assertEqual(result["room_name"], edil_room["room_name"])
+      self.assertEqual(result["capacity"], edil_room["capacity"])
+      self.assertEqual(result["cat_name"], edil_room["cat_name"])
+      self.assertEqual(result["accessibility"], easy_room["accessibility"])
+      self.assertEqual(result["equipments"], easy_room["equipments"].split("/"))
+      self.assertFalse("polygon" in result)
+      self.assertFalse("texts" in result)
+      self.assertFalse("l_floor" in result)

@@ -138,27 +138,6 @@ class DataMerger():
 
       return merged
 
-
-   @classmethod
-   def merge_room(klass, room1, room2):
-      """Merge information of a single room"""
-      eq = room1["equipments"] or room2["equipments"] or ""
-
-      result = {
-         "room_name"    : room1["room_name"]     or room2["room_name"]     or "",
-         "capacity"     : room1["capacity"]      or room2["capacity"]      or "",
-         "cat_name"     : room1["cat_name"]      or room2["cat_name"]      or "",
-         "accessibility": room1["accessibility"] or room2["accessibility"] or "",
-         "equipments"   : eq and eq.split("/")   or [],
-         "polygon"      : room1["polygon"]       or room2["polygon"]       or False,
-         }
-
-      if not result["polygon"]:
-         del result["polygon"]
-
-      return result
-
-
    @classmethod
    def merge_floors(klass, edilizia, easyroom, dxf):
       floors = [
@@ -213,6 +192,36 @@ class DataMerger():
                unmatched["rooms"][room_id]
             )
          result[room_id] = merged_room
+
+      return result
+
+   @classmethod
+   def merge_room(klass, room1, room2):
+      """
+      Merge information of a single room by 2 generic room dictionaries.
+
+      room1 attributes have higher priority compared to room2
+
+      Arguments:
+      - room1: room dictionary information;
+      - room2: second room dictionary.
+
+      Returns:
+      - a new room dictionary obtained by merging together room1 and room2.
+      """
+      eq = room1.get("equipments") or room2.get("equipments", "")
+
+      result = {
+         "room_name"    : room1.get("room_name")     or room2.get("room_name", ""),
+         "capacity"     : room1.get("capacity")      or room2.get("capacity", ""),
+         "cat_name"     : room1.get("cat_name")      or room2.get("cat_name", ""),
+         "accessibility": room1.get("accessibility") or room2.get("accessibility", ""),
+         "polygon"      : room1.get("polygon")       or room2.get("polygon", False),
+         "equipments"   : eq and eq.split("/")       or []
+         }
+
+      if result["polygon"] is False:
+         del result["polygon"]
 
       return result
 
