@@ -43,7 +43,8 @@ class DXFDataUpdater:
                   categorized_rooms += 1
                   target_room["cat_name"] = cats[target_text["text"].upper()]
 
-      Logger.info(categorized_rooms, "rooms were categorized")
+      if categorized_rooms:
+         Logger.info(categorized_rooms, "rooms were categorized")
 
    @staticmethod
    def resolve_rooms_id(building, floor_dict = None, source_name = None):
