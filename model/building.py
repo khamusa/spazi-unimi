@@ -1,4 +1,5 @@
 from . import ORMModel
+from tasks.data_merger        import DataMerger
 
 class Building(ORMModel):
 
@@ -28,6 +29,16 @@ class Building(ORMModel):
       ]
 
       return " ".join(my_str)
+
+   def merge_floors(self):
+      # Ensure floor merging is performed AFTER
+      merged            = self.get("merged", {})
+      merged["floors"]  = DataMerger.merge_floors(
+         self.get("edilizia"),
+         self.get("easyroom"),
+         self.get("dxf")
+      )
+      self["merged"]    = merged
 
    def ensure_floors_sorting(self):
       # Ordina l'array "floors" all'interno dei dizionari dxf, edilizia e easyroom
