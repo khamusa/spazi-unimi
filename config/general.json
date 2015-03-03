@@ -31,7 +31,7 @@
    "csv_headers" : {
       "edilizia":{
          "buildings"          : ["l_b_id", "b_id", "address", "lat", "lon"],
-         "rooms"              : ["r_id", "b_id", "room_name", "capacity", "l_floor", "type_name"],
+         "rooms"              : ["r_id", "b_id", "room_name", "capacity", "l_floor", "cat_name"],
          "room_categories"    : ["cat_id", "cat_name"]
       },
       "easyroom":{

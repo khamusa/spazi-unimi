@@ -45,7 +45,7 @@ class DataUpdaterTest(unittest.TestCase):
       self.edil_rooms = [
          {
             'room_name' : 'Aula Seminari',
-            'type_name' : 'Aula',
+            'cat_name' : 'Aula',
             'r_id'      : 'T-065',
             'b_id'      : '21030',
             'capacity'  : '52',
@@ -53,7 +53,7 @@ class DataUpdaterTest(unittest.TestCase):
          },
          {
             'room_name' : 'Aula Pippo',
-            'type_name' : 'Aula',
+            'cat_name' : 'Aula',
             'r_id'      : 'T066',
             'b_id'      : '21030',
             'capacity'  : '52',
@@ -61,7 +61,7 @@ class DataUpdaterTest(unittest.TestCase):
          },
          {
             'room_name' : 'Aula Pippo Sdentato',
-            'type_name' : 'Aula',
+            'cat_name' : 'Aula',
             'r_id'      : '1066',
             'b_id'      : '21030',
             'capacity'  : '52',
@@ -72,7 +72,7 @@ class DataUpdaterTest(unittest.TestCase):
       self.easy_rooms = [
          {
             'room_name' : 'Aula Seminari',
-            'type_name' : 'Aula',
+            'cat_name' : 'Aula',
             'r_id'      : '21030#T-065',
             'b_id'      : '21030',
             'capacity'  : '52',
@@ -80,7 +80,7 @@ class DataUpdaterTest(unittest.TestCase):
          },
          {
             'room_name' : 'Aula Pippo',
-            'type_name' : 'Aula',
+            'cat_name' : 'Aula',
             'r_id'      : '21030#T066',
             'b_id'      : '21030',
             'capacity'  : '52',
@@ -88,7 +88,7 @@ class DataUpdaterTest(unittest.TestCase):
          },
          {
             'room_name' : 'Aula Pippo Sdentato',
-            'type_name' : 'Aula',
+            'cat_name' : 'Aula',
             'r_id'      : '21030#1066',
             'b_id'      : '21030',
             'capacity'  : '52',

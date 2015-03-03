@@ -109,7 +109,7 @@ class DataUpdater():
       Example of a room retrieved from an Edilizia csv file:
       {
          'room_name' : 'Aula Seminari',
-         'type_name' : 'Aula',
+         'cat_name' : 'Aula',
          'r_id'      : 'T065',
          'b_id'      : '11010',
          'capacity'  : '52',
