@@ -162,7 +162,7 @@ class DataUpdater():
          building["updated_at"]        = batch_date
          namespaced_attr["updated_at"] = batch_date
 
-         with Logger.info("Processing building {}".format(b_id)):
+         with Logger.info("Processing", str(building)):
 
             # Raggruppiamo le stanze per floor_id
             floor_and_rooms = itertools.groupby(floor_and_rooms, key=lambda s: s[floor_key])
@@ -173,7 +173,12 @@ class DataUpdater():
                # Controlliamo di avere almeno un floor id valido
                f_id = self.sanitize_floor_id(f_id)
                if not f_id :
-                  Logger.warning("Empty floor id in building. {} rooms discarded".format(len(list(floor_rooms))))
+                  rooms = [ r["r_id"] for r in floor_rooms ]
+                  Logger.warning(
+                     "Empty floor id in building.",
+                     len(rooms), "rooms discarded:",
+                     ", ".join(rooms)
+                     )
                   continue
 
                with Logger.error_context("Processing floor {}".format(f_id)):
