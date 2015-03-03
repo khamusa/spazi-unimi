@@ -5,6 +5,30 @@ class Building(ORMModel):
    def __init__(self, new_attrs = None):
       super().__init__(new_attrs, external_id = "b_id")
 
+   def __str__(self):
+      b_id     = self.get("b_id", "?")
+      merged   = self.get("merged")
+      l_b_id   = (
+               self.get("l_b_id") or
+               merged and merged.get("l_b_id") or
+               self.get("edilizia") and self.get("edilizia").get("l_b_id") or
+               "?"
+               )
+      name     = (
+               merged and merged.get("building_name") or
+               self.get("easyroom") and
+               self.get("easyroom").get("building_name") or
+               ""
+               )
+      name = name and "("+name+")"
+      my_str   = [
+         "Building Id: " + b_id,
+         "Legacy id: " + l_b_id,
+         name
+      ]
+
+      return " ".join(my_str)
+
    def ensure_floors_sorting(self):
       # Ordina l'array "floors" all'interno dei dizionari dxf, edilizia e easyroom
       for k in ["dxf", "easyroom", "edilizia"]:
