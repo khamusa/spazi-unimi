@@ -1,7 +1,8 @@
 import re
-from .data_updater import DataUpdater
+from .building_data_updater   import BuildingDataUpdater
+from .room_data_updater       import RoomDataUpdater
 
-class EasyroomDataUpdater(DataUpdater):
+class EasyroomDataUpdater(BuildingDataUpdater, RoomDataUpdater):
    """
    Responsible for handling data updates from source "Edilizia"
    """

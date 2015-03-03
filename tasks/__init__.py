@@ -1,5 +1,6 @@
 from .task                    import Task,FileUpdateException
-from .data_updater            import DataUpdater
+from .building_data_updater   import BuildingDataUpdater
+from .room_data_updater       import RoomDataUpdater
 from .dxf_data_updater        import DXFDataUpdater
 from .edilizia_data_updater   import EdiliziaDataUpdater
 from .easyroom_data_updater   import EasyroomDataUpdater
@@ -13,7 +14,8 @@ __all__ = [
             "DXFTask",
             "DXFDataUpdater",
             "DataMerger",
-            "DataUpdater",
+            "BuildingDataUpdater",
+            "RoomDataUpdater",
             "EdiliziaDataUpdater",
             "EasyroomDataUpdater",
             "FileUpdateException"

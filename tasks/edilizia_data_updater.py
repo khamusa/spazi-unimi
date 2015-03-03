@@ -1,11 +1,12 @@
 import re
 from model                    import RoomCategory
-from .data_updater            import DataUpdater
+from .building_data_updater   import BuildingDataUpdater
+from .room_data_updater       import RoomDataUpdater
 from .floor_inference         import FloorInference
 from model.building           import Building
 from tasks.dxf_data_updater   import DXFDataUpdater
 
-class EdiliziaDataUpdater(DataUpdater):
+class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
    """
    Responsible for handling data updates from source "Edilizia"
    """
