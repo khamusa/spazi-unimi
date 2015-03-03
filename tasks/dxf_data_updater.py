@@ -20,6 +20,7 @@ class DXFDataUpdater:
 
       Returns None, updates are performed directly on the dxf rooms.
       """
+      categorized_rooms = 0
       target_floors = (
                   floor_dict and [floor_dict] or
                   building.attr("dxf") and building.attr("dxf")["floors"] or
@@ -39,8 +40,10 @@ class DXFDataUpdater:
 
             for target_text in target_room["texts"]:
                if target_text["text"].upper() in cats:
+                  categorized_rooms += 1
                   target_room["cat_name"] = cats[target_text["text"].upper()]
 
+      Logger.info(categorized_rooms, "rooms were categorized")
 
    @staticmethod
    def resolve_rooms_id(building, floor_dict = None, source_name = None):
@@ -62,6 +65,7 @@ class DXFDataUpdater:
       - None, associations are made directly on the floor_dict dictionary items.
 
       """
+      identified_rooms = set()
       target_floors = (
                   floor_dict and [floor_dict] or
                   building.attr("dxf") and building.attr("dxf")["floors"] or
@@ -86,7 +90,7 @@ class DXFDataUpdater:
             # rooms con r_id come chiave e rimuovo la stanza da
             # unidentified_rooms
             if r_id:
-               Logger.info("Found room: ", r_id)
+               identified_rooms.add(r_id)
                floor_dict["rooms"][r_id] = target_room
                # Marchiamo l'elemento corrente come "rimosso". Non lo
                # rimuoviamo subito perché andremo ad alterare la lista su
@@ -97,6 +101,12 @@ class DXFDataUpdater:
          floor_dict["unidentified_rooms"] = [
                   r for r in floor_dict["unidentified_rooms"] if r is not None
                ]
+
+      if identified_rooms:
+         Logger.info(
+            "The following rooms have been identified:",
+            ", ".join(identified_rooms)
+            )
 
    @staticmethod
    def _find_r_id_on_source(source_floors, possible_ids):
@@ -191,10 +201,16 @@ class DXFDataUpdater:
       building["dxf"]         = dxf
       building["updated_at"]  = new_floor["updated_at"]
 
-      callback = lambda b: DXFDataUpdater.resolve_rooms_id(b, new_floor, source_name = None)
-      building.listen_once("before_save", callback)
+      with Logger.info("Floor", new_floor["f_id"], "for", str(building)):
+         Logger.info("Total rooms found:", len(new_floor["unidentified_rooms"]))
+         callback = lambda b: DXFDataUpdater.resolve_rooms_id(
+            b,
+            new_floor,
+            source_name = None
+         )
+         building.listen_once("before_save", callback)
 
-      callback = lambda b: DXFDataUpdater.resolve_room_categories(b, new_floor)
-      building.listen_once("before_save", callback)
+         callback = lambda b: DXFDataUpdater.resolve_room_categories(b, new_floor)
+         building.listen_once("before_save", callback)
 
-      building.save()
+         building.save()
