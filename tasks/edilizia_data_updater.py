@@ -59,15 +59,6 @@ class EdiliziaDataUpdater(DataUpdater):
       """
       return b_id and re.match("\d+", b_id)
 
-   def get_floor_key(self):
-      """
-      Returns a string representing the key to be used as floor identifier by
-      this data source.
-
-      Hook method used by parent DataUpdater class
-      """
-      return "l_floor"
-
    def sanitize_floor_id(self, l_floor):
       """
       Intended to clean up floor_ids before insertion on database.

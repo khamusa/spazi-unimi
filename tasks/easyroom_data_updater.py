@@ -39,15 +39,6 @@ class EasyroomDataUpdater(DataUpdater):
       """
       return b_id and re.match("^\d\d\d\d\d$", b_id)
 
-   def get_floor_key(self):
-      """
-      Returns a string representing the key to be used as floor identifier by
-      this data source.
-
-      Hook method used by parent DataUpdater class
-      """
-      return "l_floor"
-
    def sanitize_room(self, room):
       """
       Sanitizes a room ensuring it is valid and correctly formatted.

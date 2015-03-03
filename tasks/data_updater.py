@@ -132,10 +132,9 @@ class DataUpdater():
       for each updated floor.
       """
       namespace = self.get_namespace() # che sorgente dati stiamo aggiornando?
-      floor_key = self.get_floor_key() #
 
       # ordiniamo le stanze per edificio e per piano in modo da velocizzare l'algoritmo
-      keyfunc           = lambda s: (s["b_id"], s[floor_key])
+      keyfunc           = lambda s: (s["b_id"], s["l_floor"])
       rooms.sort(key=keyfunc)
 
       # raggruppiamo le stanze per building_id
@@ -165,7 +164,7 @@ class DataUpdater():
          with Logger.info("Processing", str(building)):
 
             # Raggruppiamo le stanze per floor_id
-            floor_and_rooms = itertools.groupby(floor_and_rooms, key=lambda s: s[floor_key])
+            floor_and_rooms = itertools.groupby(floor_and_rooms, key=lambda s: s["l_floor"])
 
             # cicliamo su un floor alla volta
             for (f_id, floor_rooms) in floor_and_rooms:
