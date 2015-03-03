@@ -45,25 +45,23 @@ class DataUpdater():
          b_id     = b.get("b_id", "")
          l_b_id   = b.get("l_b_id", "")
 
-         message = ["Processing building"]
-         if b_id:
-            message.append("BID: {}".format(b_id))
-         if l_b_id:
-            message.append("L_BID: {}".format(l_b_id))
-
-         with Logger.info(" ".join(message)):
-            if not self._is_valid_b_id(b_id):
-               Logger.warning("Invalid building ID: \"{}\"".format(b_id))
+         if not self._is_valid_b_id(b_id):
+               Logger.warning(
+                  "Invalid building Id:", b_id,
+                  "- legacy id:", l_b_id or "?"
+                  )
                continue
 
-            building             = self.find_building_to_update(b)
-            namespaced_attr      = building.get(namespace, {})
-            deleted_key          = "deleted_" + namespace
-            if deleted_key in building:
-               del building[deleted_key]
-            namespaced_attr.update(b)
-            building[namespace]  = namespaced_attr
+         building             = self.find_building_to_update(b)
+         namespaced_attr      = building.get(namespace, {})
+         building[namespace]  = namespaced_attr
+         namespaced_attr.update(b)
 
+         deleted_key = "deleted_" + namespace
+         if deleted_key in building:
+            del building[deleted_key]
+
+         with Logger.info("Processing "+str(building)):
             edilizia = building.get('edilizia')
             easyroom = building.get('easyroom')
             dxf      = building.get('dxf')
