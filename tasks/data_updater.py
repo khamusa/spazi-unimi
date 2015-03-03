@@ -132,70 +132,67 @@ class DataUpdater():
       keyfunc           = lambda s: (s["b_id"], s[floor_key])
       rooms.sort(key=keyfunc)
 
-      # raggruppiamo le stanze per building_id e floor_id
-      rooms             = itertools.groupby(rooms, key=keyfunc)
-
-      # inizialmente non abbiamo un building su cui stiamo lavorando
-      building          = None
+      # raggruppiamo le stanze per building_id
+      rooms             = itertools.groupby(rooms, key=lambda s: s["b_id"])
 
       # data di aggiornamento comune a tutti i palazzi
       batch_date        = datetime.now()
 
-      for ((b_id, f_id), floor_rooms) in rooms:
+      for (b_id, floor_and_rooms) in rooms:
 
-         with Logger.info("Processing building {}, floor {}".format(b_id, f_id)):
+         if not self._is_valid_b_id(b_id):
+            Logger.warning("Invalid building ID: \"{}\"".format(b_id))
+            continue
 
-            f_id = self.sanitize_floor_id(f_id)
-            # Controlliamo di avere almeno un floor id valido
-            if not f_id :
-               Logger.warning("Empty floor id in building: \"{}\". \"{}\" rooms discarded".format(b_id, len(list(floor_rooms))))
-               continue
+         building = Building.find_or_create_by_id(b_id)
 
-            # remove the attribute b_id from the rooms
-            floor_rooms = map(self.sanitize_room, floor_rooms)
+         # Namespaced_attr si riferisce a una sottoparte del dizionario
+         # che costituisce il documento del building: quella relativa
+         # alla sorgente che aggiorniamo in questo momento.
+         namespaced_attr               = building.get(namespace, {})
+         namespaced_attr["floors"]     = []
+         building.attr(namespace, namespaced_attr)
 
-            if not self._is_valid_b_id(b_id):
-               Logger.warning("Invalid building ID: \"{}\"".format(b_id))
-               continue
+         building["updated_at"]        = batch_date
+         namespaced_attr["updated_at"] = batch_date
 
-            # Se b_id non si riferisce più allo stesso building ...
-            if not building or building["b_id"] != b_id:
-               # Salviamo l'ultimo building contemplato, ormai avrà le info
-               # aggiornate su tutte le sue stanze
+         with Logger.info("Processing building {}".format(b_id)):
 
-               # Aggiungiamo prima il callback per l'associazione dei room_id
-               # dei file dxf
-               if building:
-                  callback = lambda b: DXFDataUpdater.resolve_rooms_id(b, None, namespace)
-                  building.listen_once("before_save", callback)
-                  building["updated_at"]        = batch_date
-                  namespaced_attr["updated_at"] = batch_date
+            # Raggruppiamo le stanze per floor_id
+            floor_and_rooms = itertools.groupby(floor_and_rooms, key=lambda s: s[floor_key])
 
-                  merged = building.get("merged", {})
-                  merged["floors"] = DataMerger.merge_floors(
-                     building.get("edilizia"),
-                     building.get("easyroom"),
-                     building.get("dxf")
-                  )
-                  building.save()
+            # cicliamo su un floor alla volta
+            for (f_id, floor_rooms) in floor_and_rooms:
 
-               building = Building.find_or_create_by_id(b_id)
+               # Controlliamo di avere almeno un floor id valido
+               f_id = self.sanitize_floor_id(f_id)
+               if not f_id :
+                  Logger.warning("Empty floor id in building. {} rooms discarded".format(len(list(floor_rooms))))
+                  continue
 
-               # Namespaced_attr si riferisce a una sottoparte del dizionario
-               # che costituisce il documento del building: quella relativa
-               # alla sorgente che aggiorniamo in questo momento.
-               namespaced_attr = building.attr(namespace) or {}
-               namespaced_attr["floors"] = []
-               building.attr(namespace, namespaced_attr)
+               with Logger.error_context("Processing floor {}".format(f_id)):
+                  # remove the attribute b_id from the rooms
+                  floor_rooms = map(self.sanitize_room, floor_rooms)
 
+                  namespaced_attr["floors"].append( {
+                        "f_id"   : f_id,
+                        "rooms"  : self.prepare_rooms(f_id, floor_rooms)
+                  } )
 
-            namespaced_attr["floors"].append( {
-                  "f_id"   : f_id,
-                  "rooms"  : self.prepare_rooms(f_id, floor_rooms)
-            } )
+            def callback(b):
+               # Resolve DXF Room Ids
+               DXFDataUpdater.resolve_rooms_id(b, None, namespace)
 
-      building and building.save()
+               # Ensure floor merging is performed AFTER
+               merged            = b.get("merged", {})
+               merged["floors"]  = DataMerger.merge_floors(
+                  b.get("edilizia"),
+                  b.get("easyroom"),
+                  b.get("dxf")
+               )
 
+            building.listen_once("before_save", callback)
+            building.save()
 
    def sanitize_room(self, room):
       """
