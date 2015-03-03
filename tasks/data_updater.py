@@ -46,9 +46,17 @@ class DataUpdater():
          l_b_id   = b.get("l_b_id", "")
 
          if not self._is_valid_b_id(b_id):
+            if self._is_valid_b_id(l_b_id):
                Logger.warning(
-                  "Invalid building Id:", b_id,
-                  "- legacy id:", l_b_id or "?"
+                  "Invalid building id: \"{}\"".format(b_id),
+                  "- legacy id", l_b_id, "will be used instead."
+                  )
+               b["b_id"]   = l_b_id
+            else:
+               Logger.error(
+                  "Building discarded:",
+                  "Invalid building id", b_id,
+                  "and no valid legacy id is present"
                   )
                continue
 
