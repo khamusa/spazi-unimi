@@ -165,7 +165,7 @@ class DataMerger():
          source1, floor1 = floors[0]
          source2, floor2 = floors[1]
 
-         with Logger.error_context("Merging floors: {}->{}".format(source1, source2)):
+         with Logger.error_context("Merging floors from {} <- {}".format(source1, source2)):
             result      = klass._match_and_merge_floors(floor1, floor2)
             floors[0:2] = [ (source1+"/"+source2, result) ]
 
@@ -201,8 +201,8 @@ class DataMerger():
 
          if unmatched["room_ids"]:
             with Logger.warning(
-                  "Some rooms were not directly mapped between two floors: ",
-                  unmatched["room_ids"]
+                  "Some rooms were not directly mapped between two floors:",
+                  ", ".join(unmatched["room_ids"])
                ):
 
                if mapping:
@@ -210,8 +210,10 @@ class DataMerger():
                   klass._merge_rooms_into_floor(base, unmatched, unmatched["room_ids"])
 
                   Logger.warning(
-                     "Conflict solved, rooms merged into floor ",
-                     base["f_id"]
+                     "Conflict solved, rooms merged into floor",
+                     base["f_id"],
+                     "together with",
+                     ", ".join(rooms)
                   )
                else:
                   Logger.error("Cannot resolve, no mapping is possible for those rooms.")
