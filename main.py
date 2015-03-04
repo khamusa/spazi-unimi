@@ -76,6 +76,9 @@ class Main():
       task              = CSVTask(self._config)
       task.perform_updates_on_files(files)
 
+   def run_svg(self, b_ids):
+      pass
+
 if __name__ == '__main__':
    """
    Main procedure of the application, parse the arguments and call the
@@ -86,8 +89,8 @@ if __name__ == '__main__':
 
    parser = argparse.ArgumentParser(description = "Programma per l'aggiornamento dati del server Spazi Unimi.")
 
-   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "cow"],
-                      help="Il commando da eseguire: dxf, csv")
+   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "svg", "cow"],
+                      help="Il commando da eseguire: dxf, csv, svg")
 
    parser.add_argument('files', metavar='file', type=str, nargs='*',
                       help='I file su cui lavorare, a seconda del comando scelto.')
