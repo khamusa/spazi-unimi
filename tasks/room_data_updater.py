@@ -59,7 +59,11 @@ class RoomDataUpdater():
 
          # Non procedo se il b_id non è valido
          if not Building.is_valid_bid(b_id):
-            Logger.warning("Invalid building id: \"{}\"".format(b_id))
+            Logger.error(
+               "Invalid building id: \"{}\".".format(b_id),
+               "Rooms discarded:",
+               ", ".join(r["r_id"] for r in rooms)
+            )
             continue
 
          building = Building.find_or_create_by_id(b_id)
