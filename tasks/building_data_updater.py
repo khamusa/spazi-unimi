@@ -44,8 +44,8 @@ class BuildingDataUpdater():
          b_id     = b.get("b_id", "")
          l_b_id   = b.get("l_b_id", "")
 
-         if not self._is_valid_b_id(b_id):
-            if self._is_valid_b_id(l_b_id):
+         if not Building.is_valid_bid(b_id):
+            if Building.is_valid_bid(l_b_id):
                Logger.warning(
                   "Invalid building id: \"{}\"".format(b_id),
                   "- legacy id", l_b_id, "will be used instead."

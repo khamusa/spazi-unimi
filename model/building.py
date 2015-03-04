@@ -1,4 +1,5 @@
 from . import ORMModel
+import re
 
 class Building(ORMModel):
 
@@ -50,6 +51,10 @@ class Building(ORMModel):
          self[source] = {}
 
       return self.get(source)
+
+   #################
+   # CLASS METHODS #
+   #################
 
    @classmethod
    def remove_untouched_keys(klass, namespace, batch_date):
@@ -113,6 +118,44 @@ class Building(ORMModel):
       result      = klass._pm.remove("building", query, options)
       return (result["n"], buildings)
 
+   @classmethod
+   def is_valid_bid(klass, bid):
+      """
+      Determines wether or not b_id is a valid building identifier.
+
+      Return value: True o False
+      """
+      return bid and re.match("^\d{3,5}$", bid.strip())
+
+   @classmethod
+   def is_valid_fid(klass, fid):
+      """
+      Determines wether or not fid is a valid floor identifier
+
+      The current implementation basically checks it's not empty, we may
+      in the future add some more validation, but in the present moment it
+      doesn't seem necessary.
+
+      Returns True or False.
+      """
+      return type(fid) is str and fid.strip()
+
+   @classmethod
+   def is_valid_rid(klass, rid):
+      """
+      Validates the supplied room id
+
+      Arguments:
+      - rid: a string representing a room id.
+
+      Returns:
+      - True if r_id is valid, False otherwise.
+      """
+      return (
+            re.match("^[a-z]+\d+$", rid.lower(), re.I) or
+            re.match("^\d{3,}$", rid.lower(), re.I) or
+            re.match("^1i\d{3,}$", rid.lower(), re.I)
+         )
 
    #########################
    # CALLBACKS / LISTENERS #

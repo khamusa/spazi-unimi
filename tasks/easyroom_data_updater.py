@@ -29,17 +29,6 @@ class EasyroomDataUpdater(BuildingDataUpdater, RoomDataUpdater):
       """
       return "easyroom"
 
-   def _is_valid_b_id(self, b_id):
-      """
-      Determines wether or not b_id is a valid building identifier according to
-      the current data source policies.
-
-      Return value: True o False
-
-      Hook method used by parent DataUpdater class
-      """
-      return b_id and re.match("^\d\d\d\d\d$", b_id)
-
    def sanitize_room(self, room):
       """
       Sanitizes a room ensuring it is valid and correctly formatted.

@@ -58,7 +58,7 @@ class RoomDataUpdater():
       for (b_id, rooms) in rooms:
 
          # Non procedo se il b_id non è valido
-         if not self._is_valid_b_id(b_id):
+         if not Building.is_valid_bid(b_id):
             Logger.warning("Invalid building id: \"{}\"".format(b_id))
             continue
 
@@ -131,14 +131,14 @@ class RoomDataUpdater():
       - floor_id: a string representing the floor identifier,
       - rooms: a list of rooms.
       Returns: a dictionary of rooms.
-      Validate the r_id using _is_valid_r_id function and discard rooms have no
-      a correct id. Create and return a dictionary of validated rooms.
+      Validate the r_id using Building.is_valid_rid function and discard rooms
+      with invalid id. Create and return a dictionary of validated rooms.
       """
       result = {}
       discarded_rooms = set()
 
       for r in map(self.sanitize_room, rooms):
-         if not self._is_valid_r_id(r["r_id"]):
+         if not Building.is_valid_rid(r["r_id"]):
             discarded_rooms.add(r["r_id"])
             continue
 
@@ -186,7 +186,7 @@ class RoomDataUpdater():
 
       It is a good practice for subclasses to call this parent superclass.
       """
-      valid = type(floor_id) is str and floor_id.strip() or ""
+      valid = Building.is_valid_fid(floor_id)
 
       if not valid:
          rooms = [ r["r_id"] for r in floor_rooms ]
@@ -197,26 +197,3 @@ class RoomDataUpdater():
             )
 
       return valid
-
-   def _is_valid_r_id(self, room_id):
-      """
-      Called for every room before insertion, and must return True or False.
-
-      Arguments:
-      - room: a string representing a room_id.
-
-      Returns:
-      - True if the room has a valid r_id ,
-      - False otherwise.
-      """
-
-      if (
-         re.match("^[a-z]+\d+$", room_id.lower(),re.I) or
-         re.match("^\d{3,}$", room_id.lower(),re.I) or
-         re.match("^1i\d{3,}$", room_id.lower(),re.I)
-
-         ):
-         return True
-      else:
-         return False
-

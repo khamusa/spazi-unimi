@@ -49,17 +49,6 @@ class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
       """
       return "edilizia"
 
-   def _is_valid_b_id(self, b_id):
-      """
-      Determines wether or not b_id is a valid building identifier according to
-      the current data source policies.
-
-      Return value: True o False
-
-      Hook method used by parent DataUpdater class
-      """
-      return b_id and re.match("\d+", b_id)
-
    def sanitize_and_validate_floor(self, floor_id, floor_rooms):
       """
       Intended to clean up and validating floor_ids before insertion on database.
@@ -103,7 +92,7 @@ class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
       if not building.has_attr("merged") or building.attr("merged")["l_b_id"] is "":
          l_b_id   = building_dict["l_b_id"]
 
-         if not self._is_valid_b_id(l_b_id):
+         if not Building.is_valid_bid(l_b_id):
             return building
 
          to_merge = Building.find(l_b_id)
