@@ -1,5 +1,5 @@
 import csv
-from utils.myfunctools import subtract_dict
+from utils.myfunctools import filter_keys
 
 class CSVReader:
 
@@ -48,7 +48,7 @@ class CSVReader:
 
          valid_headers  = possible_headers[self.service][self.entities_type]
          self.header    = [ s for s in self.header if s in valid_headers ]
-         self.content   = [ subtract_dict(c, self.header) for c in self.content ]
+         self.content   = [ filter_keys(c, self.header) for c in self.content ]
 
 
    @classmethod

@@ -4,6 +4,7 @@ from pygeocoder         import GeocoderError
 from utils.logger       import Logger
 from itertools          import chain
 from utils.myfunctools  import subtract_dict
+from utils.myfunctools  import filter_keys
 import time
 
 class InvalidMergeStrategy(RuntimeError):
@@ -349,12 +350,12 @@ class DataMerger():
          ]
 
       for room_id, room in floor.get("rooms", {}).items():
-         result["rooms"][room_id] = subtract_dict(room, final_room_keys)
+         result["rooms"][room_id] = filter_keys(room, final_room_keys)
 
       # 2- copia lista di stanze non identificate, creando copie e lasciando
       #    soltanto le chiavi necessarie per il merging.
       for room in floor.get("unidentified_rooms", []):
-         new_room = subtract_dict(room, final_room_keys)
+         new_room = filter_keys(room, final_room_keys)
          result["unidentified_rooms"].append(new_room)
 
       return result
