@@ -60,20 +60,21 @@ class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
       """
       return b_id and re.match("\d+", b_id)
 
-   def sanitize_floor_id(self, l_floor):
+   def sanitize_and_validate_floor(self, floor_id, floor_rooms):
       """
-      Intended to clean up floor_ids before insertion on database.
+      Intended to clean up and validating floor_ids before insertion on database.
+      It must also Log in case the floor is invalid.
 
       Arguments:
-      - l_floor: the original floor_id string to be sanitized.
+      - floor_id: the original floor_id string to be sanitized.
+      - floor_rooms: a list of dictionaries representing the floor rooms.
 
       Returns a string representing the sanitized version of the floor_id.
 
-      This implementation acquires the floor id from the legacy floor id
-      contained in l_floor, by requesting the service to FloorInference.
+      It is a good practice for subclasses to call this parent superclass.
       """
-      f_id = FloorInference.fid_from_string(l_floor, "suffix_regex")
-      return super().sanitize_floor_id(f_id)
+      f_id = FloorInference.fid_from_string(floor_id, "suffix_regex")
+      return super().sanitize_and_validate_floor(f_id, floor_rooms)
 
    def find_building_to_update(self, building_dict):
       """
