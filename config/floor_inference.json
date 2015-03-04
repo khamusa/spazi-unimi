@@ -31,10 +31,15 @@
       "suffix_regex": ["^t[pra]?$", "^pt$"],
       "name_regexes": ["^terra$", "^(piano\\s+)terra", "^terra(\\s+piano)", "^terreno$", "^(piano\\s+)terreno" ]
    },
+   "0.3" : {
+      "floor_name": "Rialzato Piano Terra",
+      "suffix_regex": ["^r[ap\\.]?$"],
+      "name_regexes": [ "^rialzato$" ]
+   },
    "0.5" : {
-      "floor_name": "Mezzanino/Rialzato Piano Terra",
-      "suffix_regex": ["^a[pr]$", "^r[ap\\.]?$", "^arp?$"],
-      "name_regexes": [ "^ammezzato$", "^rialzato$", "^ammezzato rialzato$", "^ammezzato terra$" ]
+      "floor_name": "Mezzanino Piano Terra",
+      "suffix_regex": ["^a[pr]$", "^arp?$"],
+      "name_regexes": [ "^ammezzato$", "^ammezzato rialzato$", "^ammezzato terra$" ]
    },
    "1" : {
       "floor_name": "Primo Piano",
