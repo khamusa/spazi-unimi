@@ -3,7 +3,8 @@ from utils.logger             import Logger
 from tasks.data_merger        import DataMerger
 from tasks.dxf_data_updater   import DXFDataUpdater
 from datetime                 import datetime
-import itertools, re
+from itertools                import groupby
+import re
 
 class RoomDataUpdater():
    """
@@ -44,78 +45,114 @@ class RoomDataUpdater():
       everytime this method is called, it must receive the final list of rooms
       for each updated floor.
       """
-      namespace = self.get_namespace() # che sorgente dati stiamo aggiornando?
+      # salviamo una data di aggiornamento comune a tutti i palazzi
+      self.batch_date = datetime.now()
 
       # ordiniamo le stanze per edificio e per piano in modo da velocizzare l'algoritmo
-      keyfunc           = lambda s: (s["b_id"], s["l_floor"])
-      rooms.sort(key=keyfunc)
+      rooms.sort(key = lambda s: (s["b_id"], s["l_floor"]))
 
       # raggruppiamo le stanze per building_id
-      rooms             = itertools.groupby(rooms, key=lambda s: s["b_id"])
+      rooms = groupby(rooms, key = lambda s: s["b_id"])
 
-      # data di aggiornamento comune a tutti i palazzi
-      batch_date        = datetime.now()
+      # Analizziamo un building alla volta
+      for (b_id, rooms) in rooms:
 
-      for (b_id, floor_and_rooms) in rooms:
-
+         # Non procedo se il b_id non è valido
          if not self._is_valid_b_id(b_id):
-            Logger.warning("Invalid building ID: \"{}\"".format(b_id))
+            Logger.warning("Invalid building id: \"{}\"".format(b_id))
             continue
 
          building = Building.find_or_create_by_id(b_id)
 
-         # Namespaced_attr si riferisce a una sottoparte del dizionario
-         # che costituisce il documento del building: quella relativa
-         # alla sorgente che aggiorniamo in questo momento.
-         namespaced_attr               = building.get(namespace, {})
-         namespaced_attr["floors"]     = []
-         building.attr(namespace, namespaced_attr)
+         # Lavoro principale di aggiornamento
+         self.replace_building_rooms(building, rooms)
 
-         building["updated_at"]        = batch_date
-         namespaced_attr["updated_at"] = batch_date
+         # Non sarebbe questa gia' una politica di merge? Si tratta di usare
+         # info di piu' sorgenti per risolvere qualcosa di DXF, ma usiamo più
+         # sorgenti! È un tipo di merge, non un DXFDataUpdater. Mi sembra nel
+         # posto sbagliato questo metodo. Mi sembra che le funzionalità di
+         # merge sono compito del building model.
+         DXFDataUpdater.resolve_rooms_id(building, None, self.get_namespace())
 
-         with Logger.info("Processing", str(building)):
+         # Ensure floor merging is performed AFTER DXF Room_id resolution
+         merged            = building.get("merged", {})
+         merged["floors"]  = DataMerger.merge_floors(
+            building.get("edilizia"),
+            building.get("easyroom"),
+            building.get("dxf")
+         )
 
-            # Raggruppiamo le stanze per floor_id
-            floor_and_rooms = itertools.groupby(floor_and_rooms, key=lambda s: s["l_floor"])
+         building.save()
 
-            # cicliamo su un floor alla volta
-            for (f_id, floor_rooms) in floor_and_rooms:
+   def replace_building_rooms(self, building, rooms):
+      """
+      Replace the current building floors/rooms with those rooms (and
+      consequently floors) contained in rooms.
 
-               # Controlliamo di avere almeno un floor id valido
-               f_id = self.sanitize_floor_id(f_id)
-               if not f_id :
-                  rooms = [ r["r_id"] for r in floor_rooms ]
-                  Logger.warning(
-                     "Empty floor id in building.",
-                     len(rooms), "rooms discarded:",
-                     ", ".join(rooms)
-                     )
-                  continue
+      Arguments
+      - building: a Building object to be updated
+      - rooms : a list of dictionaries, each one representing a room. The format
+      is the same of the rooms supplied to RoomDataUpdater.update_rooms.
 
-               with Logger.error_context("Processing floor {}".format(f_id)):
-                  # remove the attribute b_id from the rooms
-                  floor_rooms = map(self.sanitize_room, floor_rooms)
+      Return Value
+      - None, changes are performed directly on the building object.
+      """
 
-                  namespaced_attr["floors"].append( {
-                        "f_id"   : f_id,
-                        "rooms"  : self.prepare_rooms(f_id, floor_rooms)
-                  } )
+      with Logger.info("Processing", str(building)):
 
-            def callback(b):
-               # Resolve DXF Room Ids
-               DXFDataUpdater.resolve_rooms_id(b, None, namespace)
+         namespaced_attr = building.attributes_for_source(self.get_namespace())
+         namespaced_attr["floors"] = []
 
-               # Ensure floor merging is performed AFTER
-               merged            = b.get("merged", {})
-               merged["floors"]  = DataMerger.merge_floors(
-                  b.get("edilizia"),
-                  b.get("easyroom"),
-                  b.get("dxf")
-               )
+         # salviamo le date di aggiornamento
+         building["updated_at"]        = self.batch_date
+         namespaced_attr["updated_at"] = self.batch_date
 
-            building.listen_once("before_save", callback)
-            building.save()
+         # cicliamo su un floor alla volta
+         for (f_id, floor_rooms) in groupby(rooms, key = lambda s:s["l_floor"]):
+
+            # Controlliamo di avere almeno un floor id valido
+            f_id = self.sanitize_and_validate_floor(f_id, floor_rooms)
+            if not f_id:
+               continue
+
+            # possiamo fare a meno di questo error_context, facendo si che
+            # la prepare_rooms, in seguito a un errore, stampi anche
+            # il floor id?
+            with Logger.error_context("Processing floor {}".format(f_id)):
+               namespaced_attr["floors"].append( {
+                     "f_id"   : f_id,
+                     "rooms"  : self.prepare_rooms(f_id, floor_rooms)
+               } )
+
+   def prepare_rooms(self, floor_id, rooms):
+      """
+      Transform a list of rooms in a dictionary indexed by room id.
+      Arguments:
+      - floor_id: a string representing the floor identifier,
+      - rooms: a list of rooms.
+      Returns: a dictionary of rooms.
+      Validate the r_id using _is_valid_r_id function and discard rooms have no
+      a correct id. Create and return a dictionary of validated rooms.
+      """
+      result = {}
+      discarded_rooms = set()
+
+      for r in map(self.sanitize_room, rooms):
+         if not self._is_valid_r_id(r["r_id"]):
+            discarded_rooms.add(r["r_id"])
+            continue
+
+         r_id = r["r_id"]
+         del r["r_id"]
+         result[r_id] = r
+
+      if discarded_rooms:
+         Logger.warning(
+            "Rooms discarded from floor", floor_id,
+            "for having an invalid room id:",
+            ", ".join(discarded_rooms)
+            )
+      return result
 
    def sanitize_room(self, room):
       """
@@ -136,19 +173,30 @@ class RoomDataUpdater():
       del room["b_id"]
       return room
 
-
-   def sanitize_floor_id(self, floor_id):
+   def sanitize_and_validate_floor(self, floor_id, floor_rooms):
       """
-      Intended to clean up floor_ids before insertion on database.
+      Intended to clean up and validating floor_ids before insertion on database.
+      It must also Log in case the floor is invalid.
 
       Arguments:
       - floor_id: the original floor_id string to be sanitized.
+      - floor_rooms: a list of dictionaries representing the floor rooms.
 
       Returns a string representing the sanitized version of the floor_id.
 
       It is a good practice for subclasses to call this parent superclass.
       """
-      return type(floor_id) is str and floor_id.strip() or ""
+      valid = type(floor_id) is str and floor_id.strip() or ""
+
+      if not valid:
+         rooms = [ r["r_id"] for r in floor_rooms ]
+         Logger.warning(
+            "Empty floor id in building.",
+            len(rooms), "rooms discarded:",
+            ", ".join(rooms)
+            )
+
+      return valid
 
    def _is_valid_r_id(self, room_id):
       """
@@ -172,25 +220,3 @@ class RoomDataUpdater():
       else:
          return False
 
-   def prepare_rooms(self, floor_id, rooms):
-      """
-      Transform a list of rooms in a dictionary indexed by room id.
-      Arguments:
-      - floor_id: a string representing the floor identifier,
-      - rooms: a list of rooms.
-      Returns: a dictionary of rooms.
-      Validate the r_id using _is_valid_r_id function and discard rooms have no
-      a correct id. Create and return a dictionary of validated rooms.
-      """
-      result = {}
-
-      for r in rooms:
-         if not self._is_valid_r_id(r["r_id"]):
-            Logger.warning("Room discarded for invalid r_id:", r["r_id"])
-            continue
-
-         r_id = r["r_id"]
-         del r["r_id"]
-         result[r_id] = r
-
-      return result
