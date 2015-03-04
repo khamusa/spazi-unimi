@@ -132,8 +132,7 @@ class DataMerger():
          "l_b_id"          : DataMerger.merge_building_l_b_id(edilizia, easyroom),
          "address"         : DataMerger.merge_building_address(edilizia, easyroom),
          "building_name"   : DataMerger.merge_building_name(edilizia, easyroom),
-         "coordinates"     : DataMerger.prepare_GeoJson_coordinates(coordinates),
-         "floors"          : DataMerger.merge_floors(edilizia, easyroom, dxf)
+         "coordinates"     : DataMerger.prepare_GeoJson_coordinates(coordinates)
       }
 
       return merged

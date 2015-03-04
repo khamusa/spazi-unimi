@@ -1,7 +1,8 @@
-from itertools    import chain
-from model        import Building, RoomCategory
-from utils.logger import Logger
-from datetime     import datetime
+from itertools          import chain
+from tasks.data_merger  import DataMerger
+from model              import Building, RoomCategory
+from utils.logger       import Logger
+from datetime           import datetime
 
 class DXFDataUpdater:
 
@@ -204,14 +205,23 @@ class DXFDataUpdater:
 
       with Logger.info("Floor", new_floor["f_id"], "for", str(building)):
          Logger.info("Total rooms found:", len(new_floor["unidentified_rooms"]))
-         callback = lambda b: DXFDataUpdater.resolve_rooms_id(
-            b,
-            new_floor,
-            source_name = None
-         )
-         building.listen_once("before_save", callback)
 
-         callback = lambda b: DXFDataUpdater.resolve_room_categories(b, new_floor)
-         building.listen_once("before_save", callback)
+         def before_callback(b):
+            DXFDataUpdater.resolve_rooms_id(
+                  b,
+                  new_floor,
+                  source_name = None
+               )
 
+            DXFDataUpdater.resolve_room_categories(b, new_floor)
+
+            # Ensure floor merging is performed AFTER DXF Room_id resolution
+            merged            = b.attributes_for_source("merged")
+            merged["floors"]  = DataMerger.merge_floors(
+               b.get("edilizia"),
+               b.get("easyroom"),
+               b.get("dxf")
+            )
+
+         building.listen_once("before_save", before_callback)
          building.save()

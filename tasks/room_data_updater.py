@@ -79,7 +79,7 @@ class RoomDataUpdater():
          DXFDataUpdater.resolve_rooms_id(building, None, self.get_namespace())
 
          # Ensure floor merging is performed AFTER DXF Room_id resolution
-         merged            = building.get("merged", {})
+         merged            = building.attributes_for_source("merged")
          merged["floors"]  = DataMerger.merge_floors(
             building.get("edilizia"),
             building.get("easyroom"),

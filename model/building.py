@@ -175,7 +175,7 @@ class Building(ORMModel):
 
       Currently called as a before_save filter.
       """
-      for source in ["dxf", "edilizia", "easyroom"]:
+      for source in ["dxf", "edilizia", "easyroom", "merged"]:
          if source in self and not self[source]:
             del self[source]
 

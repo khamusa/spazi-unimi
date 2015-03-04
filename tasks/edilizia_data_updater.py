@@ -5,6 +5,7 @@ from .room_data_updater       import RoomDataUpdater
 from .floor_inference         import FloorInference
 from model.building           import Building
 from tasks.dxf_data_updater   import DXFDataUpdater
+from tasks.data_merger        import DataMerger
 
 class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
    """
@@ -105,6 +106,13 @@ class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
 
             def before_callback(b):
                DXFDataUpdater.resolve_rooms_id(b, None, "edilizia")
+               # Ensure floor merging is performed AFTER DXF Room_id resolution
+               merged            = b.attributes_for_source("merged")
+               merged["floors"]  = DataMerger.merge_floors(
+                  b.get("edilizia"),
+                  b.get("easyroom"),
+                  b.get("dxf")
+               )
 
             building.listen_once("before_save", before_callback)
             building.listen_once("after_save", lambda b: to_merge.destroy() )
