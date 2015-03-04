@@ -29,13 +29,27 @@ class Building(ORMModel):
 
       return " ".join(my_str)
 
-   def ensure_floors_sorting(self):
-      # Ordina l'array "floors" all'interno dei dizionari dxf, edilizia e easyroom
-      for k in ["dxf", "easyroom", "edilizia"]:
-         namespace = self.attr(k)
+   def attributes_for_source(self, source):
+      """
+      Returns a dictionary representing the attributes of this building under
+      the supplied namespace (source).
 
-         if namespace and "floors" in namespace:
-            namespace["floors"].sort(key=lambda s: float(s["f_id"]))
+      If the namespace does not exist in the current attributes list, it
+      gets created and assigned an empty dictionary, which is returned. A
+      listen callback ensures that buildings don't get saved with empty
+      dictionaries as source data.
+
+      Attributes:
+      - source: a string representing the desired namespace: dxf, edilizia or
+      easyroom.
+
+      Return Value: a dictionary
+      """
+
+      if source not in self:
+         self[source] = {}
+
+      return self.get(source)
 
    @classmethod
    def remove_untouched_keys(klass, namespace, batch_date):
@@ -100,4 +114,27 @@ class Building(ORMModel):
       return (result["n"], buildings)
 
 
+   #########################
+   # CALLBACKS / LISTENERS #
+   #########################
+
+   def ensure_floors_sorting(self):
+      # Ordina l'array "floors" all'interno dei dizionari dxf, edilizia e easyroom
+      for k in ["dxf", "easyroom", "edilizia"]:
+         namespace = self.attr(k)
+
+         if namespace and "floors" in namespace:
+            namespace["floors"].sort(key=lambda s: float(s["f_id"]))
+
+   def remove_empty_sources(self):
+      """
+      Ensure buildings don't get saved with empty source attributes.
+
+      Currently called as a before_save filter.
+      """
+      for source in ["dxf", "edilizia", "easyroom"]:
+         if source in self and not self[source]:
+            del self[source]
+
 Building.listen("before_save", "ensure_floors_sorting")
+Building.listen("before_save", "remove_empty_sources")
