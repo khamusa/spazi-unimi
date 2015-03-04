@@ -6,23 +6,10 @@ from itertools          import chain
 from utils.myfunctools  import filter_keys
 import time
 
-class InvalidMergeStrategy(RuntimeError):
-   pass
-
 class DataMerger():
 
    skip_geocoding          = False
    geocoding_retry_count   = 0
-
-   @classmethod
-   def merge(self,field,edilizia,easyroom):
-      strategy_name   = "merge_building_"+field
-      merge_strategy  = getattr(DataMerger, strategy_name, DataMerger.raise_exception)
-      return merge_strategy(edilizia,easyroom)
-
-   @classmethod
-   def raise_exception(self,field,data):
-      raise InvalidMergeStrategy(field)
 
    # Helpers
    @classmethod
