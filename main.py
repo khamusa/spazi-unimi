@@ -77,7 +77,24 @@ class Main():
       task.perform_updates_on_files(files)
 
    def run_svg(self, b_ids):
-      pass
+      """
+      Create svg files representing maps of buildings.
+
+      Arguments:
+      - b_ids: a list of string representing the building ids of the buildings
+      we want create/update svg files.
+
+      Returns: None
+
+      Instantiates a MongoDBPersistenceManager and a SVGTask to create the svg
+      files whit the apposite procedure.
+      If b_ids is None the CSVTask create svg files of every building in the DB.
+      """
+      persistence       = MongoDBPersistenceManager(self._config)
+      ORMModel.set_pm( persistence )
+
+      task              = SVGTask(self._config)
+      task.perform_svg_update(b_ids)
 
 if __name__ == '__main__':
    """
