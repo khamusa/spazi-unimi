@@ -73,10 +73,17 @@ class DxfReader():
          if type(ent) not in [MText, dxfgrabber.entities.Text]:
             return False
 
-         if re.match("^\s*[a-zA-Z\d]*\d+[a-zA-Z\d]*\s*$", ent.plain_text()) is None:
+         if ent.layer not in self.valid_text_layers:
             return False
 
-         return ent.layer in self.valid_text_layers
+         txt = ent.plain_text().strip()
+         m1  = re.match("^[a-zA-Z\d]*\d+[a-zA-Z\d]*$", txt)
+         m2  = re.match("^([a-zA-Z]{2,}\s*)+$", txt)
+
+         if not(m1 or m2):
+            return False
+
+         return True
 
       rooms = (
                Room(

@@ -1,11 +1,12 @@
-from mock                        import MagicMock
-from tasks.dxf_data_updater      import DXFDataUpdater
-from model                       import Building, RoomCategory
+from mock                           import MagicMock
+from model                          import Building, RoomCategory
+from tasks.dxf_room_ids_resolver    import DXFRoomIdsResolver
+
 import unittest
 
-class DXFDataUpdaterTest(unittest.TestCase):
+class DXFRoomIdsResolverTest(unittest.TestCase):
    """
-   Test the room merging procedures of DXFDataUpdater, i.e, the ability of
+   Test the room merging procedures of DXFRoomIdsResolver, i.e, the ability of
    associating DXF rooms with other souces rooms.
    """
    def setUp(self):
@@ -152,27 +153,12 @@ class DXFDataUpdaterTest(unittest.TestCase):
       }
       self.building     = Building(self.db_building)
 
-      self.room_categories = [
-         RoomCategory({
-            "_id": "AUL01",
-            "cat_name": "Aula"
-         }),
-         RoomCategory({
-            "_id": "AUL03",
-            "cat_name": "Aula Informatica"
-         }),
-         RoomCategory({
-            "_id": "WC01",
-            "cat_name": "Bagno"
-         })
-      ]
-
    def test_resolve_rooms_id_floor_by_floor_edilizia(self):
       """Test r_id resolving with edilizia data, one floor at a time"""
 
 
       floor = self.db_building["dxf"]["floors"][0]
-      DXFDataUpdater.resolve_rooms_id(
+      DXFRoomIdsResolver.resolve_rooms_id(
          self.building,
          floor,
          "edilizia"
@@ -182,7 +168,7 @@ class DXFDataUpdaterTest(unittest.TestCase):
 
 
       floor = self.db_building["dxf"]["floors"][1]
-      DXFDataUpdater.resolve_rooms_id(
+      DXFRoomIdsResolver.resolve_rooms_id(
          self.building,
          floor,
          "edilizia"
@@ -196,7 +182,7 @@ class DXFDataUpdaterTest(unittest.TestCase):
       """Test r_id resolving with easyroom data, one floor at a time"""
 
       floor = self.db_building["dxf"]["floors"][0]
-      DXFDataUpdater.resolve_rooms_id(
+      DXFRoomIdsResolver.resolve_rooms_id(
          self.building,
          floor,
          "easyroom"
@@ -206,7 +192,7 @@ class DXFDataUpdaterTest(unittest.TestCase):
 
 
       floor = self.db_building["dxf"]["floors"][1]
-      DXFDataUpdater.resolve_rooms_id(
+      DXFRoomIdsResolver.resolve_rooms_id(
          self.building,
          floor,
          "easyroom"
@@ -227,7 +213,7 @@ class DXFDataUpdaterTest(unittest.TestCase):
       room_10 = floor_1["unidentified_rooms"][0]
       room_12 = floor_1["unidentified_rooms"][2]
 
-      DXFDataUpdater.resolve_rooms_id(
+      DXFRoomIdsResolver.resolve_rooms_id(
          self.building,
          None,
          None
@@ -241,28 +227,3 @@ class DXFDataUpdaterTest(unittest.TestCase):
       self.assertTrue(room_02 not in floor_0["unidentified_rooms"])
       self.assertTrue(room_10 not in floor_1["unidentified_rooms"])
       self.assertTrue(room_12 not in floor_1["unidentified_rooms"])
-
-
-   def test_resolve_room_categories(self):
-
-      RoomCategory.where = MagicMock(return_value= self.room_categories)
-
-      # Richiamo resolve_rooms_id per testare che le category vengano matchate
-      # sia sul dizionario rooms sia sulla lista uniidentified_rooms
-      DXFDataUpdater.resolve_rooms_id(
-         self.building,
-         None,
-         None
-      )
-
-      DXFDataUpdater.resolve_room_categories(self.building, None)
-
-      floor_0 = self.db_building["dxf"]["floors"][0]
-      floor_1 = self.db_building["dxf"]["floors"][1]
-
-      self.assertEqual(floor_1["rooms"]["R023"]["cat_name"], "Aula")
-      self.assertEqual(floor_1["rooms"]["R022"]["cat_name"], "Aula Informatica")
-      self.assertEqual(floor_1["unidentified_rooms"][0]["cat_name"], "Bagno")
-      self.assertEqual(floor_0["rooms"]["R002"]["cat_name"], "Aula Informatica")
-      self.assertEqual(floor_0["rooms"]["R003"]["cat_name"], "Aula")
-      self.assertEqual(floor_0["unidentified_rooms"][0]["cat_name"], "Bagno")

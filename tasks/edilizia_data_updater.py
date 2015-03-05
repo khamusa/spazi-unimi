@@ -1,11 +1,11 @@
-import re
-from model                    import RoomCategory
-from .building_data_updater   import BuildingDataUpdater
-from .room_data_updater       import RoomDataUpdater
-from .floor_inference         import FloorInference
-from model.building           import Building
-from tasks.dxf_data_updater   import DXFDataUpdater
-from tasks.data_merger        import DataMerger
+from model                          import RoomCategory
+from .building_data_updater         import BuildingDataUpdater
+from .room_data_updater             import RoomDataUpdater
+from .floor_inference               import FloorInference
+from model.building                 import Building
+from tasks.data_merger              import DataMerger
+from tasks.dxf_room_ids_resolver    import DXFRoomIdsResolver
+from tasks.dxf_room_cats_resolver   import DXFRoomCatsResolver
 
 class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
    """
@@ -37,7 +37,7 @@ class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
          cat.save()
 
       for building in Building.where({}):
-         DXFDataUpdater.resolve_room_categories(building, None)
+         DXFRoomCatsResolver.resolve_room_categories(building, None)
          building.save()
 
    def get_namespace(self):
@@ -105,7 +105,7 @@ class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
             building.attr("dxf", to_merge.attr("dxf"))
 
             def before_callback(b):
-               DXFDataUpdater.resolve_rooms_id(b, None, "edilizia")
+               DXFRoomIdsResolver.resolve_rooms_id(b, None, "edilizia")
                # Ensure floor merging is performed AFTER DXF Room_id resolution
                merged            = b.attributes_for_source("merged")
                merged["floors"]  = DataMerger.merge_floors(

@@ -1,10 +1,9 @@
-from model                    import Building
-from utils.logger             import Logger
-from tasks.data_merger        import DataMerger
-from tasks.dxf_data_updater   import DXFDataUpdater
-from datetime                 import datetime
-from itertools                import groupby
-import re
+from model                          import Building
+from utils.logger                   import Logger
+from tasks.data_merger              import DataMerger
+from tasks.dxf_room_ids_resolver    import DXFRoomIdsResolver
+from datetime                       import datetime
+from itertools                      import groupby
 
 class RoomDataUpdater():
    """
@@ -76,7 +75,7 @@ class RoomDataUpdater():
          # sorgenti! È un tipo di merge, non un DXFDataUpdater. Mi sembra nel
          # posto sbagliato questo metodo. Mi sembra che le funzionalità di
          # merge sono compito del building model.
-         DXFDataUpdater.resolve_rooms_id(building, None, self.get_namespace())
+         DXFRoomIdsResolver.resolve_rooms_id(building, None, self.get_namespace())
 
          # Ensure floor merging is performed AFTER DXF Room_id resolution
          merged            = building.attributes_for_source("merged")
