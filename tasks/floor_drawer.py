@@ -1,6 +1,7 @@
 from model.drawable  import Polygon, Point
 from io              import StringIO
 from utils.logger    import Logger
+from itertools       import chain
 import svgwrite, random
 
 class FloorDrawer():
@@ -19,27 +20,26 @@ class FloorDrawer():
 
       unidentified_rooms = floor.get("unidentified_rooms", [])
 
-      for room in unidentified_rooms:
+      unidentified_rooms = ((None, room) for room in unidentified_rooms)
+
+      rooms = floor.get("rooms", {})
+      for r_id, room in chain(rooms.items(), unidentified_rooms):
+
+         if r_id:
+            group = svgwrite.container.Group(id = r_id)
+
+         else:
+            group    = svgwrite.container.Group()
 
          points   = FloorDrawer.get_polygon_points(room)
          if points:
-            FloorDrawer.draw_room(svg, points)
-
-         if "cat_name" in room:
-            svg.add(svg.text(room["cat_name"], (room["polygon"]["anchor_point"]["x"], room["polygon"]["anchor_point"]["y"])))
-
-      rooms = floor.get("rooms", [])
-      for r_id, room in rooms.items():
-
-         points   = FloorDrawer.get_polygon_points(room)
-         if points:
-            FloorDrawer.draw_room(svg, points)
-            text = r_id
+            FloorDrawer.draw_room(svg, group, points)
 
             if "cat_name" in room:
-               text = text + " - " + room["cat_name"]
+               group.add(svg.text(room["cat_name"], (room["polygon"]["anchor_point"]["x"], room["polygon"]["anchor_point"]["y"])))
 
-            svg.add(svg.text(text, (room["polygon"]["anchor_point"]["x"], room["polygon"]["anchor_point"]["y"])))
+            svg.add(group)
+
       if len(svg.elements) <= 1:
          Logger.warning("Impossible generate csv: no room polylines founded")
       return svg
@@ -53,7 +53,7 @@ class FloorDrawer():
          return polygon.points
 
    @classmethod
-   def draw_room(self, svg, points):
+   def draw_room(self, svg, group, points):
       color    = "rgb({}, {}, {})".format(int(random.random()*200), int(random.random()*200), int(random.random()*200))
       poly     = svg.polyline( ((p.x, p.y) for p in points), fill=color, stroke="#666")
-      svg.add(poly)
+      group.add(poly)
