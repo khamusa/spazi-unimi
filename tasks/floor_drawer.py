@@ -1,5 +1,6 @@
 from model.drawable  import Polygon, Point
 from io              import StringIO
+from utils.logger    import Logger
 import svgwrite, random
 
 class FloorDrawer():
@@ -39,6 +40,8 @@ class FloorDrawer():
                text = text + " - " + room["cat_name"]
 
             svg.add(svg.text(text, (room["polygon"]["anchor_point"]["x"], room["polygon"]["anchor_point"]["y"])))
+      if len(svg.elements) <= 1:
+         Logger.warning("Impossible generate csv: no room polylines founded")
       return svg
 
    @classmethod

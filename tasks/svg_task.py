@@ -1,5 +1,6 @@
 from model                 import Building
 from tasks.floor_drawer    import FloorDrawer
+from utils.logger          import Logger
 import os
 
 class SVGTask():
@@ -48,12 +49,13 @@ class SVGTask():
 
       Returns: None.
       """
-      for floor in building["merged"]["floors"]:
-         print(building["_id"] + " " + floor["f_id"])
-         svg      = FloorDrawer.draw_floor(floor)
+      with Logger.info("Generating floor maps for", str(building)):
+         for floor in building["merged"]["floors"]:
+            Logger.info("Generating map for floor: ", floor["f_id"])
+            svg      = FloorDrawer.draw_floor(floor)
 
-         filename = self.prepare_path_and_filename(building["_id"], floor["f_id"])
-         svg.saveas(filename)
+            filename = self.prepare_path_and_filename(building["_id"], floor["f_id"])
+            svg.saveas(filename)
 
    def prepare_path_and_filename(self, b_id, f_id):
       """
