@@ -16,29 +16,38 @@ class FloorDrawer():
       """
       svg = svgwrite.Drawing()
 
-      for room in floor["unidentified_rooms"]:
+      unidentified_rooms = floor.get("unidentified_rooms", [])
+
+      for room in unidentified_rooms:
 
          points   = FloorDrawer.get_polygon_points(room)
-         FloorDrawer.draw_room(svg, points)
+         if points:
+            FloorDrawer.draw_room(svg, points)
 
          if "cat_name" in room:
             svg.add(svg.text(room["cat_name"], (room["polygon"]["anchor_point"]["x"], room["polygon"]["anchor_point"]["y"])))
 
-      for room in floor["rooms"].values():
+      rooms = floor.get("rooms", [])
+      for r_id, room in rooms.items():
 
          points   = FloorDrawer.get_polygon_points(room)
-         FloorDrawer.draw_room(svg, points)
+         if points:
+            FloorDrawer.draw_room(svg, points)
+            text = r_id
 
-         if "cat_name" in room:
-            svg.add(svg.text(room["cat_name"], (room["polygon"]["anchor_point"]["x"], room["polygon"]["anchor_point"]["y"])))
+            if "cat_name" in room:
+               text = text + " - " + room["cat_name"]
 
+            svg.add(svg.text(text, (room["polygon"]["anchor_point"]["x"], room["polygon"]["anchor_point"]["y"])))
       return svg
 
    @classmethod
    def get_polygon_points(self, room):
-      polygon  = Polygon.from_serializable(room["polygon"])
-      polygon.absolutize()
-      return polygon.points
+      poly     = room.get("polygon")
+      if poly:
+         polygon  = Polygon.from_serializable(poly)
+         polygon.absolutize()
+         return polygon.points
 
    @classmethod
    def draw_room(self, svg, points):

@@ -24,7 +24,10 @@ class SVGTask():
       Returns: None.
       """
 
-      query = { "merged.floors" : {"$exists": True} }
+      query = { "$and" : [
+            { "merged.floors" : {"$exists": True} },
+            { "dxf.floors" : {"$exists": True} }
+         ] }
 
       if  b_ids:
          query["_id"] = { "$in": b_ids }
@@ -46,6 +49,7 @@ class SVGTask():
       Returns: None.
       """
       for floor in building["merged"]["floors"]:
+         print(building["_id"] + " " + floor["f_id"])
          svg      = FloorDrawer.draw_floor(floor)
 
          filename = self.prepare_path_and_filename(building["_id"], floor["f_id"])
