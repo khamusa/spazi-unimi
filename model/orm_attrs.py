@@ -128,6 +128,33 @@ class ORMAttrs:
 
       return ns
 
+   @replace_external_key
+   def has_path(self, dotted_path, default = None):
+      """
+      Test whether or not a dot-notation path exists in the attributes
+      tree.
+
+      Example:
+      >>> a = ORMAttrs({ "something": { "cool": 123 }})
+      >>> a.has_path("something")
+      True
+      >>> a.has_path("something.cool")
+      True
+      >>> a.has_path("something.not_cool")
+      False
+      >>> a.has_path("some_things")
+      False
+
+      """
+      ns = self._attrs
+      try:
+         for key in dotted_path.split("."):
+            ns = ns[key]
+      except KeyError:
+         return False
+
+      return True
+
    def _ensure_sanitize_id(self):
       """
       Ensure _ids are always saved as a string, no leading or trailing spaces

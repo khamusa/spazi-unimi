@@ -23,7 +23,8 @@ class ORMAttrsTest(unittest.TestCase):
                "deep": {
                   "structure" : "slightly deeper"
                }
-            }
+            },
+            "particular" : False
          }
       )
 
@@ -111,3 +112,26 @@ class ORMAttrsTest(unittest.TestCase):
    def test_get_path_on_single_level_paths(self):
       self.assertEqual(self.attrs.get_path("_id"), "32548")
       self.assertEqual(self.attrs.get_path("cat_name"), "ofelia")
+
+
+   #################
+   # TEST has_path #
+   #################
+   def test_has_path(self):
+      attrs = self.attrs
+
+      # Truths
+      self.assertTrue(attrs.has_path("some"))
+      self.assertTrue(attrs.has_path("some.really"))
+      self.assertTrue(attrs.has_path("some.really.very"))
+      self.assertTrue(attrs.has_path("some.really.very.deep.deep"))
+      self.assertTrue(attrs.has_path("some.really.very.deep.deep"))
+
+      # Falses
+      self.assertFalse(attrs.has_path("soome"))
+      self.assertFalse(attrs.has_path("some.reallities"))
+      self.assertFalse(attrs.has_path("some.really.veryyyyy"))
+      self.assertFalse(attrs.has_path("some.really.very.deeeeep.deep"))
+      self.assertFalse(attrs.has_path("some.really.very.deep.deeeeeep"))
+
+      self.assertTrue(attrs.has_path("particular"))
