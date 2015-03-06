@@ -89,8 +89,8 @@ class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
       b_id     = building_dict["b_id"]
       building = Building.find_or_create_by_id(b_id)
 
-      # controllo di avere una mappatura tra b_id e l_b_id
-      if not building.has_attr("merged") or building.attr("merged")["l_b_id"] is "":
+      # controllo di non avere una mappatura tra b_id e l_b_id
+      if "merged" not in building or not building["merged"].get("l_b_id", None):
          l_b_id   = building_dict["l_b_id"]
 
          if not Building.is_valid_bid(l_b_id):
