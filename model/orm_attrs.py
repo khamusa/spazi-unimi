@@ -85,14 +85,15 @@ class ORMAttrs:
       return self._attrs.get(key, default)
 
    @replace_external_key
-   def get_path(self, dotted_path, default = None, build = False):
+   def get_path(self, path, default = None, build = False):
       """
       Optional get of a dotted-path, with option to build the path if non
       existing.
 
 
       Arguments:
-      - dotted_path: a string defining a dot-notation dictionary keys path
+      - path: a string defining a dot-notation dictionary keys path, or
+      a list containing the sequence of keys to be followed.
       - default: default value to return if any of the keys in the path does not
       exist.
       - build: if set to True, in case a key is not found, the path will be
@@ -105,15 +106,20 @@ class ORMAttrs:
       123
       >>> "some" in a
       False
-      >>> a.get_path("some.deep.structure", 123, build=True)
+      >>> a.get_path(["some", "deep", 5], 123, build=True)
       123
       >>> "some" in a
       True
-      >>> a["some"]["deep"]["structure"] == 123
+      >>> a["some"]["deep"][5] == 123
       True
       """
-      keys     = dotted_path.split(".")
-      path     = [ (k, False) for k in keys[:-1] ]
+
+      if type(path) is str:
+         keys = path.split(".")
+      else:
+         keys = path # already a list of keys
+
+      path = [ (k, False) for k in keys[:-1] ]
       path.append( (keys[-1], True) )
 
       ns = self._attrs
@@ -129,10 +135,10 @@ class ORMAttrs:
       return ns
 
    @replace_external_key
-   def has_path(self, dotted_path, default = None):
+   def has_path(self, path, default = None):
       """
-      Test whether or not a dot-notation path exists in the attributes
-      tree.
+      Test whether or not a dot-notation path or list of keys exists in the
+      attributes tree.
 
       Example:
       >>> a = ORMAttrs({ "something": { "cool": 123 }})
@@ -146,9 +152,14 @@ class ORMAttrs:
       False
 
       """
+      if type(path) is str:
+         keys = path.split(".")
+      else:
+         keys = path # already a list of keys
+
       ns = self._attrs
       try:
-         for key in dotted_path.split("."):
+         for key in keys:
             ns = ns[key]
       except KeyError:
          return False

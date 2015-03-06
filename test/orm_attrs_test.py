@@ -110,9 +110,29 @@ class ORMAttrsTest(unittest.TestCase):
       self.assertEqual(attrs.get_path("fail.really.very.fail.deep", 9), 9)
 
    def test_get_path_on_single_level_paths(self):
-      self.assertEqual(self.attrs.get_path("_id"), "32548")
-      self.assertEqual(self.attrs.get_path("cat_name"), "ofelia")
+      attrs = self.attrs
+      self.assertEqual(attrs.get_path("_id"), "32548")
+      self.assertEqual(attrs.get_path("cat_name"), "ofelia")
 
+   def test_get_path_with_list_notation(self):
+      attrs = self.attrs
+      self.assertEqual(attrs.get_path(["_id"]), "32548")
+      self.assertEqual(attrs.get_path(["cat_name"]), "ofelia")
+
+      # Unexisting without defaults
+      self.assertEqual(attrs.get_path(["some", (1, 2)]), None)
+      self.assertEqual(attrs.get_path(["some", 77, "wrong"]), None)
+
+      # With defaults
+      self.assertEqual(attrs.get_path([777, "fail", 456, "fail", "deep"], 8), 8)
+      self.assertEqual(attrs.get_path(["fail", "really", "very", 935, "deep"], 9), 9)
+
+      # With build
+      self.assertEqual(attrs.get_path(["new_attr"], 123, build=True), 123)
+      self.assertEqual(attrs["new_attr"], 123)
+
+      self.assertEqual(attrs.get_path(["some", 478], {}, build=True), {})
+      self.assertEqual(attrs["some"][478], {})
 
    #################
    # TEST has_path #
@@ -121,15 +141,15 @@ class ORMAttrsTest(unittest.TestCase):
       attrs = self.attrs
 
       # Truths
-      self.assertTrue(attrs.has_path("some"))
-      self.assertTrue(attrs.has_path("some.really"))
-      self.assertTrue(attrs.has_path("some.really.very"))
+      self.assertTrue(attrs.has_path(["some"]))
+      self.assertTrue(attrs.has_path(["some", "really"]))
+      self.assertTrue(attrs.has_path(["some", "really", "very"]))
       self.assertTrue(attrs.has_path("some.really.very.deep.deep"))
       self.assertTrue(attrs.has_path("some.really.very.deep.deep"))
 
       # Falses
-      self.assertFalse(attrs.has_path("soome"))
-      self.assertFalse(attrs.has_path("some.reallities"))
+      self.assertFalse(attrs.has_path(["soome"]))
+      self.assertFalse(attrs.has_path(["some", "reallities"]))
       self.assertFalse(attrs.has_path("some.really.veryyyyy"))
       self.assertFalse(attrs.has_path("some.really.very.deeeeep.deep"))
       self.assertFalse(attrs.has_path("some.really.very.deep.deeeeeep"))
