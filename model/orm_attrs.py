@@ -84,6 +84,50 @@ class ORMAttrs:
       """
       return self._attrs.get(key, default)
 
+   @replace_external_key
+   def get_path(self, dotted_path, default = None, build = False):
+      """
+      Optional get of a dotted-path, with option to build the path if non
+      existing.
+
+
+      Arguments:
+      - dotted_path: a string defining a dot-notation dictionary keys path
+      - default: default value to return if any of the keys in the path does not
+      exist.
+      - build: if set to True, in case a key is not found, the path will be
+      built until the leaf is found. The leaf value will be set to the value
+      supplied as default.
+
+      Examples:
+      >>> a = ORMAttrs({})
+      >>> a.get_path("some.deep.structure", 123)
+      123
+      >>> "some" in a
+      False
+      >>> a.get_path("some.deep.structure", 123, build=True)
+      123
+      >>> "some" in a
+      True
+      >>> a["some"]["deep"]["structure"] == 123
+      True
+      """
+      keys     = dotted_path.split(".")
+      path     = [ (k, False) for k in keys[:-1] ]
+      path.append( (keys[-1], True) )
+
+      ns = self._attrs
+      for key, last in path:
+         if key not in ns and build is not False:
+            ns[key]  = {} if not last else default
+
+         if key in ns:
+            ns       = ns[key]
+         else:
+            return default
+
+      return ns
+
    def _ensure_sanitize_id(self):
       """
       Ensure _ids are always saved as a string, no leading or trailing spaces
