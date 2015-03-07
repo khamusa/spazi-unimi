@@ -24,9 +24,15 @@ class ORMAttrsTest(unittest.TestCase):
                   "structure" : "slightly deeper"
                }
             },
-            "particular" : False
+            "particular" : False,
+            "pippo" : "pluto",
+            "mickey": "paperino"
          }
       )
+
+   ###########################
+   # Testing method get_path #
+   ###########################
 
    def test_get_path_against__getitem__(self):
       attrs = self.attrs
@@ -155,3 +161,102 @@ class ORMAttrsTest(unittest.TestCase):
       self.assertFalse(attrs.has_path("some.really.very.deep.deeeeeep"))
 
       self.assertTrue(attrs.has_path("particular"))
+
+   ####################
+   # TEST id handling #
+   ####################
+   def test_id_assignment_gets_sanitized(self):
+      orm = orm_attrs.ORMAttrs({ "_id": "   123 "})
+      self.assertEqual(orm["_id"], "123")
+
+      orm.attrs({ "_id" : 13124 })
+      self.assertEqual(orm["_id"], "13124")
+
+      orm["_id"] = 444
+      self.assertEqual(orm["_id"], "444")
+
+   def test_external_id_handling(self):
+      attrs = orm_attrs.ORMAttrs({ "bid": 123, "pippo": 123 }, external_id = "bid")
+
+      def verify_id(expected):
+         self.assertTrue(attrs["bid"] is attrs["_id"])
+         self.assertEqual(attrs["bid"], expected)
+         self.assertEqual(attrs["pippo"], 123)
+
+      # Test __getitem__
+      verify_id("123")
+
+      # Test __setitem__
+      attrs["bid"]   = "PIUFACILE"
+      verify_id("PIUFACILE")
+
+      attrs["pippo"] = "Sporcizia"
+      self.assertEqual(attrs["pippo"], "Sporcizia")
+
+      # Test __contains__
+      self.assertTrue("_id"   in attrs)
+      self.assertTrue("bid"   in attrs)
+      self.assertTrue("pippo" in attrs)
+      self.assertFalse("piw!" in attrs)
+
+      # Test get
+      attrs["_id"] = 123
+      self.assertEqual(attrs.get("_id"), "123")
+      self.assertEqual(attrs.get("_id", "hahaha"), "123")
+      self.assertEqual(attrs.get("_idzzzz"), None)
+      self.assertEqual(attrs.get("_idbiz", "hahaha"), "hahaha")
+      self.assertEqual(attrs.get("bid"), "123")
+
+   #############################################
+   # TEST attrs interface (get, set, contains) #
+   #############################################
+
+   def test_attrs_get_and_set(self):
+      self.assertEqual(self.attrs["pippo"], "pluto")
+
+      self.attrs.attrs( { "pippo": "sempronio", "caio": "tizio"})
+      self.assertEqual(self.attrs["pippo"], "sempronio")
+      self.assertEqual(self.attrs["caio"], "tizio")
+
+      self.assertEqual(self.attrs["mickey"], "paperino")
+
+   def test_has_attr(self):
+      self.assertTrue("pippo"  in self.attrs)
+      self.assertTrue("mickey" in self.attrs)
+      self.assertFalse("1234"  in self.attrs)
+
+   def test_attr_getter_method(self):
+      self.assertTrue("pippuzzo" not in self.attrs)
+      self.assertEqual(self.attrs["pippo"], "pluto")
+
+   def test_attr_setter_method(self):
+      self.attrs["pippuzzo"] = "ciao"
+      self.assertEqual(self.attrs["pippuzzo"] ,"ciao")
+
+   ###############################
+   # TEST changed state handling #
+   ###############################
+
+   def test_set_changed(self):
+      self.attrs.set_changed(False)
+      self.assertFalse(self.attrs.is_changed())
+
+      self.attrs.set_changed(True)
+      self.assertTrue(self.attrs.is_changed())
+
+      self.attrs.set_changed(False)
+      self.assertFalse(self.attrs.is_changed())
+
+   def test_is_changed(self):
+      self.assertTrue(self.attrs.is_changed())
+      self.attrs.set_changed(False)
+      self.attrs.attr("pippo", "ciao")
+      self.assertTrue(self.attrs.is_changed())
+
+      self.attrs.set_changed(False)
+      self.attrs["pippo"] = "ciao"
+      self.assertFalse(self.attrs.is_changed())
+
+      self.attrs.set_changed(False)
+      self.attrs["pippo"] = "ciao2"
+      self.assertTrue(self.attrs.is_changed())
