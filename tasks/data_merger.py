@@ -11,6 +11,22 @@ class DataMerger():
    skip_geocoding          = False
    geocoding_retry_count   = 0
 
+   @classmethod
+   def merge_building(self, edilizia = None, easyroom = None, dxf = None):
+      """Merge easyroom and edilizia data"""
+
+      coordinates = DataMerger._merge_building_coordinates(edilizia, easyroom)
+
+      merged = {
+         "l_b_id"          : DataMerger._merge_building_l_b_id(edilizia, easyroom),
+         "address"         : DataMerger._merge_building_address(edilizia, easyroom),
+         "building_name"   : DataMerger._merge_building_name(edilizia, easyroom),
+         "coordinates"     : DataMerger._prepare_GeoJson_coordinates(coordinates)
+      }
+
+      return merged
+
+
    # Helpers
    @classmethod
    def coordinates_are_valid(self,data):
@@ -29,14 +45,14 @@ class DataMerger():
    # Strategies
 
    @classmethod
-   def merge_building_l_b_id(self, edilizia=None, easyroom=None):
+   def _merge_building_l_b_id(self, edilizia=None, easyroom=None):
       if edilizia :
          return edilizia.get("l_b_id", "")
       else:
          return ""
 
    @classmethod
-   def merge_building_name(self, edilizia=None, easyroom=None):
+   def _merge_building_name(self, edilizia=None, easyroom=None):
       """Building name merge strategy"""
       if easyroom :
          return easyroom.get("building_name", None)
@@ -45,7 +61,7 @@ class DataMerger():
 
 
    @classmethod
-   def merge_building_coordinates(self, edilizia=None, easyroom=None):
+   def _merge_building_coordinates(self, edilizia=None, easyroom=None):
       """Coordinates merge strategy: return lat and lng if are present and valid
          in the edilizia data, otherwhise make a reverse geocoding request"""
 
@@ -68,7 +84,7 @@ class DataMerger():
       return { "lat" : None , "lng" : None }
 
    @classmethod
-   def prepare_GeoJson_coordinates(self,coordinates):
+   def _prepare_GeoJson_coordinates(self,coordinates):
       coordinates = coordinates or { "lng" : 0 , "lat" : 0 }
       return {
             "type"         : "Point",
@@ -77,7 +93,7 @@ class DataMerger():
 
 
    @classmethod
-   def merge_building_address(self, edilizia=None, easyroom=None):
+   def _merge_building_address(self, edilizia=None, easyroom=None):
       """Address merge strategy: use easyroom field if is present,
          otherwhise use Geocoder in order to obtain a well-formed address"""
 
@@ -107,22 +123,7 @@ class DataMerger():
 
          elif error.status == GeocoderError.G_GEO_OVER_QUERY_LIMIT :
                self.geocoding_retry_count += 1
-               return DataMerger.merge_building_address(edilizia, easyroom)
-
-   @classmethod
-   def merge_building(self, edilizia = None, easyroom = None, dxf = None):
-      """Merge easyroom and edilizia data"""
-
-      coordinates = DataMerger.merge_building_coordinates(edilizia, easyroom)
-
-      merged = {
-         "l_b_id"          : DataMerger.merge_building_l_b_id(edilizia, easyroom),
-         "address"         : DataMerger.merge_building_address(edilizia, easyroom),
-         "building_name"   : DataMerger.merge_building_name(edilizia, easyroom),
-         "coordinates"     : DataMerger.prepare_GeoJson_coordinates(coordinates)
-      }
-
-      return merged
+               return DataMerger._merge_building_address(edilizia, easyroom)
 
    @classmethod
    def merge_floors(klass, edilizia, easyroom, dxf):
@@ -156,7 +157,6 @@ class DataMerger():
             floors[0:2] = [ (source1+"/"+source2, result) ]
 
       return floors and floors[0][1] or []
-
 
    @classmethod
    def _match_and_merge_floors(klass, base_floors, unmatched_floors):

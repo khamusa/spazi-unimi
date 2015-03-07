@@ -37,42 +37,42 @@ class DataMergerTest(unittest.TestCase):
 
    def test_merge_building_name(self):
       """ Merge without edilizia data """
-      merged = DataMerger.merge_building_name(edilizia=None, easyroom=self.db_building["easyroom"])
+      merged = DataMerger._merge_building_name(edilizia=None, easyroom=self.db_building["easyroom"])
       self.assertEqual(merged,"Agraria Edificio 3")
 
       """ Merge without easyroom data """
-      merged = DataMerger.merge_building_name(edilizia=self.db_building["edilizia"], easyroom=None)
+      merged = DataMerger._merge_building_name(edilizia=self.db_building["edilizia"], easyroom=None)
       self.assertEqual(merged,"Milano - Via Celoria 2_Ed 3")
 
       """ Merge with edilizia and easyroom data """
-      merged = DataMerger.merge_building_name(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
+      merged = DataMerger._merge_building_name(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
       self.assertEqual(merged,"Agraria Edificio 3")
 
    def test_merge_building_address(self):
       """ Merge without edilizia data """
-      merged = DataMerger.merge_building_address(easyroom=self.db_building["easyroom"])
+      merged = DataMerger._merge_building_address(easyroom=self.db_building["easyroom"])
       self.assertEqual(merged, "Via Celoria, 2, Milano, 20133")
 
       if not DataMerger.skip_geocoding:
          """ Merge without easyroom data """
-         merged = DataMerger.merge_building_address(edilizia=self.db_building["edilizia"])
+         merged = DataMerger._merge_building_address(edilizia=self.db_building["edilizia"])
          self.assertEqual(merged, "Via Giovanni Celoria, 2, 20133 Milano")
 
          """ Merge with edilizia and easyroom data """
-         merged = DataMerger.merge_building_address(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
+         merged = DataMerger._merge_building_address(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
          self.assertEqual(merged, "Via Celoria, 2, Milano, 20133")
 
    def test_merge_building_l_b_id(self):
       """ Merge without edilizia data """
-      merged = DataMerger.merge_building_l_b_id(easyroom=self.db_building["easyroom"])
+      merged = DataMerger._merge_building_l_b_id(easyroom=self.db_building["easyroom"])
       self.assertEqual(merged,"")
 
       """ Merge without easyroom data """
-      merged = DataMerger.merge_building_l_b_id(edilizia=self.db_building["edilizia"])
+      merged = DataMerger._merge_building_l_b_id(edilizia=self.db_building["edilizia"])
       self.assertEqual(merged,"5703")
 
       """ Merge with edilizia and easyroom data """
-      merged = DataMerger.merge_building_l_b_id(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
+      merged = DataMerger._merge_building_l_b_id(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
       self.assertEqual(merged,"5703")
 
    def test_coordinates_are_valid(self):
@@ -86,22 +86,22 @@ class DataMergerTest(unittest.TestCase):
 
    def test_merge_coordinates(self):
       """ Merge without easyroom data """
-      coordinates = DataMerger.merge_building_coordinates(edilizia=self.db_building["edilizia"])
+      coordinates = DataMerger._merge_building_coordinates(edilizia=self.db_building["edilizia"])
       self.assertEqual(coordinates,{"lat" : 45.476098, "lng" : 9.227756})
 
       """ Merge with edilizia and easyroom data """
-      coordinates = DataMerger.merge_building_coordinates(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
+      coordinates = DataMerger._merge_building_coordinates(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
       self.assertEqual(coordinates,{"lat" : 45.476098, "lng" : 9.227756})
 
       if not DataMerger.skip_geocoding:
          """ Merge without edilizia data """
-         coordinates = DataMerger.merge_building_coordinates(easyroom=self.db_building["easyroom"])
+         coordinates = DataMerger._merge_building_coordinates(easyroom=self.db_building["easyroom"])
          self.assertEqual(coordinates,{"lat" : 45.476739, "lng" : 9.227256})
 
          """ Merge with edilizia and easyroom data ( edilizia has no coordinates ) """
          self.db_building["edilizia"].pop("lon")
          self.db_building["edilizia"].pop("lat")
-         coordinates = DataMerger.merge_building_coordinates(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
+         coordinates = DataMerger._merge_building_coordinates(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
          self.assertEqual(coordinates,{"lat" : 45.476739, "lng" : 9.227256})
 
 
