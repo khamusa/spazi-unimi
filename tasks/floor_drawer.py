@@ -1,7 +1,8 @@
 from model.drawable  import Polygon, Point
 from io              import StringIO
 from utils.logger    import Logger
-from itertools       import chain
+from itertools       import chain, groupby
+from config_manager  import ConfigManager
 import svgwrite, random
 
 class FloorDrawer():
@@ -16,6 +17,7 @@ class FloorDrawer():
 
       Returns: None
       """
+      config = ConfigManager("config/svg_categories.json")
       svg = svgwrite.Drawing()
 
       unidentified_rooms = floor.get("unidentified_rooms", [])
@@ -23,20 +25,26 @@ class FloorDrawer():
       unidentified_rooms = ((None, room) for room in unidentified_rooms)
 
       rooms = floor.get("rooms", {})
+
+      cats_svg = []
       for r_id, room in chain(rooms.items(), unidentified_rooms):
 
-         if r_id:
-            group = svgwrite.container.Group(id = r_id)
+         if "cat_name" in room:
+            cat_id   =  room["cat_name"].replace(" ", "-")
+            group    = svgwrite.container.SVG(id = cat_id[0:11])
 
          else:
-            group    = svgwrite.container.Group()
+            group    = svgwrite.container.SVG()
 
-         points   = FloorDrawer.get_polygon_points(room)
-         if points:
-            FloorDrawer.draw_room(svg, group, points)
+         polygon  = FloorDrawer.create_polygon(room)
 
-            if "cat_name" in room:
-               group.add(svg.text(room["cat_name"], (room["polygon"]["anchor_point"]["x"], room["polygon"]["anchor_point"]["y"])))
+         if polygon:
+            FloorDrawer.draw_room(svg, group, polygon.points, r_id)
+
+            center = polygon.center_point
+
+            cat = room.get("cat_name", "Sconosciuto")
+            group.add(svg.text(cat, (center.x, center.y)))
 
             svg.add(group)
 
@@ -45,15 +53,18 @@ class FloorDrawer():
       return svg
 
    @classmethod
-   def get_polygon_points(self, room):
+   def create_polygon(self, room):
       poly     = room.get("polygon")
       if poly:
          polygon  = Polygon.from_serializable(poly)
          polygon.absolutize()
-         return polygon.points
+         return polygon
 
    @classmethod
-   def draw_room(self, svg, group, points):
+   def draw_room(self, svg, group, points, r_id):
       color    = "rgb({}, {}, {})".format(int(random.random()*200), int(random.random()*200), int(random.random()*200))
-      poly     = svg.polyline( ((p.x, p.y) for p in points), fill=color, stroke="#666")
+      if r_id:
+         poly  = svg.polyline( ((p.x, p.y) for p in points), fill=color, stroke="#666", id = r_id)
+      else:
+         poly  = svg.polyline( ((p.x, p.y) for p in points), fill=color, stroke="#666")
       group.add(poly)

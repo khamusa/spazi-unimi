@@ -1,4 +1,5 @@
-from utils.myitertools import circular_pairwise
+from utils.myitertools  import circular_pairwise
+from itertools          import chain
 from . import Point
 from . import Drawable
 from . import Anchorable
@@ -85,10 +86,13 @@ class Polygon(Drawable, Anchorable):
          max_y = max(max_y, p.y)
 
       self.bounding_box = (Point(min_x, min_y), Point(max_x, max_y))
+      center_x = (min_x - max_x) / 2
+      center_y = (min_y - max_y) / 2
+      self.center_point = Point(abs(center_x), abs(center_y))
 
    def __entities__(self):
       """Hook method for Anchorable"""
-      return self.points
+      return chain(self.points, self.bounding_box, [self.center_point])
 
    ##########################
    # TRANSFORMATION METHODS #
