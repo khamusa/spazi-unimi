@@ -3,7 +3,7 @@ from io              import StringIO
 from utils.logger    import Logger
 from itertools       import chain, groupby
 from config_manager  import ConfigManager
-import svgwrite
+import svgwrite, re
 
 class FloorDrawer():
 
@@ -20,6 +20,11 @@ class FloorDrawer():
       self.room_colors     = {
          "Aula"               : "rgb(39,  88,  107)",
          "Aula Informatica"   : "rgb(97,  126, 136)",
+         "Sala Studio (sala per studio autonomo studenti non annessa a Biblioteca)" : "rgb(170, 115, 57)",
+         "Sala Lettura (prevalenza posti studio)" : "rgb(170, 115, 57)",
+         "Biblioteca (con presenza di libri e posti lettura)" : "rgb(170, 115, 57)",
+         "Mediateca"          : "rgb(170, 115, 57 )",
+         "Videoteca"          : "rgb(170, 115, 57 )",
          "WC"                 : "rgb(122, 64,  0  )",
          "Antibagno"          : "rgb(122, 64,  0  )",
          "Corridoio"          : "rgb(120, 120, 120)",
@@ -28,7 +33,9 @@ class FloorDrawer():
          "Studio"             : "rgb(136, 162, 54 )",
          "Ufficio"            : "rgb(136, 162, 54 )",
          "Sala Lauree"        : "rgb(125, 42,  104)",
-         "Sala Riunioni"      : "rgb(143, 74,  126)"
+         "Aula Seminari"      : "rgb(125, 42,  104)",
+         "Aula Magna"         : "rgb(125, 42,  104)",
+         "Sala Riunioni"      : "rgb(143, 74,  126)",
       }
 
       svg                  = svgwrite.Drawing()
@@ -58,8 +65,9 @@ class FloorDrawer():
 
    @classmethod
    def _prepare_cat_name(self, cat_name):
-      id_cat_name = cat_name.replace(" ", "-")
-      return id_cat_name[0:11]
+      cat_name = re.sub("\s*\([^\)]*\)\s*", "", cat_name)
+      id_cat_name = re.sub("[^a-zA-Z]", "-", cat_name)
+      return id_cat_name
 
    @classmethod
    def _create_room_group(self, svg, r_id, room):
@@ -83,7 +91,8 @@ class FloorDrawer():
 
    @classmethod
    def _is_cat_name_relevant(self, cat_name):
-      return not cat_name == "Corridoio" and cat_name in self.room_colors.keys()
+      exceptions = ["Corridoio"]
+      return cat_name not in exceptions and cat_name in self.room_colors.keys()
 
    @classmethod
    def _get_cat_color(self, cat_name):
