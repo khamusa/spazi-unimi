@@ -1,0 +1,129 @@
+#Aula polyline,
+#Aula-Informatica polyline,
+#Laboratorio-Didattico polyline {fill : rgb(39,  88,  107)}
+
+#Aula-Seminari polyline,
+#Aula-Magna polyline,
+#Sala-Lauree polyline,
+#Sala-Riunioni polyline {fill : rgb(125, 42,  104)}
+
+#Biblioteca polyline,
+#Sala-Informatica polyline,
+#Mediateca polyline,
+#Sala-Lettura polyline,
+#Sala-Studio polyline,
+#Videoteca polyline,
+#Spazio-Espositivo-Museale polyline {fill : rgb(170, 115, 57)}
+
+#Studio polyline,
+#Ufficio polyline {fill : rgb(136, 162, 54)}
+
+#WC polyline,
+#Antibagno polyline,
+#WCH polyline {fill : rgb(122, 64, 0)}
+
+#Atrio polyline,
+#Corridoio polyline,
+#Balcone polyline,
+#Porticato polyline,
+#Terrazzo polyline,
+#Parcheggio-Coperto-Garage polyline,
+#Cortile polyline {fill : rgb(120, 120, 120)}
+
+#Vano-Scala polyline {fill : rgb(170, 57, 57)}
+
+#Ascensore polyline {fill : rgb(225, 0, 0)}
+
+#Locale-Ristoro-Mensa polyline {fill : rgb(198, 87, 15)}
+
+#Laboratorio-di-Ricerca polyline,
+#Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-2 polyline,
+#Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-3 polyline,
+#Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-4 polyline,
+#Laboratorio-Radioisotopi polyline,
+#Laboratorio-Microscopia polyline,
+#Laboratorio-NMR polyline,
+#Laboratorio-Informatico-di-Ricerca polyline {fill : rgb(194, 166, 100)}
+
+#Locale-Guardiola-Informazioni polyline,
+#Portineria-Informazioni-Reception polyline {fill : rgb(35, 107, 97)}
+
+g:hover g polyline {
+   fill: rgb(20, 20, 255) !important;
+}
+
+/*
+#Locale-Fotocopie
+#Ambulatorio
+#Locale-di-Supporto
+#Deposito-Libri
+#Camera-Oscura
+#Camera-Insonorizzata
+#Camera-Termostatata
+#Camera-Fredda
+#Deposito-Materiale-di-Laboratorio
+#Locale-Supporto-Laboratori
+#Camera-Speciale
+#Cella-Magazzino-Refrigerato
+#Cella-Magazzino-Refrigerato
+#Deposito-Gabbie-Sporche
+#Deposito-Gabbie-Pulite
+#Fienile
+#Locale-Mungitura
+#Quarantena
+#Accettazione-Animali
+#Locale-Supporto-Stabulario
+#Sala-d-Attesa
+#Sala-Operatoria
+#Ambulatorio-Radiografico
+#Sala-Autoptica
+#Locale-Preparazioni-Cliniche
+#Ambulatorio-TAC
+#Sala-Terapia
+#Scuderie
+#Stabulario
+#Stalla
+#Serra
+#Locale-Supporto-Serra
+#Deposito-Solventi-Reagenti
+#Deposito-Bombole-Gas
+#Deposito-Rifiuti-Speciali
+#Deposito-Rifiuti-Radioattivi
+#Locale-Travaso
+#Officina
+#Appartamento-di-Servizio
+#Foresteria
+#Deposito-Materiale-Inerte
+#Deposito-Rifiuti-Solidi-Urbani
+#Deposito-Materiale-Cartaceo
+#Locale-Non-Utilizzato
+#Locali-Cooperative-Librarie
+#Locale-Pausa-Personale
+#Locale-Centro-Stampa
+#Sala-Regia-Televisiva
+#Sala-Server-Apparati-di-rete
+#Docce
+#Deposito-Materiale-Pulizie
+#Spogliatoio
+#Montacarichi
+#Montalibri
+#Cabina-Elettrica-di-Trasformazione
+#Locale-Gruppo-Elettrogeno
+#Locale-Gruppo-Continuit-
+#Centrale-Termica
+#Centrale-Trattamento-Aria
+#Centrale-Idrica
+#Locale-Contatori-Cabina-Elettrica
+#Centrali-Frigorifere
+#Centrale-Antincendio
+#Locale-Macchine-Ascensori
+#Locale-Impianti-Tecnologici
+#Locale-Quadri-Elettrici
+#Vasche-Diluizione-Scarichi-Radioattivi
+#Cavedio-Porta-Impianti
+#Soppalco
+#Sottotetto
+#Intercapedine
+*/
+
+

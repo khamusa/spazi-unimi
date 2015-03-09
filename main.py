@@ -76,6 +76,26 @@ class Main():
       task              = CSVTask(self._config)
       task.perform_updates_on_files(files)
 
+   def run_svg(self, b_ids):
+      """
+      Create svg files representing maps of buildings.
+
+      Arguments:
+      - b_ids: a list of string representing the building ids of the buildings
+      we want create/update svg files.
+
+      Returns: None
+
+      Instantiates a MongoDBPersistenceManager and a SVGTask to create the svg
+      files whit the apposite procedure.
+      If b_ids is None the CSVTask create svg files of every building in the DB.
+      """
+      persistence       = MongoDBPersistenceManager(self._config)
+      ORMModel.set_pm( persistence )
+
+      task              = SVGTask(self._config)
+      task.perform_svg_update(b_ids)
+
 if __name__ == '__main__':
    """
    Main procedure of the application, parse the arguments and call the
@@ -86,8 +106,8 @@ if __name__ == '__main__':
 
    parser = argparse.ArgumentParser(description = "Programma per l'aggiornamento dati del server Spazi Unimi.")
 
-   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "cow"],
-                      help="Il commando da eseguire: dxf, csv")
+   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "svg", "cow"],
+                      help="Il commando da eseguire: dxf, csv, svg")
 
    parser.add_argument('files', metavar='file', type=str, nargs='*',
                       help='I file su cui lavorare, a seconda del comando scelto.')
