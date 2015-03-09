@@ -17,28 +17,8 @@ class FloorDrawer():
 
       Returns: None
       """
-      self.room_colors     = {
-         "Aula"               : "rgb(39,  88,  107)",
-         "Aula Informatica"   : "rgb(97,  126, 136)",
-         "Sala Studio"        : "rgb(170, 115, 57 )",
-         "Sala Lettura"       : "rgb(170, 115, 57 )",
-         "Biblioteca"         : "rgb(170, 115, 57 )",
-         "Mediateca"          : "rgb(170, 115, 57 )",
-         "Videoteca"          : "rgb(170, 115, 57 )",
-         "WC"                 : "rgb(122, 64,  0  )",
-         "Antibagno"          : "rgb(122, 64,  0  )",
-         "Corridoio"          : "rgb(120, 120, 120)",
-         "Ascensore"          : "rgb(225, 0,   0  )",
-         "Vano Scala"         : "rgb(170, 57,  57 )",
-         "Studio"             : "rgb(136, 162, 54 )",
-         "Ufficio"            : "rgb(136, 162, 54 )",
-         "Sala Lauree"        : "rgb(125, 42,  104)",
-         "Aula Seminari"      : "rgb(125, 42,  104)",
-         "Aula Magna"         : "rgb(125, 42,  104)",
-         "Sala Riunioni"      : "rgb(143, 74,  126)"
-      }
-
       svg                  = svgwrite.Drawing()
+      svg.add(FloorDrawer._get_style(svg))
 
       unidentified_rooms   = floor.get("unidentified_rooms", [])
       unidentified_rooms   = ((None, room) for room in unidentified_rooms)
@@ -64,6 +44,11 @@ class FloorDrawer():
       return svg
 
    @classmethod
+   def _get_style(self, svg):
+      with open("assets/svg.css") as fp:
+         return svg.style(fp.read())
+
+   @classmethod
    def _prepare_cat_name(self, cat_name):
       return re.sub("[^a-zA-Z]", "-", cat_name)
 
@@ -71,12 +56,11 @@ class FloorDrawer():
    def _create_room_group(self, svg, r_id, room):
 
       cat         = room.get("cat_name", "Sconosciuto")
-      cat_color   = self._get_cat_color(cat)
       group       = svgwrite.container.Group(id = r_id)
       polygon     = FloorDrawer.create_polygon(room)
 
       if polygon:
-         FloorDrawer.draw_room(svg, group, polygon.points, r_id, color = cat_color)
+         FloorDrawer.draw_room(svg, group, polygon.points, r_id, color = "rgb(220, 220, 220)")
          center = polygon.center_point
 
          if FloorDrawer._is_cat_name_relevant(cat):
@@ -89,12 +73,17 @@ class FloorDrawer():
 
    @classmethod
    def _is_cat_name_relevant(self, cat_name):
-      exceptions = ["Corridoio"]
-      return cat_name not in exceptions and cat_name in self.room_colors.keys()
-
-   @classmethod
-   def _get_cat_color(self, cat_name):
-      return self.room_colors.get(cat_name, "rgb(220, 220, 220)")
+      exceptions = [
+         "Sconosciuto",
+         "Corridoio",
+         "Atrio",
+         "Corridoio",
+         "Balcone",
+         "Porticato",
+         "Terrazzo",
+         "Cortile"
+      ]
+      return cat_name not in exceptions
 
    @classmethod
    def create_polygon(self, room):
