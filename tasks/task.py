@@ -17,8 +17,10 @@ class Task():
 
       Returns None.
       """
-      for filename in files:
-         with Logger.info("Processing file " + filename):
+      total = len(files)
+      for i, filename in enumerate(files):
+         msg = "{}/{} - Processing file {}".format(i, total, filename)
+         with Logger.info(msg):
             try:
                self.perform_update(filename)
                self.perform_file_backup(filename)
