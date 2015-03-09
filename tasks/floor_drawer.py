@@ -50,7 +50,10 @@ class FloorDrawer():
 
    @classmethod
    def _prepare_cat_name(self, cat_name):
-      return re.sub("[^a-zA-Z]", "-", cat_name)
+      if cat_name.strip():
+         return re.sub("[^a-zA-Z]", "-", cat_name)
+
+      return "Sconosciuto"
 
    @classmethod
    def _create_room_group(self, svg, r_id, room):
