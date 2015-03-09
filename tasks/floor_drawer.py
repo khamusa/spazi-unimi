@@ -8,7 +8,7 @@ import svgwrite, re
 class FloorDrawer():
 
    @classmethod
-   def draw_floor(self, floor):
+   def draw_floor(klass, floor):
       """
       Create and save a map (in svg format) representing a floor.
 
@@ -44,26 +44,24 @@ class FloorDrawer():
       return svg
 
    @classmethod
-   def _get_style(self, svg):
-      with open("assets/svg.css") as fp:
-         return svg.style(fp.read())
+   def _create_room_group(klass, svg, r_id, room):
+      """
+      Create an svg Group that contains room's elements: a polyline and a text.
 
-   @classmethod
-   def _prepare_cat_name(self, cat_name):
-      if cat_name.strip():
-         return re.sub("[^a-zA-Z]", "-", cat_name)
+      Arguments:
+      - svg: the svg we are editing;
+      - r_id: a string representing the room id;
+      - room: a dictionary representing the room's informations.
 
-      return "Sconosciuto"
-
-   @classmethod
-   def _create_room_group(self, svg, r_id, room):
-
+      Returns:
+      - an svg Group.
+      """
       cat         = room.get("cat_name", "Sconosciuto")
       group       = svgwrite.container.Group(id = r_id)
-      polygon     = FloorDrawer.create_polygon(room)
+      polygon     = FloorDrawer._create_polygon(room)
 
       if polygon:
-         FloorDrawer.draw_room(svg, group, polygon.points, r_id, color = "rgb(220, 220, 220)")
+         FloorDrawer._draw_room(svg, group, polygon.points, r_id, color = "rgb(220, 220, 220)")
          center = polygon.center_point
 
          if FloorDrawer._is_cat_name_relevant(cat):
@@ -75,7 +73,80 @@ class FloorDrawer():
       return group
 
    @classmethod
-   def _is_cat_name_relevant(self, cat_name):
+   def _create_polygon(klass, room):
+      """
+      Create a polygon from a room's polyline.
+
+      Arguments:
+      - room: a dictionary representing the room's informations.
+
+      Returns:
+      - a polygon object.
+      """
+      poly        = room.get("polygon")
+      if poly:
+         polygon  = Polygon.from_serializable(poly)
+         polygon.absolutize()
+         return polygon
+
+   @classmethod
+   def _draw_room(klass, svg, group, points, r_id, color):
+      """
+      Add an svg polyline from a points list to a group.
+
+      Arguments:
+      - svg: the svg we are editing;
+      - group: the svg Group we want update with the polyline;
+      - points: a list representing the points of the polyline;
+      - color: the fill color for the polyline.
+
+      Returns: None.
+      """
+      if r_id:
+         poly  = svg.polyline( ((p.x, p.y) for p in points), fill=color, stroke="#666", id = r_id)
+      else:
+         poly  = svg.polyline( ((p.x, p.y) for p in points), fill=color, stroke="#666")
+      group.add(poly)
+
+   @classmethod
+   def _get_style(klass, svg):
+      """
+      Read the svg.css file and return an svg Style object that contains his
+      informations.
+
+      Arguments:
+      - svg: the svg we are editing.
+
+      Returns:
+      - an svg Style object.
+      """
+      with open("assets/svg.css") as fp:
+         return svg.style(fp.read())
+
+   @classmethod
+   def _prepare_cat_name(klass, cat_name):
+      """
+      Prepare a cat name to be used as svg's id.
+
+      Arguments:
+      - cat_name: a string representing a room category name.
+
+      Returns: a string representing a cat_name usable as svg's id.
+      """
+      if cat_name.strip():
+         return re.sub("[^a-zA-Z]", "-", cat_name)
+      return "Sconosciuto"
+
+   @classmethod
+   def _is_cat_name_relevant(klass, cat_name):
+      """
+      Say if a cat_name can be added as text to the room's group.
+
+      Arguments:
+      - cat_name: a string representing a room category name.
+
+      Returns: True or False.
+      """
       exceptions = [
          "Sconosciuto",
          "Corridoio",
@@ -87,20 +158,4 @@ class FloorDrawer():
          "Cortile"
       ]
       return cat_name not in exceptions
-
-   @classmethod
-   def create_polygon(self, room):
-      poly        = room.get("polygon")
-      if poly:
-         polygon  = Polygon.from_serializable(poly)
-         polygon.absolutize()
-         return polygon
-
-   @classmethod
-   def draw_room(self, svg, group, points, r_id, color):
-      if r_id:
-         poly  = svg.polyline( ((p.x, p.y) for p in points), fill=color, stroke="#666", id = r_id)
-      else:
-         poly  = svg.polyline( ((p.x, p.y) for p in points), fill=color, stroke="#666")
-      group.add(poly)
 
