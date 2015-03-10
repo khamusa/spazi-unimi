@@ -1,3 +1,8 @@
+g g text {
+   font-size: 2em;
+   font-family: monospace;
+}
+
 #Aula polyline,
 #Aula-Informatica polyline,
 #Laboratorio-Didattico polyline {fill : rgb(39,  88,  107)}
@@ -28,7 +33,7 @@
 #Porticato polyline,
 #Terrazzo polyline,
 #Parcheggio-Coperto-Garage polyline,
-#Cortile polyline {fill : rgb(120, 120, 120)}
+#Cortile polyline {fill : rgb(150, 150, 150)}
 
 #Vano-Scala polyline {fill : rgb(170, 57, 57)}
 
