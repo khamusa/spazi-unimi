@@ -8,7 +8,7 @@ import svgwrite, re
 class FloorDrawer():
 
    @classmethod
-   def draw_floor(self, floor):
+   def draw_floor(klass, floor):
       """
       Create and save a map (in svg format) representing a floor.
 
@@ -18,10 +18,10 @@ class FloorDrawer():
       Returns: None
       """
       svg                  = svgwrite.Drawing()
-      svg.add(FloorDrawer._get_style(svg))
+      svg.add(klass._get_style(svg))
 
       walls                = floor.get("walls", [])
-      walls_group          = self._create_walls_group(svg, walls)
+      walls_group          = klass._create_walls_group(svg, walls)
 
       unidentified_rooms   = floor.get("unidentified_rooms", [])
       unidentified_rooms   = ((None, room) for room in unidentified_rooms)
@@ -33,11 +33,11 @@ class FloorDrawer():
       rooms_by_cat         = groupby(all_rooms, key = get_cat_name)
 
       for cat_name, cat_rooms in rooms_by_cat:
-         id_cat_name = FloorDrawer._prepare_cat_name(cat_name)
+         id_cat_name = klass._prepare_cat_name(cat_name)
          cat_group   = svgwrite.container.Group(id = id_cat_name)
 
          for r_id, room in cat_rooms:
-            room_group = FloorDrawer._create_room_group(svg, r_id, room)
+            room_group = klass._create_room_group(svg, r_id, room)
             cat_group.add(room_group)
 
          svg.add(cat_group)
@@ -50,40 +50,50 @@ class FloorDrawer():
       return svg
 
    @classmethod
-   def _create_walls_group(self, svg, walls):
+   def _create_walls_group(klass, svg, walls):
       g = svgwrite.container.Group(id = "walls")
 
       for p in walls:
-         poly = self.create_polygon(p)
+         poly = klass._create_polygon(p)
          g.add( svg.polyline( ((p.x, p.y) for p in poly.points), fill="rgb(0,0,0)") )
 
       return g
 
    @classmethod
-   def _get_style(self, svg):
+   def _get_style(klass, svg):
       with open("assets/svg.css") as fp:
          return svg.style(fp.read())
 
    @classmethod
-   def _prepare_cat_name(self, cat_name):
+   def _prepare_cat_name(klass, cat_name):
       if cat_name.strip():
          return re.sub("[^a-zA-Z]", "-", cat_name)
 
       return "Sconosciuto"
 
    @classmethod
-   def _create_room_group(self, svg, r_id, room):
+   def _create_room_group(klass, svg, r_id, room):
+      """
+      Create an svg Group that contains room's elements: a polyline and a text.
 
+      Arguments:
+      - svg: the svg we are editing;
+      - r_id: a string representing the room id;
+      - room: a dictionary representing the room's informations.
+
+      Returns:
+      - an svg Group.
+      """
       cat         = room.get("cat_name", "Sconosciuto")
       group       = svgwrite.container.Group(id = r_id)
-      polygon     = FloorDrawer.create_polygon(room.get("polygon"))
+      polygon     = klass._create_polygon(room.get("polygon"))
 
       if polygon:
-         FloorDrawer.draw_room(svg, group, polygon.points, r_id, color = "rgb(220, 220, 220)")
+         klass._draw_room(svg, group, polygon.points, r_id)
          center      = polygon.center_point
          center.y    += 10
 
-         if FloorDrawer._is_cat_name_relevant(cat):
+         if klass._is_cat_name_relevant(cat):
             name     = room.get("room_name", "")
             text     = svg.text(cat, (center.x - len(cat) * 8, center.y))
             text.add(svg.tspan(name, x = [center.x - len(cat) * 8], y = [center.y + 35]))
@@ -92,7 +102,78 @@ class FloorDrawer():
       return group
 
    @classmethod
-   def _is_cat_name_relevant(self, cat_name):
+   def _create_polygon(klass, poly):
+      """
+      Create a polygon from a room's polyline.
+
+      Arguments:
+      - poly: a dictionary representing the room's polygon informations.
+
+      Returns:
+      - a polygon object.
+      """
+      if poly:
+         polygon  = Polygon.from_serializable(poly)
+         polygon.absolutize()
+         return polygon
+
+   @classmethod
+   def _draw_room(klass, svg, group, points, r_id):
+      """
+      Add an svg polyline from a points list to a group.
+
+      Arguments:
+      - svg: the svg we are editing;
+      - group: the svg Group we want update with the polyline;
+      - points: a list representing the points of the polyline;
+
+      Returns: None.
+      """
+      if r_id:
+         poly  = svg.polyline( ((p.x, p.y) for p in points), id = r_id)
+      else:
+         poly  = svg.polyline( ((p.x, p.y) for p in points))
+      group.add(poly)
+
+   @classmethod
+   def _get_style(klass, svg):
+      """
+      Read the svg.css file and return an svg Style object that contains his
+      informations.
+
+      Arguments:
+      - svg: the svg we are editing.
+
+      Returns:
+      - an svg Style object.
+      """
+      with open("assets/svg.css") as fp:
+         return svg.style(fp.read())
+
+   @classmethod
+   def _prepare_cat_name(klass, cat_name):
+      """
+      Prepare a cat name to be used as svg's id.
+
+      Arguments:
+      - cat_name: a string representing a room category name.
+
+      Returns: a string representing a cat_name usable as svg's id.
+      """
+      if cat_name.strip():
+         return re.sub("[^a-zA-Z]", "-", cat_name)
+      return "Sconosciuto"
+
+   @classmethod
+   def _is_cat_name_relevant(klass, cat_name):
+      """
+      Say if a cat_name can be added as text to the room's group.
+
+      Arguments:
+      - cat_name: a string representing a room category name.
+
+      Returns: True or False.
+      """
       exceptions = [
          "Sconosciuto",
          "Corridoio",
@@ -104,19 +185,4 @@ class FloorDrawer():
          "Cortile"
       ]
       return cat_name not in exceptions
-
-   @classmethod
-   def create_polygon(self, poly):
-      if poly:
-         polygon  = Polygon.from_serializable(poly)
-         polygon.absolutize()
-         return polygon
-
-   @classmethod
-   def draw_room(self, svg, group, points, r_id, color):
-      if r_id:
-         poly  = svg.polyline( ((p.x, p.y) for p in points), fill=color, stroke="#666", id = r_id)
-      else:
-         poly  = svg.polyline( ((p.x, p.y) for p in points), fill=color, stroke="#666")
-      group.add(poly)
 

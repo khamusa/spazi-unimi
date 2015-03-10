@@ -23,6 +23,9 @@ class Point(Drawable):
    def __repr__(self):
       return str(self)
 
+   def __hash__(self):
+      return hash(str(self))
+
    def to_serializable(self):
       """Transform this object in something json-serializable"""
       return { "x": self.x, "y": self.y }
