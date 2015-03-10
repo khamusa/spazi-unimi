@@ -65,7 +65,9 @@ class DXFTask(Task):
 
       # Pulisce i dati ed esegue il vero salvataggio sul DB
       updater.save_floor(building, floor)
-      # TODO: CALL A DATAMERGER
+
+      backup_filename      = self.get_backup_filepath(dxf_file)
+      self.backup_filepath = os.path.join(backup_filename)
 
    def get_backup_filepath(self, filename):
       """
@@ -79,7 +81,7 @@ class DXFTask(Task):
 
       Called by parent class (method perform_file_backup).
       """
-      backup_file_folder  = os.path.join(self._backup_folder, self.dx.fl9oor.b_id)
+      backup_file_folder  = os.path.join(self._backup_folder, self.dx.floor.b_id)
 
       if not os.path.exists( backup_file_folder ):
          os.mkdir(backup_file_folder)
