@@ -55,7 +55,7 @@ class FloorDrawer():
 
       for p in walls:
          poly = klass._create_polygon(p)
-         g.add( svg.polyline( ((p.x, p.y) for p in poly.points), fill="rgb(0,0,0)") )
+         g.add( svg.polyline( ((p.x, p.y) for p in poly.points), fill="rgb(0,0,0)", stroke="rgb(255, 0, 0)") )
 
       return g
 
@@ -130,9 +130,9 @@ class FloorDrawer():
       Returns: None.
       """
       if r_id:
-         poly  = svg.polyline( ((p.x, p.y) for p in points), id = r_id)
+         poly  = svg.polyline( ((p.x, p.y) for p in points), id = r_id, fill="rgb(255, 255, 255)")
       else:
-         poly  = svg.polyline( ((p.x, p.y) for p in points))
+         poly  = svg.polyline( ((p.x, p.y) for p in points), fill="rgb(255, 255, 255)")
       group.add(poly)
 
    @classmethod
