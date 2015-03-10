@@ -20,6 +20,9 @@ class FloorDrawer():
       svg                  = svgwrite.Drawing()
       svg.add(FloorDrawer._get_style(svg))
 
+      walls                = floor.get("walls", [])
+      walls_group          = self._create_walls_group(svg, walls)
+
       unidentified_rooms   = floor.get("unidentified_rooms", [])
       unidentified_rooms   = ((None, room) for room in unidentified_rooms)
       rooms                = floor.get("rooms", {})
@@ -39,9 +42,22 @@ class FloorDrawer():
 
          svg.add(cat_group)
 
+
+      svg.add(walls_group)
+
       if len(svg.elements) <= 1:
          Logger.warning("Impossible generate csv: no room polylines founded")
       return svg
+
+   @classmethod
+   def _create_walls_group(self, svg, walls):
+      g = svgwrite.container.Group(id = "walls")
+
+      for p in walls:
+         poly = self.create_polygon(p)
+         g.add( svg.polyline( ((p.x, p.y) for p in poly.points), fill="rgb(0,0,0)") )
+
+      return g
 
    @classmethod
    def _get_style(self, svg):
@@ -60,16 +76,17 @@ class FloorDrawer():
 
       cat         = room.get("cat_name", "Sconosciuto")
       group       = svgwrite.container.Group(id = r_id)
-      polygon     = FloorDrawer.create_polygon(room)
+      polygon     = FloorDrawer.create_polygon(room.get("polygon"))
 
       if polygon:
          FloorDrawer.draw_room(svg, group, polygon.points, r_id, color = "rgb(220, 220, 220)")
-         center = polygon.center_point
+         center      = polygon.center_point
+         center.y    += 10
 
          if FloorDrawer._is_cat_name_relevant(cat):
             name     = room.get("room_name", "")
-            text     = svg.text(cat, (center.x - len(cat) * 4.5, center.y))
-            text.add(svg.tspan(name, x = [center.x - len(cat) * 4.5], y = [center.y + 20]))
+            text     = svg.text(cat, (center.x - len(cat) * 8, center.y))
+            text.add(svg.tspan(name, x = [center.x - len(cat) * 8], y = [center.y + 35]))
             group.add(text)
 
       return group
@@ -89,8 +106,7 @@ class FloorDrawer():
       return cat_name not in exceptions
 
    @classmethod
-   def create_polygon(self, room):
-      poly        = room.get("polygon")
+   def create_polygon(self, poly):
       if poly:
          polygon  = Polygon.from_serializable(poly)
          polygon.absolutize()
