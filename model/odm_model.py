@@ -1,5 +1,5 @@
 import types
-from .orm_attrs import ORMAttrs
+from .odm_attrs import ODMAttrs
 
 def around_callbacks(funz):
    """
@@ -54,7 +54,7 @@ def around_callbacks(funz):
       return ret
    return wrapper
 
-class ORMModel(ORMAttrs):
+class ODMModel(ODMAttrs):
 
    before_callbacks = {}
    after_callbacks  = {}
@@ -70,15 +70,15 @@ class ORMModel(ORMAttrs):
       """
       Sets the class Persistence Manager to be used
       """
-      ORMModel._pm = pm
+      ODMModel._pm = pm
 
    @classmethod # can actually be called on instances
    def get_collection(klass_or_instance):
       """
-      Explicit reference to ORMModel so that the method behaves
+      Explicit reference to ODMModel so that the method behaves
       the same being called both on instances and class
       """
-      return ORMModel._pm.get_collection(klass_or_instance.collection_name())
+      return ODMModel._pm.get_collection(klass_or_instance.collection_name())
 
    @classmethod # can actually be called on instances
    def collection_name(klass_or_instance):
@@ -86,7 +86,7 @@ class ORMModel(ORMAttrs):
 
    @classmethod # can actually be called on instances
    def sanitize_id(klass_or_instance, id):
-      return ORMAttrs.sanitize_id(id)
+      return ODMAttrs.sanitize_id(id)
 
    """
 
@@ -144,7 +144,7 @@ class ORMModel(ORMAttrs):
       Arguments:
       - query: a MONGO filtering query
 
-      Return value: a generator of ORMModel objects.
+      Return value: a generator of ODMModel objects.
       """
       docs = klass.get_collection().find( query )
 
@@ -169,7 +169,7 @@ class ORMModel(ORMAttrs):
 
       Arguments:
       - event: a string representing the event to listen to. Must be on the
-      format before_<methodname> or after_<methodname> where <methodname>
+      fodmat before_<methodname> or after_<methodname> where <methodname>
       is the name of the instance method whose calls you want to listen to.
       - callback_name_or_callable: either a string representing the method to be
       called or a callable object. If a string is used, It MUST be an instance
@@ -179,18 +179,18 @@ class ORMModel(ORMAttrs):
       Return value: None
 
       Usage:
-      ORMModel.listen("after_save", "nice_method")
-      ORMModel.listen("before_destroy", "other_beautiful_method")
+      ODMModel.listen("after_save", "nice_method")
+      ODMModel.listen("before_destroy", "other_beautiful_method")
 
       Example:
-      >>> from model import ORMModel
+      >>> from model import ODMModel
       >>> from mock import MagicMock
-      >>> ORMModel.set_pm(MagicMock())
-      >>> b = ORMModel({ "_id": 123 })
+      >>> ODMModel.set_pm(MagicMock())
+      >>> b = ODMModel({ "_id": 123 })
       >>> before = lambda s: print("Before Save executed")
       >>> after  = lambda s: print("After Save executed")
-      >>> ORMModel.listen("before_save", before)
-      >>> ORMModel.listen("after_save", after)
+      >>> ODMModel.listen("before_save", before)
+      >>> ODMModel.listen("after_save", after)
       >>> b.save()
       Before Save executed
       After Save executed
@@ -220,7 +220,7 @@ class ORMModel(ORMAttrs):
    @classmethod
    def _listen_split_event(klass, event):
       """
-      Given an event string in the format "type_method" (i.e. before_save,
+      Given an event string in the fodmat "type_method" (i.e. before_save,
       after_destroy), splits the event name separating the type and method,
       validates the event type (before or after only) and return both
       as a tuple.
@@ -252,7 +252,7 @@ class ORMModel(ORMAttrs):
 
       Arguments:
       - event: a string representing the event to listen to. Must be on the
-      format before_<methodname> or after_<methodname> where <methodname>
+      fodmat before_<methodname> or after_<methodname> where <methodname>
       is the name of the instance method whose calls you want to listen to.
       - callback_name_or_callable: either a string representing the method to be
       called or a callable object. If a string is used, It MUST be an instance

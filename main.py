@@ -4,7 +4,7 @@ from persistence.json_persistence_manager          import JSONPersistenceManager
 from persistence.db.mongo_db_persistence_manager   import MongoDBPersistenceManager
 from persistence.svg_persistence_decorator         import SVGPersistenceDecorator
 from utils.logger                                  import Logger
-from model                                         import ORMModel
+from model                                         import ODMModel
 import time
 
 class Main():
@@ -53,7 +53,7 @@ class Main():
       """
       #persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
       persistence       = MongoDBPersistenceManager(self._config)
-      ORMModel.set_pm( persistence )
+      ODMModel.set_pm( persistence )
 
       task              = DXFTask(self._config)
       task.perform_updates_on_files(files)
@@ -71,7 +71,7 @@ class Main():
       files whit the apposite procedure.
       """
       persistence       = MongoDBPersistenceManager(self._config)
-      ORMModel.set_pm( persistence )
+      ODMModel.set_pm( persistence )
 
       task              = CSVTask(self._config)
       task.perform_updates_on_files(files)
@@ -91,7 +91,7 @@ class Main():
       If b_ids is None the CSVTask create svg files of every building in the DB.
       """
       persistence       = MongoDBPersistenceManager(self._config)
-      ORMModel.set_pm( persistence )
+      ODMModel.set_pm( persistence )
 
       task              = SVGTask(self._config)
       task.perform_svg_update(b_ids)

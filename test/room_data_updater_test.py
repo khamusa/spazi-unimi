@@ -1,6 +1,6 @@
 import unittest
 from persistence.db              import MongoDBPersistenceManager
-from model.orm_model             import ORMModel
+from model.odm_model             import ODMModel
 from model.building              import Building
 from mock                        import MagicMock
 from itertools                   import chain
@@ -18,7 +18,7 @@ class RoomDataUpdaterTest(unittest.TestCase):
             }
       })
 
-      ORMModel.set_pm(pm)
+      ODMModel.set_pm(pm)
 
       self.edil_rooms = [
          {

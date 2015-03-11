@@ -1,7 +1,7 @@
-from . import ORMModel
+from . import ODMModel
 import re
 
-class Building(ORMModel):
+class Building(ODMModel):
 
    def __init__(self, new_attrs = None):
       super().__init__(new_attrs, external_id = "b_id")

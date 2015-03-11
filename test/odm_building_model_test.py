@@ -1,9 +1,9 @@
 import unittest
 from model              import Building
-from model              import ORMModel
+from model              import ODMModel
 from persistence.db     import MongoDBPersistenceManager
 
-class ORMBuildingModelTest(unittest.TestCase):
+class ODMBuildingModelTest(unittest.TestCase):
 
    def setUp(self):
       self._pm = MongoDBPersistenceManager({
@@ -13,7 +13,7 @@ class ORMBuildingModelTest(unittest.TestCase):
                "db_name" : "campus_unimi_test"
             }
       })
-      ORMModel.set_pm(self._pm)
+      ODMModel.set_pm(self._pm)
       self._pm.clean_collection("building")
 
 

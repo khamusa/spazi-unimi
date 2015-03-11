@@ -1,6 +1,6 @@
 import unittest
 from persistence.db              import MongoDBPersistenceManager
-from model.orm_model             import ORMModel
+from model.odm_model             import ODMModel
 from model.building              import Building
 from mock                        import MagicMock, patch
 from datetime                    import datetime
@@ -18,8 +18,8 @@ class BuildingDataUpdaterTest(unittest.TestCase):
                "db_name" : "campus_unimi_test"
             }
       })
-      self.old_pm = getattr(ORMModel, "_pm", None)
-      ORMModel.set_pm(pm)
+      self.old_pm = getattr(ODMModel, "_pm", None)
+      ODMModel.set_pm(pm)
 
       self.db_building  = {
           "_id" : "21030",
@@ -197,4 +197,4 @@ class BuildingDataUpdaterTest(unittest.TestCase):
             mock_obj.assert_called_once_with()
 
    def tearDown(self):
-      ORMModel.set_pm(self.old_pm)
+      ODMModel.set_pm(self.old_pm)

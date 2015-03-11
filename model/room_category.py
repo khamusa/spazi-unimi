@@ -1,7 +1,7 @@
-from . import ORMModel
+from . import ODMModel
 import re
 
-class RoomCategory(ORMModel):
+class RoomCategory(ODMModel):
 
    def __init__(self, new_attrs = None):
       new_attrs["cat_name"] = re.sub("\s*\([^\)]*\)\s*", "", new_attrs["cat_name"])

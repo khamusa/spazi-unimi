@@ -1,10 +1,10 @@
 import unittest
-import model.orm_attrs as orm_attrs
+import model.odm_attrs as odm_attrs
 
-class ORMAttrsTest(unittest.TestCase):
+class ODMAttrsTest(unittest.TestCase):
 
    def setUp(self):
-      self.attrs = orm_attrs.ORMAttrs(
+      self.attrs = odm_attrs.ODMAttrs(
          {
             "_id": "32548",
             "some": {
@@ -166,17 +166,17 @@ class ORMAttrsTest(unittest.TestCase):
    # TEST id handling #
    ####################
    def test_id_assignment_gets_sanitized(self):
-      orm = orm_attrs.ORMAttrs({ "_id": "   123 "})
-      self.assertEqual(orm["_id"], "123")
+      odm = odm_attrs.ODMAttrs({ "_id": "   123 "})
+      self.assertEqual(odm["_id"], "123")
 
-      orm.attrs({ "_id" : 13124 })
-      self.assertEqual(orm["_id"], "13124")
+      odm.attrs({ "_id" : 13124 })
+      self.assertEqual(odm["_id"], "13124")
 
-      orm["_id"] = 444
-      self.assertEqual(orm["_id"], "444")
+      odm["_id"] = 444
+      self.assertEqual(odm["_id"], "444")
 
    def test_external_id_handling(self):
-      attrs = orm_attrs.ORMAttrs({ "bid": 123, "pippo": 123 }, external_id = "bid")
+      attrs = odm_attrs.ODMAttrs({ "bid": 123, "pippo": 123 }, external_id = "bid")
 
       def verify_id(expected):
          self.assertTrue(attrs["bid"] is attrs["_id"])

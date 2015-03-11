@@ -1,4 +1,4 @@
-class ORMAttrs:
+class ODMAttrs:
 
    def __init__(self, attrs = None, external_id = "_id"):
       if external_id is not "_id" and external_id in attrs:
@@ -8,7 +8,7 @@ class ORMAttrs:
       self._attrs          = attrs or {}
       self._external_id    = external_id
 
-      """Since __setitem__ is not called during ORMAttrs creation, we need
+      """Since __setitem__ is not called during ODMAttrs creation, we need
       to manually ensure id sanitization"""
       self._ensure_sanitize_id()
 
@@ -101,7 +101,7 @@ class ORMAttrs:
       supplied as default.
 
       Examples:
-      >>> a = ORMAttrs({})
+      >>> a = ODMAttrs({})
       >>> a.get_path("some.deep.structure", 123)
       123
       >>> "some" in a
@@ -141,7 +141,7 @@ class ORMAttrs:
       attributes tree.
 
       Example:
-      >>> a = ORMAttrs({ "something": { "cool": 123 }})
+      >>> a = ODMAttrs({ "something": { "cool": 123 }})
       >>> a.has_path("something")
       True
       >>> a.has_path("something.cool")
