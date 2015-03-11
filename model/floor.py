@@ -13,11 +13,13 @@ class Floor:
       self.n_rooms         = 0
       self.walls           = []
 
-      for r in rooms:
-         self.add_room(r)
+      if rooms:
+         for r in rooms:
+            self.add_room(r)
 
-      for p in wall_polygons:
-         self.add_wall_polygon(p)
+      if wall_polygons:
+         for p in wall_polygons:
+            self.add_wall_polygon(p)
 
    def __eq__(self,other):
       return (

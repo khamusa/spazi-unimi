@@ -1,7 +1,8 @@
 import unittest
-from model.drawable import Point
-from model.drawable import Polygon
-from mock import MagicMock
+from model.drawable  import Point
+from model.drawable  import Polygon
+from mock            import MagicMock
+from itertools       import chain
 
 class PolygonTest(unittest.TestCase):
 
@@ -155,5 +156,11 @@ class PolygonTest(unittest.TestCase):
    def test___entities__method(self):
       # We want to make sure polygon defines this method, that's the only
       # reason this test exists
-      self.assertEqual(self.polygon1.points, self.polygon1.__entities__())
+      result = chain(
+         self.polygon1.points,
+         self.polygon1.bounding_box,
+         [self.polygon1.center_point]
+      )
+
+      self.assertEqual(list(result), list(self.polygon1.__entities__()))
 
