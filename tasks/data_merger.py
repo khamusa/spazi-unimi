@@ -321,6 +321,7 @@ class DataMerger():
       result                        = {}
       result["f_id"]                = floor["f_id"]
       result["walls"]               = floor.get("walls", [])
+      result["windows"]             = floor.get("windows", [])
       result["rooms"]               = {}
       result["unidentified_rooms"]  = []
 

@@ -3,14 +3,29 @@ g g text {
    font-family: monospace;
 }
 
+#walls line {
+   stroke: rgb(0, 0, 0);
+   stroke-width: 5
+}
+
+#windows line {
+   stroke: rgb(60, 60, 60);
+   stroke-width: 5
+}
+
+g polyline{
+   stroke: black;
+   stroke-width : 3;
+}
+
 #Aula polyline,
 #Aula-Informatica polyline,
-#Laboratorio-Didattico polyline {fill : rgb(39,  88,  107)}
+#Laboratorio-Didattico polyline {fill : rgb(39, 88, 107)}
 
 #Aula-Seminari polyline,
 #Aula-Magna polyline,
 #Sala-Lauree polyline,
-#Sala-Riunioni polyline {fill : rgb(125, 42,  104)}
+#Sala-Riunioni polyline {fill : rgb(125, 42, 104)}
 
 #Biblioteca polyline,
 #Sala-Informatica polyline,

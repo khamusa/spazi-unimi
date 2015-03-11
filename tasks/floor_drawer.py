@@ -21,7 +21,12 @@ class FloorDrawer():
       svg.add(klass._get_style(svg))
 
       walls                = floor.get("walls", [])
-      walls_group          = klass._create_walls_group(svg, walls)
+      walls_group          = klass._create_group(svg, walls, "walls")
+      svg.add(walls_group)
+
+      windows              = floor.get("windows", [])
+      windows_group        = klass._create_group(svg,  windows, "windows")
+      svg.add(windows_group)
 
       unidentified_rooms   = floor.get("unidentified_rooms", [])
       unidentified_rooms   = ((None, room) for room in unidentified_rooms)
@@ -42,20 +47,16 @@ class FloorDrawer():
 
          svg.add(cat_group)
 
-
-      svg.add(walls_group)
-
       if len(svg.elements) <= 1:
          Logger.warning("Impossible generate csv: no room polylines founded")
       return svg
 
    @classmethod
-   def _create_walls_group(klass, svg, walls):
-      g = svgwrite.container.Group(id = "walls")
+   def _create_group(klass, svg, lines, group_name):
+      g = svgwrite.container.Group(id = group_name)
 
-      for p in walls:
-         poly = klass._create_polygon(p)
-         g.add( svg.polyline( ((p.x, p.y) for p in poly.points), fill="rgb(0,0,0)", stroke="rgb(255, 0, 0)") )
+      for start, end in lines:
+         g.add( svg.line( start=(start["x"], start["y"]), end=(end["x"], end["y"]) ) )
 
       return g
 
