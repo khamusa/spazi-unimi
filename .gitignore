@@ -34,5 +34,6 @@ assets/test.svg
 #data
 data/
 assets/csv
-assets/dxf
+assets/dxf*
 assets/dwg
+docs/
