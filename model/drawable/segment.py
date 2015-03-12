@@ -153,3 +153,12 @@ class Segment(Drawable):
 
    def __entities__(self):
       return (self.start, self.end)
+
+   def to_serializable(self):
+      return [ self.start.to_serializable(), self.end.to_serializable() ]
+
+   def from_serializable(data):
+      return Segment(
+         Point.from_serializable(data[0]),
+         Point.from_serializable(data[1])
+      )

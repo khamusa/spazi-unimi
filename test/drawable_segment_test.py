@@ -23,6 +23,15 @@ class DrawableSegmentTest(unittest.TestCase):
       self.assertEqual(s, (Point(1, 2), Point(3, 4.0009)) )
       self.assertNotEqual(s, (Point(1, 2), Point(3, 4.0011)) )
 
+   def test_segment_to_from_serializable(self):
+      s = Segment.from_tuples( (1,2), (3, 4) )
+      data = s.to_serializable()
+      self.assertEqual(data[0], Point(1, 2).to_serializable())
+      self.assertEqual(data[1], Point(3, 4).to_serializable())
+
+      s2 = Segment.from_serializable(data)
+      self.assertEqual(s, s2)
+
    def test_segment_length(self):
       s = Segment.from_coordinates(0, 0, 1, 1)
       self.assertEqual(s.length(), math.sqrt(2))
