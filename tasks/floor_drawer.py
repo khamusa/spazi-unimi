@@ -96,8 +96,8 @@ class FloorDrawer():
 
          if klass._is_cat_name_relevant(cat):
             name     = room.get("room_name", "")
-            text     = svg.text(cat, (center.x - len(cat) * 8, center.y))
-            text.add(svg.tspan(name, x = [center.x - len(cat) * 8], y = [center.y + 35]))
+            text     = svg.text(cat, (center.x - len(cat) * 4, center.y))
+            text.add(svg.tspan(name, x = [center.x - len(cat) * 4], y = [center.y + 20]))
             group.add(text)
 
       return group
