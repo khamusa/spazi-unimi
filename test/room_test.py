@@ -63,6 +63,8 @@ class RoomTest(unittest.TestCase):
       self.room1.traslate(5, 5)
       check_min_abs_point(self.room1, 5, 5)
       self.room1.reflect_y()
+
+
       check_min_abs_point(self.room1, 5, -15)
 
    def test_room_max_absolute_point(self):
@@ -75,6 +77,8 @@ class RoomTest(unittest.TestCase):
       self.room1.traslate(5, 5)
       check_max_abs_point(self.room1, 15, 15)
       self.room1.reflect_y()
+
+
       check_max_abs_point(self.room1, 15, -5)
 
    def test_room_contains_text(self):

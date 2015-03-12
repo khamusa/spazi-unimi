@@ -1,13 +1,12 @@
 from .drawable import Drawable
-from .anchorable import Anchorable
 from .point import Point
-class Segment():
+
+class Segment(Drawable):
 
    def __init__(self, start, end):
       self.start        = start
       self.end          = end
       self.slope        = self.__class__._calculate_slope(start, end)
-      self.bounding_box = self._calculate_bounding_box()
 
       if not self.is_vertical():
          self.y_intercept = start.y - self.slope * start.x
@@ -15,6 +14,8 @@ class Segment():
       else:
          self.y_intercept = None
          self.x_value     = start.x
+
+      super().__init__()
 
    @classmethod
    def from_tuples(klass, start_tuple, end_tuple):
@@ -38,8 +39,8 @@ class Segment():
       can be passed as a single Point object or as x, y coordinates"""
       x, y = y is not None and Point(x, y) or Point(x[0], x[1])
 
-      cond1 = self.min_x <= x <= self.max_x
-      cond2 = self.min_y <= y <= self.max_y
+      cond1 = self.min_x() <= x <= self.max_x()
+      cond2 = self.min_y() <= y <= self.max_y()
       return self.is_point_on_same_line(x, y) and cond1 and cond2
 
    def is_point_on_same_line(self, x, y = None):
@@ -70,10 +71,10 @@ class Segment():
 
       if point is True:
          return not(
-                  self.min_x > other.max_x or
-                  other.min_x > self.max_x or
-                  self.min_y > other.max_y or
-                  other.min_y > self.max_y
+                  self.min_x() > other.max_x() or
+                  other.min_x() > self.max_x() or
+                  self.min_y() > other.max_y() or
+                  other.min_y() > self.max_y()
                   )
 
       else:
@@ -130,8 +131,5 @@ class Segment():
       else:
          return float("+inf")
 
-   def _calculate_bounding_box(self):
-      self.min_x = min(self.start.x, self.end.x)
-      self.max_x = max(self.start.x, self.end.x)
-      self.min_y = min(self.start.y, self.end.y)
-      self.max_y = max(self.start.y, self.end.y)
+   def __entities__(self):
+      return (self.start, self.end)

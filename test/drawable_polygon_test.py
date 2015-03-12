@@ -145,13 +145,11 @@ class PolygonTest(unittest.TestCase):
       self.assertEqual(self.polygon2.bounding_box, (Point(0, 0), Point(60, 60)))
       self.polygon1._calculate_bounding_box = MagicMock()
       self.polygon1.traslate(10, 10)
-      self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 1)
-      self.polygon1.reflect_y()
-      self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 2)
       self.polygon1.scale(4)
-      self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 3)
+      self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 0)
+      self.polygon1.reflect_y()
       self.polygon1.rotate(90)
-      self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 4)
+      self.assertEqual(self.polygon1._calculate_bounding_box.call_count, 2)
 
    def test___entities__method(self):
       # We want to make sure polygon defines this method, that's the only
@@ -163,4 +161,3 @@ class PolygonTest(unittest.TestCase):
       )
 
       self.assertEqual(list(result), list(self.polygon1.__entities__()))
-

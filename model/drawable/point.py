@@ -1,8 +1,7 @@
-from . import Drawable
 from math import sin, cos, radians, sqrt
 from sys import float_info
 
-class Point(Drawable):
+class Point():
    _precision  = 4
    _epsilon    = 0.001
 
@@ -58,6 +57,18 @@ class Point(Drawable):
       y1 = abs(self.y - other_y)
       return sqrt(x1*x1 + y1*y1)
 
+   def min_x(self):
+      return self.x
+
+   def min_y(self):
+      return self.y
+
+   def max_x(self):
+      return self.x
+
+   def max_y(self):
+      return self.y
+
    def clone(self):
       return Point(self.x, self.y)
 
@@ -97,6 +108,20 @@ class Point(Drawable):
       self.y = self.y * amount_y
 
       return self
+
+   def traslated(self, *args, **kargs):
+      """Immutable version of traslate"""
+      return self.clone().traslate(*args, **kargs)
+
+   def reflected_y(self, *args, **kargs):
+      """Immutable version of reflecte_y"""
+      return self.clone().reflect_y(*args, **kargs)
+
+   def scaled(self, *args, **kargs):
+      return self.clone().scale(*args, **kargs)
+
+   def rotated(self, *args, **kargs):
+      return self.clone().rotate(*args, **kargs)
 
    # Anomaly! Use carefully, only defined by Point
    def rotated_clockwise(self):

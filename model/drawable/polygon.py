@@ -6,6 +6,10 @@ from . import Anchorable
 
 class Polygon(Drawable, Anchorable):
 
+   def __init__(self):
+      self.bounding_box = ()
+      self.center_point = None
+
    def from_absolute_coordinates(points):
       """Factory method, creates a polygon based on absolute coordinates
       (list of tuples)"""
@@ -56,7 +60,7 @@ class Polygon(Drawable, Anchorable):
       p              = Polygon()
       p.points       = [p.clone() for p in self.points]
       p.anchor_point = self.anchor_point.clone()
-      p.bounding_box = ( self.bounding_box[0].clone(), self.bounding_box[1].clone() )
+      p._calculate_bounding_box()
       return p
 
 
@@ -73,55 +77,9 @@ class Polygon(Drawable, Anchorable):
       p._calculate_bounding_box()
       return p
 
-   def _calculate_bounding_box(self):
-      min_x = float("+inf")
-      min_y = float("+inf")
-      max_x = float("-inf")
-      max_y = float("-inf")
-
-      for p in self.points:
-         min_x = min(min_x, p.x)
-         min_y = min(min_y, p.y)
-         max_x = max(max_x, p.x)
-         max_y = max(max_y, p.y)
-
-      self.bounding_box = (Point(min_x, min_y), Point(max_x, max_y))
-      center_x = (min_x - max_x) / 2
-      center_y = (min_y - max_y) / 2
-      self.center_point = Point(abs(center_x), abs(center_y))
-
    def __entities__(self):
       """Hook method for Anchorable"""
       return chain(self.points, self.bounding_box, [self.center_point])
-
-   ##########################
-   # TRANSFORMATION METHODS #
-   ##########################
-
-   def traslate(self, amount_x, amount_y):
-      """Traslates the polygon relatively to it's containing element"""
-      self._transform_points( lambda s: s.traslate(amount_x, amount_y))
-      return self
-
-   def reflect_y(self):
-      self._transform_points( lambda s: s.reflect_y() )
-
-      return self
-
-   def scale(self, amount_x, amount_y = None):
-      self._transform_points( lambda s: s.scale(amount_x, amount_y) )
-
-      return self
-
-   def rotate(self, grades):
-      self._transform_points( lambda s: s.rotate(grades, 0, 0) )
-      return self
-
-   def _transform_points(self, lamb):
-      for p in self.points:
-         lamb(p)
-
-      self._calculate_bounding_box()
 
    #############################
    # TESTS FOR POINT INCLUSION #
