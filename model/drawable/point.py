@@ -3,18 +3,27 @@ from math import sin, cos, radians, sqrt
 from sys import float_info
 
 class Point(Drawable):
+   _precision  = 4
+   _epsilon    = 0.001
+
    def __init__(self, a, b = None):
       a, b = b is None and (a[0], a[1]) or (a, b)
       self.x = self._round(a)
       self.y = self._round(b)
 
    def _round(self, a):
-      return round(a, 3)
+      return round(a, self.__class__._precision)
 
    def __eq__(self, other):
+      if type(other) is not Point:
+         try:
+            other = Point(other[0], other[1])
+         except Exception:
+            return False
+
       return (
-            self._round(abs(other.x - self.x)) == 0.0 and
-            self._round(abs(other.y - self.y)) == 0.0
+            abs(other.x - self.x) <= self.__class__._epsilon and
+            abs(other.y - self.y) <= self.__class__._epsilon
             )
 
    def __str__(self):

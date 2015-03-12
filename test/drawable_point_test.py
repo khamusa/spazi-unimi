@@ -4,11 +4,18 @@ from model.drawable import Point
 class PointTest(unittest.TestCase):
    def test_point_creation(self):
       # Test rounding function actually being applied
-      self.assertTrue( 3.333 == Point(3.33333, 1).x )
-      self.assertTrue( 3.333 == Point(1, 3.3333333).y )
+      self.assertTrue( 3.3333 == Point(3.33333, 1).x )
+      self.assertTrue( 3.3333 == Point(1, 3.3333333).y )
 
       self.assertTrue( 10 == Point( (10, 20, 30) ).x )
       self.assertTrue( 20 == Point( (10, 20, 30) ).y )
+
+   def test_point_equality(self):
+      p1 = Point(1.0, 1.0)
+      self.assertEqual(p1, (1.00, 1.00))
+      self.assertEqual(p1, (1.0001, 1.0005))
+      self.assertNotEqual(p1, (1.0011, 1.0005))
+      self.assertNotEqual(p1, (1.0, 1.0011))
 
    def test_distance_to(self):
       p1 = Point(0, 0)
