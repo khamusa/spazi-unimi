@@ -141,10 +141,10 @@ class DxfReader():
       return True
 
    def _is_valid_wall_line(self, ent):
-      return ent.layer == "MURI" and type(ent) is dxfgrabber.entities.Line
+      return ent.layer.upper() == "MURI" and type(ent) is dxfgrabber.entities.Line
 
    def _is_valid_window_line(self, ent):
-      return ent.layer == "FINESTRE" and type(ent) is dxfgrabber.entities.Line
+      return ent.layer.upper() == "FINESTRE" and type(ent) is dxfgrabber.entities.Line
 
    def _get_b_id(self, basename):
       """

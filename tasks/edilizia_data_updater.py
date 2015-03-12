@@ -29,12 +29,14 @@ class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
       """
       Main method responsible for updating room categories collection on database.
       """
+      cat_exceptions = ["VNS02"]
 
       RoomCategory.clean()
       for c in categories:
-         cat = RoomCategory(c)
-         cat.attr("_id", cat.attr("_id").upper())
-         cat.save()
+         if c["cat_id"] not in cat_exceptions:
+            cat = RoomCategory(c)
+            cat.attr("_id", cat.attr("_id").upper())
+            cat.save()
 
       for building in Building.where({}):
          DXFRoomCatsResolver.resolve_room_categories(building, None)
