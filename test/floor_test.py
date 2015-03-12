@@ -91,13 +91,26 @@ class FloorTest(unittest.TestCase):
       self.assertEqual(self.room1.traslate.call_count, 11)
       self.assertEqual(self.room1.scale.call_count, 11)
 
-
    def test_floor_normalize(self):
       self.f.transform = MagicMock()
-      sa = 10
-      self.f.normalize(sa)
+      sa = self.f.calculate_scale_amount()
+      self.f.normalize()
       self.f.transform.assert_called_once_with(
          scale_amount = sa,
          traslate_x   = -self.f.min_x,
          traslate_y   = -self.f.min_y
          )
+
+   def test_calculate_scale_amount_and_trasform(self):
+      polygon = Polygon.from_absolute_coordinates(
+            [(0,0),(1024,0),(1024,1024),(2048,1024),(2048,2048),(0,2048)]
+         )
+      room = Room(polygon)
+      f = Floor("Pippo", "disneyland", [room])
+      self.assertEqual(f.max_output_size / 2048, f.calculate_scale_amount())
+
+      f.normalize()
+      for point in f.rooms[0].polygon.points:
+         self.assertTrue(point.x <= f.max_output_size)
+         self.assertTrue(point.y <= f.max_output_size)
+

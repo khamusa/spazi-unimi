@@ -64,7 +64,7 @@ class DxfReader():
       if self.floor.n_rooms == 0:
          raise FileUpdateException("The floor read has no rooms: " + self._filename)
       self.floor.associate_room_texts(self._texts)
-      self.floor.normalize(0.3)
+      self.floor.normalize()
 
    def _extract_entities(self):
       self._rooms          = []

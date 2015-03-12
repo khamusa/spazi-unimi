@@ -53,6 +53,10 @@ class Room(Drawable):
       min_point, _ = self.polygon.bounding_box
       return self.polygon.traslated_ac(*min_point)
 
+   def max_absolute_point(self):
+      _, max_point = self.polygon.bounding_box
+      return self.polygon.traslated_ac(*max_point)
+
    ##########################
    # TRANSFORMATION METHODS #
    ##########################

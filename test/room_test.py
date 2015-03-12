@@ -65,6 +65,18 @@ class RoomTest(unittest.TestCase):
       self.room1.reflect_y()
       check_min_abs_point(self.room1, 5, -15)
 
+   def test_room_max_absolute_point(self):
+      def check_max_abs_point(room, expected_x, expected_y):
+         maxX, maxY = room.max_absolute_point()
+         self.assertEqual(maxX, expected_x)
+         self.assertEqual(maxY, expected_y)
+
+      check_max_abs_point(self.room1, 10, 10)
+      self.room1.traslate(5, 5)
+      check_max_abs_point(self.room1, 15, 15)
+      self.room1.reflect_y()
+      check_max_abs_point(self.room1, 15, -5)
+
    def test_room_contains_text(self):
       t1 = Text("In text!",Point(5,5))
       t2 = Text("Out text!",Point(11,5))

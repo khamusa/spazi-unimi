@@ -11,6 +11,9 @@ class Floor:
       self.rooms           = []
       self.min_x           = float("+inf")
       self.min_y           = float("+inf")
+      self.max_x           = float("-inf")
+      self.max_y           = float("-inf")
+      self.max_output_size = 1024
       self.n_rooms         = 0
       self.walls           = []
       self.windows         = []
@@ -21,12 +24,12 @@ class Floor:
 
       if wall_lines:
          for l in wall_lines:
-            line = self.add_line(l)
+            line = self.control_line(l)
             self.walls.append(line)
 
       if window_lines:
          for l in window_lines:
-            line = self.add_line(l)
+            line = self.control_line(l)
             self.windows.append(line)
 
    def __eq__(self,other):
@@ -42,14 +45,24 @@ class Floor:
       minX, minY  = room.min_absolute_point()
       self.min_x  = min(self.min_x, minX)
       self.min_y  = min(self.min_y, minY)
+
+      maxX, maxY  = room.max_absolute_point()
+      self.max_x  = max(self.max_x, maxX)
+      self.max_y  = max(self.max_y, maxY)
+
       self.rooms.append(room)
       self.n_rooms = self.n_rooms + 1
 
-   def add_line(self, line):
+   def control_line(self, line):
       self.min_x  = min(self.min_x, line[0].x)
       self.min_y  = min(self.min_y, line[0].y)
       self.min_x  = min(self.min_x, line[1].x)
       self.min_y  = min(self.min_y, line[1].y)
+
+      self.max_x  = max(self.max_x, line[0].x)
+      self.max_y  = max(self.max_y, line[0].y)
+      self.max_x  = max(self.max_x, line[1].x)
+      self.max_y  = max(self.max_y, line[1].y)
       return line
 
    def associate_room_texts(self, texts):
@@ -73,7 +86,13 @@ class Floor:
          end.traslate(traslate_x, traslate_y)
          end.scale(scale_amount)
 
-   def normalize(self, scale_amount=.4):
+   def calculate_scale_amount(self):
+      scale_amount_x = self.max_output_size / abs(self.max_x - self.min_x)
+      scale_amount_y = self.max_output_size / abs(self.max_y - self.min_y)
+      return min(scale_amount_x, scale_amount_y)
+
+   def normalize(self):
+      scale_amount = self.calculate_scale_amount()
       self.transform(scale_amount=scale_amount, traslate_x = -self.min_x, traslate_y = -self.min_y)
 
    def to_serializable(self):
