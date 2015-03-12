@@ -26,6 +26,26 @@ class Segment(Drawable):
    def from_coordinates(klass, x1, y1, x2, y2):
       return klass.from_tuples( (x1, y1), (x2, y2) )
 
+   def __eq__(self, other):
+      if type(other) is not Segment:
+         try:
+            other = Segment(other[0], other[1])
+         except Exception:
+            return False
+
+      return (
+         (self.start == other.start and self.end == other.end) or
+         (self.start == other.end and self.end == other.start)
+      )
+
+   def __getitem__(self, index):
+      if index == 0:
+         return self.start
+      if index == 1:
+         return self.end
+
+      raise IndexError("__getitem__: index {} out of bounds for subscritable".format(index))
+
    # Tests / questions
    def length(self):
       return self.start.distance_to(self.end)

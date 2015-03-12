@@ -14,6 +14,15 @@ class DrawableSegmentTest(unittest.TestCase):
       self.assertEqual(s.end.x, 3)
       self.assertEqual(s.end.y, 4)
 
+   def test_segment_equality(self):
+      s  = Segment.from_tuples( (1,2), (3, 4) )
+      s2 = Segment.from_coordinates( 1, 2, 3, 4 )
+
+      self.assertEqual(s, s2)
+      self.assertEqual(s2, s)
+      self.assertEqual(s, (Point(1, 2), Point(3, 4.0009)) )
+      self.assertNotEqual(s, (Point(1, 2), Point(3, 4.0011)) )
+
    def test_segment_length(self):
       s = Segment.from_coordinates(0, 0, 1, 1)
       self.assertEqual(s.length(), math.sqrt(2))
