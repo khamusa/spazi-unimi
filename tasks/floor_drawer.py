@@ -56,7 +56,11 @@ class FloorDrawer():
       g = svgwrite.container.Group(id = group_name)
 
       for start, end in lines:
-         g.add( svg.line( start=(start["x"], start["y"]), end=(end["x"], end["y"]) ) )
+         g.add( svg.line(
+            start= klass._approximate_coordinates( start["x"], start["y"] ),
+            end= klass._approximate_coordinates( end["x"], end["y"] )
+            )
+         )
 
       return g
 
@@ -131,9 +135,16 @@ class FloorDrawer():
       Returns: None.
       """
       if r_id:
-         poly  = svg.polyline( ((p.x, p.y) for p in points), id = r_id, fill="rgb(255, 255, 255)")
+         poly  = svg.polyline(
+            (klass._approximate_coordinates(p.x, p.y) for p in points),
+            id = r_id,
+            fill="rgb(255, 255, 255)"
+         )
       else:
-         poly  = svg.polyline( ((p.x, p.y) for p in points), fill="rgb(255, 255, 255)")
+         poly  = svg.polyline(
+            (klass._approximate_coordinates(p.x, p.y) for p in points),
+            fill="rgb(255, 255, 255)"
+         )
       group.add(poly)
 
    @classmethod
@@ -150,6 +161,10 @@ class FloorDrawer():
       """
       with open("assets/svg.css") as fp:
          return svg.style(fp.read())
+
+   @classmethod
+   def _approximate_coordinates(klass, x, y):
+      return ("{:.0f}".format(x), "{:.0f}".format(y))
 
    @classmethod
    def _prepare_cat_name(klass, cat_name):
