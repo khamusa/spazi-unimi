@@ -20,13 +20,13 @@ class FloorDrawer():
       svg                  = svgwrite.Drawing()
       svg.add(klass._get_style(svg))
 
-      walls                = floor.get("walls", [])
-      walls_group          = klass._create_group(svg, walls, "walls")
-      svg.add(walls_group)
-
       windows              = floor.get("windows", [])
       windows_group        = klass._create_group(svg,  windows, "windows")
       svg.add(windows_group)
+
+      walls                = floor.get("walls", [])
+      walls_group          = klass._create_group(svg, walls, "walls")
+      svg.add(walls_group)
 
       unidentified_rooms   = floor.get("unidentified_rooms", [])
       unidentified_rooms   = ((None, room) for room in unidentified_rooms)

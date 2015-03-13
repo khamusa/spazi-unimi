@@ -1,6 +1,7 @@
 import time
 from .            import Room
 from .drawable    import Polygon
+from .drawable    import Segment
 from itertools    import chain
 
 class Floor:
@@ -80,11 +81,9 @@ class Floor:
          r.traslate(traslate_x, traslate_y)
          r.scale(scale_amount)
 
-      for start, end in chain(self.walls, self.windows):
-         start.traslate(traslate_x, traslate_y)
-         start.scale(scale_amount)
-         end.traslate(traslate_x, traslate_y)
-         end.scale(scale_amount)
+      for line in chain(self.walls, self.windows):
+         line.traslate(traslate_x, traslate_y)
+         line.scale(scale_amount)
 
    def calculate_scale_amount(self):
       scale_amount_x = self.max_output_size / abs(self.max_x - self.min_x)
@@ -95,30 +94,22 @@ class Floor:
       scale_amount = self.calculate_scale_amount()
       self.transform(scale_amount=scale_amount, traslate_x = -self.min_x, traslate_y = -self.min_y)
 
+   def discard_tiny_lines(self):
+      self.walls = ( l for l in self.walls if l.length() >= 4 )
+      self.windows = ( l for l in self.windows if l.length() >= 4 )
+
    def to_serializable(self):
       return {
          "b_id"      : self.b_id,
          "f_id"      : self.f_id,
          "rooms"     : [ el.to_serializable() for el in self.rooms ],
-         "walls"     : [
-                           (start.to_serializable(), end.to_serializable())
-                           for start, end in self.walls
-                        ],
-         "windows"   : [
-                           (start.to_serializable(), end.to_serializable())
-                           for start, end in self.windows
-                        ]
+         "walls"     : [ l.to_serializable() for l in self.walls ],
+         "windows"   : [ l.to_serializable() for l in self.windows ]
       }
 
    def from_serializable(data):
       rooms = ( Room.from_serializable(r) for r in  data["rooms"] )
-      walls = (
-         (Point.from_serializable(start), Point.from_serializable(end))
-         for start, end in data.get("walls", [])
-         )
-      windows = (
-         (Point.from_serializable(start), Point.from_serializable(end))
-         for start, end in data.get("windows", [])
-         )
+      walls = ( (Segment.from_serializable(l)) for l in data.get("walls", []) )
+      windows = ( (Segment.from_serializable(l)) for l in data.get("windows", []) )
 
       return Floor( data["b_id"] , data["f_id"] , rooms, walls, windows )

@@ -6,6 +6,7 @@ from model                 import Room
 from model                 import Floor
 from model.drawable        import Text
 from model.drawable        import Point
+from model.drawable        import Segment
 from model.drawable        import Polygon
 from dxfgrabber.entities   import LWPolyline, Polyline, MText
 from tasks.floor_inference import FloorInference
@@ -65,6 +66,7 @@ class DxfReader():
          raise FileUpdateException("The floor read has no rooms: " + self._filename)
       self.floor.associate_room_texts(self._texts)
       self.floor.normalize()
+      self.floor.discard_tiny_lines()
 
    def _extract_entities(self):
       self._rooms          = []
@@ -93,15 +95,15 @@ class DxfReader():
                )
             )
          elif self._is_valid_wall_line(ent):
-            start          = Point(ent.start[0], -ent.start[1])
-            end            = Point(ent.end[0], -ent.end[1])
-            line           = (start, end)
+            start = Point(ent.start[0], -ent.start[1])
+            end   = Point(ent.end[0], -ent.end[1])
+            line  = Segment(start, end)
             self._wall_lines.append( line )
 
          elif self._is_valid_window_line(ent):
-            start          = Point(ent.start[0], -ent.start[1])
-            end            = Point(ent.end[0], -ent.end[1])
-            line           = (start, end)
+            start = Point(ent.start[0], -ent.start[1])
+            end   = Point(ent.end[0], -ent.end[1])
+            line  = Segment(start, end)
             self._window_lines.append( line )
 
 
