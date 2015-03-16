@@ -3,6 +3,16 @@ from itertools    import chain
 
 class FloorMergeAnalysis():
    general_count = Counter()
+   general_which = {
+      "edilizia_easyroom.identified_rooms"      : set(),
+      "edilizia_easyroom.non_identified_rooms"  : set(),
+      "edilizia_dxf.identified_rooms"           : set(),
+      "edilizia_dxf.non_identified_rooms"       : set(),
+      "easyroom_edilizia.identified_rooms"      : set(),
+      "easyroom_edilizia.non_identified_rooms"  : set(),
+      "easyroom_dxf.identified_rooms"           : set(),
+      "easyroom_dxf.non_identified_rooms"       : set()
+   }
 
    @classmethod
    def analyse_edilizia_to_dxf(klass, building):
@@ -18,7 +28,7 @@ class FloorMergeAnalysis():
 
    @classmethod
    def analyse_edilizia_to_easyroom(klass, building):
-      return klass._analyse_building("easyroom", "edilizia", building)
+      return klass._analyse_building("edilizia", "easyroom", building)
 
    @classmethod
    def _analyse_building(klass, source, target, building):
@@ -30,6 +40,8 @@ class FloorMergeAnalysis():
          for f in building.get_path(source+".floors", [])
       ]
 
+      klass._update_general_stats(source, target, building, result)
+
       return result
 
    @classmethod
@@ -39,15 +51,35 @@ class FloorMergeAnalysis():
       floor_rooms    = set(floor.get("rooms", {}).keys())
 
       which = {
-         "identified"     : floor_rooms.intersection(target_rooms),
-         "non_identified" : floor_rooms.difference(target_rooms)
+         "identified_rooms"       : floor_rooms.intersection(target_rooms),
+         "non_identified_rooms"   : floor_rooms.difference(target_rooms)
       }
 
       stats = {
-         "total_rooms"      : len(floor_rooms),
-         "identified_rooms" : len(which["identified"]),
-         "non_identified"   : len(which["non_identified"])
+         "total_rooms"           : len(floor_rooms),
+         "identified_rooms"      : len(which["identified_rooms"]),
+         "non_identified_rooms"  : len(which["non_identified_rooms"])
          }
 
       count.update(stats)
       return (f_id, count, which)
+
+   @classmethod
+   def _update_general_stats(klass, source, target, building, result):
+      prefix = source+"_"+target
+      for _, count, which in result:
+         klass.general_count.update(
+            {
+               prefix+".total_floors"           : 1,
+               prefix+".total_rooms"            : count["total_rooms"],
+               prefix+".identified_rooms"       : count["identified_rooms"],
+               prefix+".non_identified_rooms"   : count["non_identified_rooms"]
+            })
+
+         klass.general_which[prefix+".identified_rooms"].update(
+            building["_id"]+"#"+r_id.upper() for r_id in which["identified_rooms"]
+            )
+
+         klass.general_which[prefix+".non_identified_rooms"].update(
+            building["_id"]+"#"+r_id.upper() for r_id in which["non_identified_rooms"]
+         )
