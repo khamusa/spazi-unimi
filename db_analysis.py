@@ -17,6 +17,12 @@ def data_and_percent(value, total, num_padding = 3,):
 
 class GeneralReport:
 
+   merge_tuples = [
+            ("edilizia", "dxf"),
+            ("edilizia", "easyroom"),
+            ("easyroom", "dxf"),
+            ("easyroom", "edilizia")
+         ]
 
    @classmethod
    def report_building(klass, building):
@@ -24,15 +30,8 @@ class GeneralReport:
          with Logger.info("DXF Data Analysis"):
             klass._print_dxf_analysis(building)
 
-         source_target = [
-            ("edilizia", "dxf"),
-            ("easyroom", "dxf"),
-            ("easyroom", "edilizia"),
-            ("edilizia", "easyroom")
-         ]
-
          no_data = set()
-         for source, target in source_target:
+         for source, target in klass.merge_tuples:
             klass._print_merge_analysis(source, target, building)
 
             if not building.get_path(source+".floors"):
@@ -89,13 +88,74 @@ class GeneralReport:
             with Logger.info(message):
                if count["non_identified_rooms"]:
                   Logger.warning(
-                     "Non identified:",
-                     ", ".join(which["non_identified_rooms"])
+                     source,
+                     "knows about room(s)",
+                     ", ".join(which["non_identified_rooms"]),
+                     "but", target, "does not"
                      )
 
    @classmethod
    def final_report(klass):
-      pass
+      Logger.info("#####################################")
+      Logger.info("########### FINAL REPORTS ###########")
+      Logger.info("#####################################")
+      with Logger.info("DXF Analysis"):
+         count = DXFAnalysis.general_count
+         total_floors         = count["dxf.total_floors"]
+         matched_floors       = data_and_percent(count["dxf.matched_floors"], total_floors)
+         total_rooms          = count["dxf.total_rooms"]
+         identified_rooms     = data_and_percent(count["dxf.identified_rooms"], total_rooms)
+         categorized_rooms    = data_and_percent(count["dxf.categorized_rooms"], total_rooms)
+         no_info_rooms        = data_and_percent(count["dxf.no_info_rooms"], total_rooms)
+
+         Logger.info("Total Floors        : {}".format(total_floors))
+         Logger.info(
+            "Matched Floors      : {:<14}".format(matched_floors),
+            "(Floors with at least one room associated to other sources)"
+            )
+         Logger.info("Total Rooms         : {}".format(total_rooms))
+         Logger.info(
+            "Rooms Identified    : {:<14}".format(identified_rooms),
+            "(there exists at least one data source with information about those rooms)"
+            )
+         Logger.info(
+            "Rooms with Category : {}".format(categorized_rooms),
+            "(unidentified rooms for which we can infer it's type)"
+         )
+         Logger.info("Rooms with no info  : {}".format(no_info_rooms))
+
+      with Logger.info("Merge Analysis"):
+         count = FloorMergeAnalysis.general_count
+         which = FloorMergeAnalysis.general_which
+
+         for source, target in klass.merge_tuples:
+            with Logger.info("Merged floor data from {} to {}".format(source, target)):
+               prefix = source+"_"+target
+
+               total_floors         = count[prefix+".total_floors"]
+               identified_rooms     = len(which[prefix+".identified_rooms"])
+               non_identified_rooms = len(which[prefix+".non_identified_rooms"])
+               total_rooms          = identified_rooms + non_identified_rooms
+               identified_rooms     = data_and_percent(identified_rooms, total_rooms)
+               non_identified_rooms = data_and_percent(non_identified_rooms, total_rooms)
+
+               Logger.info("Total floors analysed : {}".format(total_floors))
+               Logger.info("Total rooms found     : {}".format(total_rooms))
+               Logger.info("Found in both sources : {}".format(identified_rooms))
+
+               with Logger.info("Not found on {:<9}: {}".format(target, non_identified_rooms)):
+                  if which[prefix+".non_identified_rooms"]:
+                     unident = sorted(which[prefix+".non_identified_rooms"])
+
+                     while unident:
+                        message = ""
+                        for room_id in unident[:9]:
+                           message += "{:<12}".format(room_id)
+
+                        Logger.info(message)
+                        unident = unident[9:]
+
+
 
 for b in Building.where({}):
    GeneralReport.report_building(b)

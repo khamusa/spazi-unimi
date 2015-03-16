@@ -70,16 +70,13 @@ class FloorMergeAnalysis():
       for _, count, which in result:
          klass.general_count.update(
             {
-               prefix+".total_floors"           : 1,
-               prefix+".total_rooms"            : count["total_rooms"],
-               prefix+".identified_rooms"       : count["identified_rooms"],
-               prefix+".non_identified_rooms"   : count["non_identified_rooms"]
+               prefix+".total_floors"           : 1
             })
 
          klass.general_which[prefix+".identified_rooms"].update(
-            building["_id"]+"#"+r_id.upper() for r_id in which["identified_rooms"]
+            building["_id"].upper()+"#"+r_id.upper() for r_id in which["identified_rooms"]
             )
 
          klass.general_which[prefix+".non_identified_rooms"].update(
-            building["_id"]+"#"+r_id.upper() for r_id in which["non_identified_rooms"]
+            building["_id"].upper()+"#"+r_id.upper() for r_id in which["non_identified_rooms"]
          )
