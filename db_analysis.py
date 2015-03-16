@@ -4,6 +4,7 @@ from model                                         import ODMModel, Building
 from utils.logger                                  import Logger
 from analysis.dxf_analysis import DXFAnalysis
 from analysis.floor_merge_analysis import FloorMergeAnalysis
+from analysis.building_id_analysis import BuildingIdAnalysis
 
 persistence = MongoDBPersistenceManager(ConfigManager("config/general.json"))
 ODMModel.set_pm( persistence )
@@ -26,6 +27,8 @@ class GeneralReport:
 
    @classmethod
    def report_building(klass, building):
+      BuildingIdAnalysis.analyse_building_id(building)
+
       with Logger.info("Analysing "+str(building)):
          with Logger.info("DXF Data Analysis"):
             klass._print_dxf_analysis(building)
@@ -99,6 +102,26 @@ class GeneralReport:
       Logger.info("#####################################")
       Logger.info("########### FINAL REPORTS ###########")
       Logger.info("#####################################")
+      klass._final_building_id_report()
+      klass._final_dxf_report()
+      klass._final_merge_report()
+
+   @classmethod
+   def _final_building_id_report(klass):
+      count = BuildingIdAnalysis.general_count
+      Logger.info(
+         "Total Buildings: ", count["total_buildings"]
+         )
+      Logger.info(
+         "Buildings using legacy id: ", count["buildings_without_b_id"]
+         )
+      if count["buildings_without_b_id"]:
+         Logger.info(
+            "Legacy ids being used:", ", ".join(BuildingIdAnalysis.buildings_without_b_id)
+            )
+
+   @classmethod
+   def _final_dxf_report(klass):
       with Logger.info("DXF Analysis"):
          count = DXFAnalysis.general_count
          total_floors         = count["dxf.total_floors"]
@@ -124,6 +147,8 @@ class GeneralReport:
          )
          Logger.info("Rooms with no info  : {}".format(no_info_rooms))
 
+   @classmethod
+   def _final_merge_report(klass):
       with Logger.info("Merge Analysis"):
          count = FloorMergeAnalysis.general_count
          which = FloorMergeAnalysis.general_which
