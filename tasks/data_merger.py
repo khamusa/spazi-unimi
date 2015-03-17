@@ -290,7 +290,9 @@ class DataMerger():
       result = {
          "room_name"    : room1.get("room_name")     or room2.get("room_name", ""),
          "capacity"     : room1.get("capacity")      or room2.get("capacity", ""),
-         "cat_name"     : room1.get("cat_name")      or room2.get("cat_name", ""),
+         # per la categoria riteniamo più affidabili i dati provenienti dal CSV
+         # rispetto a quelli ricevuti dal DXF
+         "cat_name"     : room2.get("cat_name")      or room1.get("cat_name", ""),
          "accessibility": room1.get("accessibility") or room2.get("accessibility", ""),
          "polygon"      : room1.get("polygon")       or room2.get("polygon", False),
          "equipments"   : eq                         or []
