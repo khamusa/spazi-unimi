@@ -174,7 +174,8 @@ class FloorMergeTest(unittest.TestCase):
       self.assertFalse(r02 is old_r02)
 
       # Ensure priority has been kept on a per-attribute basis
-      self.assertEqual(r01["cat_name"], old_r01["cat_name"])
+      cat_name = unmatched_floor["rooms"]["R001"]["cat_name"]
+      self.assertEqual(r01["cat_name"], cat_name)
       self.assertEqual(r01["room_name"], old_r01["room_name"])
       self.assertEqual(r02["cat_name"], "Aula Nuova")
       self.assertEqual(r02["capacity"], "22")
@@ -210,6 +211,7 @@ class FloorMergeTest(unittest.TestCase):
 
       easy_room = {
          "room_name"    : "Aula 01 easy",
+         "cat_name"     : "Aula Magna",
          "capacity"     : "45",
          "accessibility": True,
          "equipments"   : "PC/Lavagna/Wi-fi",
@@ -221,7 +223,7 @@ class FloorMergeTest(unittest.TestCase):
 
       self.assertEqual(result["room_name"], edil_room["room_name"])
       self.assertEqual(result["capacity"], edil_room["capacity"])
-      self.assertEqual(result["cat_name"], dxf_room["cat_name"])
+      self.assertEqual(result["cat_name"], edil_room["cat_name"])
       self.assertEqual(result["accessibility"], "")
       self.assertEqual(result["equipments"], [])
       self.assertEqual(result["polygon"], dxf_room["polygon"])
@@ -233,7 +235,7 @@ class FloorMergeTest(unittest.TestCase):
 
       self.assertEqual(result["room_name"], easy_room["room_name"])
       self.assertEqual(result["capacity"], easy_room["capacity"])
-      self.assertEqual(result["cat_name"], dxf_room["cat_name"])
+      self.assertEqual(result["cat_name"], easy_room["cat_name"])
       self.assertEqual(result["accessibility"], easy_room["accessibility"])
       self.assertEqual(result["equipments"], easy_room["equipments"].split("/"))
       self.assertEqual(result["polygon"], dxf_room["polygon"])
@@ -245,7 +247,7 @@ class FloorMergeTest(unittest.TestCase):
 
       self.assertEqual(result["room_name"], edil_room["room_name"])
       self.assertEqual(result["capacity"], edil_room["capacity"])
-      self.assertEqual(result["cat_name"], edil_room["cat_name"])
+      self.assertEqual(result["cat_name"], easy_room["cat_name"])
       self.assertEqual(result["accessibility"], easy_room["accessibility"])
       self.assertEqual(result["equipments"], easy_room["equipments"].split("/"))
       self.assertFalse("polygon" in result)
