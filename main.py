@@ -1,8 +1,6 @@
 from config_manager                                import ConfigManager
 from tasks                                         import *
-from persistence.json_persistence_manager          import JSONPersistenceManager
 from persistence.db.mongo_db_persistence_manager   import MongoDBPersistenceManager
-from persistence.svg_persistence_decorator         import SVGPersistenceDecorator
 from utils.logger                                  import Logger
 from model                                         import ODMModel
 import time
@@ -51,7 +49,6 @@ class Main():
       Instantiates a MongoDBPersistenceManager and a DXFTask to process the dxf
       files whit the apposite procedure.
       """
-      #persistence = SVGPersistenceDecorator(self._config, JSONPersistenceManager(self._config))
       persistence       = MongoDBPersistenceManager(self._config)
       ODMModel.set_pm( persistence )
 

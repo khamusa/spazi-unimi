@@ -1,11 +1,7 @@
-from model import Room
-from model.drawable import Point
-from model.drawable import Polygon
-from model.drawable import Text
-import itertools
-
+from model           import Room
+from model.drawable  import Point, Polygon, Text
+from mock            import MagicMock
 import unittest
-from mock import MagicMock
 
 class RoomTest(unittest.TestCase):
    def setUp(self):

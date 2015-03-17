@@ -1,5 +1,5 @@
-import shutil, os
 from utils.logger import Logger
+import shutil
 
 class Task():
    """

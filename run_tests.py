@@ -1,16 +1,13 @@
+from colour_runner.runner  import ColourTextTestRunner
+from tasks.data_merger     import DataMerger
+from utils.logger          import Logger
+from os                    import listdir
+import unittest, sys, re
 
-import unittest
-import sys
-from os import listdir
-import re
-from colour_runner.runner import ColourTextTestRunner
-from utils.logger import Logger
 
-from tasks.data_merger import DataMerger
 DataMerger.skip_geocoding = True
-
-
 Logger.verbosity = 0
+
 
 if(len(sys.argv) == 1):
    files_list = listdir('test')
@@ -24,6 +21,5 @@ for filename in files_list:
       potential_class_names = [local for local in dir(s) if re.match("[A-Z][^_]+", local) ]
       for classname in potential_class_names:
          setattr(sys.modules[__name__], classname, getattr(s, classname))
-
 
 unittest.main(exit=False, verbosity = 2, testRunner=ColourTextTestRunner)

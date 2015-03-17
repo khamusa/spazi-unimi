@@ -1,5 +1,4 @@
-import pymongo
-import sys
+import pymongo, sys
 
 class DB():
 

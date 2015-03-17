@@ -1,6 +1,5 @@
-from model                    import Building
-from utils.logger             import Logger
-from itertools                import chain
+from utils.logger import Logger
+from itertools    import chain
 
 class DXFRoomIdsResolver:
 

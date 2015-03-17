@@ -1,7 +1,5 @@
-from mock                           import MagicMock
-from model                          import Building, RoomCategory
+from model                          import Building
 from tasks.dxf_room_ids_resolver    import DXFRoomIdsResolver
-
 import unittest
 
 class DXFRoomIdsResolverTest(unittest.TestCase):

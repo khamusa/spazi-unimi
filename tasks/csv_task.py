@@ -1,6 +1,6 @@
-from utils.csv_reader import CSVReader
-from tasks import Task, FileUpdateException, EdiliziaDataUpdater, EasyroomDataUpdater
-from utils.logger import Logger
+from utils.csv_reader   import CSVReader
+from tasks              import Task, FileUpdateException
+from tasks              import EdiliziaDataUpdater, EasyroomDataUpdater
 import os, re
 
 class CSVTask(Task):

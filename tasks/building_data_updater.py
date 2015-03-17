@@ -2,7 +2,6 @@ from model                    import Building
 from utils.logger             import Logger
 from tasks.data_merger        import DataMerger
 from datetime                 import datetime
-import itertools
 
 class BuildingDataUpdater():
    """
@@ -95,7 +94,7 @@ class BuildingDataUpdater():
       easyroom = building.get('easyroom')
       dxf      = building.get('dxf')
 
-      building['merged']            = DataMerger.merge_building(edilizia, easyroom, dxf)
+      building['merged'] = DataMerger.merge_building(edilizia, easyroom, dxf)
       building.save()
 
    def _clean_unmarked_buildings(self):

@@ -1,7 +1,4 @@
-from .drawable import Text
-from .drawable import Point
-from .drawable import Polygon
-from .drawable import Drawable
+from .drawable import Text, Polygon, Drawable
 
 class Room(Drawable):
    def __init__(self, polygon = None, texts=None):

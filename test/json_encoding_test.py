@@ -1,13 +1,7 @@
-import unittest
-import json
-import time
-from mock import MagicMock
-from model import Floor
-from model import Room
-from model.drawable import Point
-from model.drawable import Text
-from model.drawable import Polygon
-
+from mock            import MagicMock
+from model           import Floor, Room
+from model.drawable  import Point, Text, Polygon
+import unittest, json
 
 def serialize_list(ls):
    return [ e.to_serializable() for e in ls ]

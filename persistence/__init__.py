@@ -1,7 +1,5 @@
-from .db import DB
-from .json_persistence_manager import JSONPersistenceManager
-from .svg_persistence_decorator import SVGPersistenceDecorator
-from .persistence_manager import PersistenceManager
+from .db                   import DB
+from .persistence_manager  import PersistenceManager
 
 
-_all__ = ["DB", "JSONPersistenceManager", "SVGPersistenceManager"]
+_all__ = ["DB", "PersistenceManager"]

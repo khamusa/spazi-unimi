@@ -1,5 +1,5 @@
-import unittest
 from model.drawable import Point
+import unittest
 
 class PointTest(unittest.TestCase):
    def test_point_creation(self):

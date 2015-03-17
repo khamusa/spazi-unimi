@@ -1,6 +1,5 @@
+from model.drawable import Point, Text
 import unittest
-from model.drawable import Point
-from model.drawable import Text
 
 class TextTest(unittest.TestCase):
 

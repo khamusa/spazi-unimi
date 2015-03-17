@@ -1,4 +1,3 @@
-import re
 from .building_data_updater   import BuildingDataUpdater
 from .room_data_updater       import RoomDataUpdater
 

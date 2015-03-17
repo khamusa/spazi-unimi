@@ -1,17 +1,10 @@
-import dxfgrabber
-import sys, os, re
-import dxfgrabber.entities
-from itertools             import chain
-from model                 import Room
-from model                 import Floor
-from model.drawable        import Text
-from model.drawable        import Point
-from model.drawable        import Segment
-from model.drawable        import Polygon
+from model                 import Room, Floor
+from model.drawable        import Text, Point, Segment, Polygon
 from dxfgrabber.entities   import LWPolyline, Polyline, MText
 from tasks.floor_inference import FloorInference
 from utils.logger          import Logger
 from tasks.task            import FileUpdateException
+import os, re, dxfgrabber
 
 class DxfReader():
    """

@@ -1,8 +1,6 @@
-from model.drawable  import Polygon, Point
-from io              import StringIO
+from model.drawable  import Polygon
 from utils.logger    import Logger
 from itertools       import chain, groupby
-from config_manager  import ConfigManager
 import svgwrite, re
 
 class FloorDrawer():

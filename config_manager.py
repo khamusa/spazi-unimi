@@ -1,5 +1,4 @@
-import json
-import os
+import json, os
 
 class ConfigManager:
    """Ottiene le configurazioni utilizzate dal programma da un file json, e

@@ -1,7 +1,5 @@
-from model.drawable import Point
-from model.drawable import Polygon
-from utils.myitertools import circular_pairwise, partition
-import itertools
+from model.drawable     import Point, Polygon
+from utils.myitertools  import circular_pairwise
 import unittest
 
 class PolygonPointsInsideTest(unittest.TestCase):

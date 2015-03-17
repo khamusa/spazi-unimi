@@ -1,8 +1,7 @@
-import time
 from .            import Room
-from .drawable    import Polygon
 from .drawable    import Segment
 from itertools    import chain
+import time
 
 class Floor:
 

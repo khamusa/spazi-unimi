@@ -1,10 +1,6 @@
 from tasks.dxf.dxf_reader     import DxfReader
 from tasks.task               import Task, FileUpdateException
 from tasks.dxf_data_updater   import DXFDataUpdater
-from utils.logger             import Logger
-from model.building           import Building
-from decimal                  import Decimal
-
 import os, re
 
 class DXFTask(Task):

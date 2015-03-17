@@ -1,7 +1,7 @@
-import unittest
-from model.odm_model    import ODMModel, ODMAttrs
+from model.odm_model    import ODMModel
 from persistence.db     import MongoDBPersistenceManager
 from mock               import MagicMock
+import unittest
 
 class ODMModelTest(unittest.TestCase):
    def setUp(self):

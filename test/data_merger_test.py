@@ -1,7 +1,5 @@
-import unittest
-import time
-from mock import MagicMock
-from tasks.data_merger import DataMerger
+from tasks.data_merger  import DataMerger
+import unittest, time
 
 class DataMergerTest(unittest.TestCase):
 

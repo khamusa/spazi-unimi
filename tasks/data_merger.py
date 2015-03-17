@@ -1,6 +1,4 @@
-from utils.logger       import Logger
-from pygeocoder         import Geocoder
-from pygeocoder         import GeocoderError
+from pygeocoder         import Geocoder, GeocoderError
 from utils.logger       import Logger
 from itertools          import chain
 from utils.myfunctools  import filter_keys

@@ -1,7 +1,7 @@
+from persistence.db  import *
+from config_manager  import ConfigManager
+from mock            import MagicMock
 import unittest
-from persistence.db import *
-from config_manager import ConfigManager
-from mock import MagicMock
 
 class DbTest(unittest.TestCase):
 

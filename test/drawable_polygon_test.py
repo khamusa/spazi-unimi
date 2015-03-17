@@ -1,8 +1,7 @@
-import unittest
-from model.drawable  import Point
-from model.drawable  import Polygon
+from model.drawable  import Point, Polygon
 from mock            import MagicMock
 from itertools       import chain
+import unittest
 
 class PolygonTest(unittest.TestCase):
 

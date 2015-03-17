@@ -1,6 +1,6 @@
 from mock                              import MagicMock, patch
 from tasks.dxf_room_cats_resolver      import DXFRoomCatsResolver
-from model                             import Building, RoomCategory
+from model                             import RoomCategory
 import unittest
 
 class DXFRoomCatsResolverTest(unittest.TestCase):

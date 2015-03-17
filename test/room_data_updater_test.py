@@ -1,11 +1,10 @@
-import unittest
 from persistence.db              import MongoDBPersistenceManager
 from model.odm_model             import ODMModel
 from model.building              import Building
-from mock                        import MagicMock
 from itertools                   import chain
 from tasks.easyroom_data_updater import EasyroomDataUpdater
 from tasks.edilizia_data_updater import EdiliziaDataUpdater
+import unittest
 
 class RoomDataUpdaterTest(unittest.TestCase):
 

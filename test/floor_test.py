@@ -1,7 +1,7 @@
-import unittest
 from model           import Floor, Room
 from mock            import MagicMock
 from model.drawable  import Text, Point, Polygon
+import unittest
 
 class FloorTest(unittest.TestCase):
 
