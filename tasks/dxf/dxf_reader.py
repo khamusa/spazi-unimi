@@ -166,7 +166,7 @@ class DxfReader():
       """
 
       b_id  = None
-      rm    = re.match("(\d+)_([a-zA-Z0-9]+).*\.dxf", basename, re.I)
+      rm    = re.match("(\d+)_(-?[a-zA-Z0-9]+(\.\d+)?).*\.dxf", basename, re.I)
 
       if rm:
          b_id = rm.group(1)
