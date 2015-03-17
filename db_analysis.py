@@ -164,11 +164,11 @@ class GeneralReport:
                identified_rooms     = data_and_percent(identified_rooms, total_rooms)
                non_identified_rooms = data_and_percent(non_identified_rooms, total_rooms)
 
-               Logger.info("Total floors analysed : {}".format(total_floors))
-               Logger.info("Total rooms found     : {}".format(total_rooms))
-               Logger.info("Found in both sources : {}".format(identified_rooms))
+               Logger.info("Total floors analysed         : {}".format(total_floors))
+               Logger.info("Total rooms found on {:<8} : {}".format(source, total_rooms))
+               Logger.info("Found in both sources         : {}".format(identified_rooms))
 
-               with Logger.info("Not found on {:<9}: {}".format(target, non_identified_rooms)):
+               with Logger.info("Not found on {:<9}        : {}".format(target, non_identified_rooms)):
                   if which[prefix+".non_identified_rooms"]:
                      unident = sorted(which[prefix+".non_identified_rooms"])
 
