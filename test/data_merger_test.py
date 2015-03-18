@@ -112,6 +112,7 @@ class DataMergerTest(unittest.TestCase):
          self.assertEqual(merged["coordinates"],{ "type": "Point", "coordinates": [9.227256, 45.476739] })
 
       self.assertTrue("l_b_id" not in merged)
+      self.assertTrue("building_number" not in merged)
       self.assertEqual(merged["address"],self.db_building["easyroom"]["address"])
       self.assertEqual(merged["building_name"],self.db_building["easyroom"]["building_name"])
 
@@ -126,6 +127,7 @@ class DataMergerTest(unittest.TestCase):
          })
       self.assertEqual(merged["l_b_id"], self.db_building["edilizia"]["l_b_id"])
       self.assertEqual(merged["address"],"Via Celoria, 2, Milano")
+      self.assertEqual(merged["building_number"], "3")
       self.assertTrue("building_name" not in merged)
 
 
@@ -134,6 +136,7 @@ class DataMergerTest(unittest.TestCase):
 
       self.assertEqual(merged["l_b_id"], self.db_building["edilizia"]["l_b_id"])
       self.assertEqual(merged["address"], self.db_building["easyroom"]["address"])
+      self.assertEqual(merged["building_number"], "3")
       self.assertEqual(merged["building_name"], self.db_building["easyroom"]["building_name"])
       self.assertEqual(merged["coordinates"],
          { "type": "Point", "coordinates": [

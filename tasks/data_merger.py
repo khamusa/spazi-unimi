@@ -18,13 +18,13 @@ class DataMerger():
       merged = {
          "l_b_id"          : DataMerger._merge_building_l_b_id(edilizia, easyroom),
          "address"         : DataMerger._merge_building_address(edilizia, easyroom),
+         "building_number" : DataMerger._merge_building_number(edilizia, easyroom),
          "building_name"   : DataMerger._merge_building_name(edilizia, easyroom),
          "coordinates"     : DataMerger._prepare_GeoJson_coordinates(coordinates)
       }
 
       merged = { k: v for k, v in merged.items() if v }
       return merged
-
 
    # Helpers
    @classmethod
@@ -99,6 +99,11 @@ class DataMerger():
          return edilizia["address"]
 
       return ""
+
+   @classmethod
+   def _merge_building_number(self, edilizia=None, easyroom=None):
+      """Building Number strategy. It is NOT the street number"""
+      return edilizia and edilizia.get("building_number", None)
 
    @classmethod
    def merge_floors(klass, edilizia, easyroom, dxf):
