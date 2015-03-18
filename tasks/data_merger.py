@@ -22,6 +22,7 @@ class DataMerger():
          "coordinates"     : DataMerger._prepare_GeoJson_coordinates(coordinates)
       }
 
+      merged = { k: v for k, v in merged.items() if v }
       return merged
 
 

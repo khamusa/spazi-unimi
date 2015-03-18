@@ -112,10 +112,9 @@ class DataMergerTest(unittest.TestCase):
       if not DataMerger.skip_geocoding:
          self.assertEqual(merged["coordinates"],{ "type": "Point", "coordinates": [9.227256, 45.476739] })
 
-      self.assertEqual(merged["l_b_id"],"")
+      self.assertTrue("l_b_id" not in merged)
       self.assertEqual(merged["address"],self.db_building["easyroom"]["address"])
       self.assertEqual(merged["building_name"],self.db_building["easyroom"]["building_name"])
-
 
       """ Merge without easyroom data """
       merged = DataMerger.merge_building(edilizia=self.db_building["edilizia"])
@@ -127,7 +126,7 @@ class DataMergerTest(unittest.TestCase):
             ]
          })
       self.assertEqual(merged["l_b_id"], self.db_building["edilizia"]["l_b_id"])
-      self.assertEqual(merged["building_name"], "")
+      self.assertTrue("building_name" not in merged)
 
       if not DataMerger.skip_geocoding:
          self.assertEqual(merged["address"],"Via Celoria, 2, Milano")
