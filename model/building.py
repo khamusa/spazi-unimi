@@ -21,11 +21,15 @@ class Building(ODMModel):
                self.get("easyroom").get("building_name") or
                ""
                )
-      name = name and "("+name+")"
+      address = (
+               merged and merged.get("address")
+               )
+
+      final_name = address and "("+address+")" or name and "("+name+")"
       my_str   = [
          "Building Id: " + b_id,
          "Legacy id: " + l_b_id,
-         name
+         final_name
       ]
 
       return " ".join(my_str)
