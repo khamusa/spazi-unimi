@@ -90,6 +90,8 @@ class BuildingDataUpdater():
       namespaced_attr = building.attributes_for_source(self.get_namespace())
       namespaced_attr.update(b_dict)
 
+      self._sanitize_building(building)
+
       edilizia = building.get('edilizia')
       easyroom = building.get('easyroom')
       dxf      = building.get('dxf')
@@ -172,6 +174,12 @@ class BuildingDataUpdater():
             return False
 
       return True
+
+   def _sanitize_building(self, building):
+      """
+      Intended to be implemented by subclasses if necessary. This method should
+      sanitize a building namespace data"""
+      pass
 
    def find_building_to_update(self, building_dict):
       """

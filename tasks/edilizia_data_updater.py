@@ -6,6 +6,9 @@ from model.building                 import Building
 from tasks.data_merger              import DataMerger
 from tasks.dxf_room_ids_resolver    import DXFRoomIdsResolver
 from tasks.dxf_room_cats_resolver   import DXFRoomCatsResolver
+from utils.logger                   import Logger
+
+import re
 
 class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
    """
@@ -41,6 +44,59 @@ class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
       for building in Building.where({}):
          DXFRoomCatsResolver.resolve_room_categories(building, None)
          building.save()
+
+   def _sanitize_building(self, building):
+      """
+      Sanitize a building address, obtaining uniform address information if
+      possible. If no recognizable address is present, a warning is issued.
+      Only the "edilizia" namespace is considered
+
+      Arguments:
+      - building: a Building object to sanitize
+
+      Returs None
+      """
+      address = building.get_path("edilizia.address", "")
+
+      # Extract and remove building number (not street number)
+      r_building_number = re.compile("(.+)(_ed|ed[^a-z0-9])\s*(\d+)(.*)", flags=re.I)
+      building_result   = re.match(r_building_number, address)
+      if building_result:
+         building["edilizia"]["building_number"] = building_result.group(3)
+         address = building_result.group(1)+building_result.group(4)
+
+      # Now extract an address in a format like "Milano - Via Celoria 27"
+      address_regex = [
+         "(([a-z]+\s*)+)-\s*", # città
+         "(via|viale|piazza|v.le|p.zza)\s+", # tipo di via
+         "(([a-z]+\.?\s*)+),?\s*", # nome della via
+         "(\d*)"  # numero civico
+      ]
+      r_address   = re.compile("".join(address_regex), flags=re.I)
+
+      address_result = re.match(r_address, address)
+      if address_result:
+         city_name      = address_result.group(1).strip()
+         street_type    = address_result.group(3).strip()
+         street_name    = address_result.group(4).strip()
+         civic_number   = address_result.group(6).strip()
+
+         final_address  = street_type+" "+street_name
+
+         if civic_number:
+            final_address += ", "+civic_number
+
+         final_address += ", "+city_name
+
+      else:
+         Logger.warning(
+            "Discarded invalid address, try using a standard address format:",
+            building["edilizia"]["address"]
+            )
+         final_address = ""
+
+      building["edilizia"]["address"] = final_address
+
 
    def get_namespace(self):
       """

@@ -52,11 +52,7 @@ class DataMerger():
    @classmethod
    def _merge_building_name(self, edilizia=None, easyroom=None):
       """Building name merge strategy"""
-      if easyroom :
-         return easyroom.get("building_name", None)
-      else :
-         return edilizia.get("address",None)
-
+      return easyroom and easyroom.get("building_name", "") or ""
 
    @classmethod
    def _merge_building_coordinates(self, edilizia=None, easyroom=None):
@@ -93,35 +89,15 @@ class DataMerger():
    @classmethod
    def _merge_building_address(self, edilizia=None, easyroom=None):
       """Address merge strategy: use easyroom field if is present,
-         otherwhise use Geocoder in order to obtain a well-formed address"""
+         otherwhise try using edilizia"""
 
-      if(self.geocoding_retry_count > 0):
-         time.sleep(self.geocoding_retry_count)
+      if easyroom and easyroom.get("address", None):
+         return easyroom["address"]
 
-      try:
-         if easyroom and easyroom.get("address", None):
-            return easyroom["address"]
+      if edilizia and edilizia.get("address", None):
+         return edilizia["address"]
 
-         elif self.skip_geocoding or self.geocoding_retry_count > 4:
-            return ""
-
-         elif len(edilizia["lon"].strip())>0 and len(edilizia["lat"].strip())>0 :
-            g = Geocoder.reverse_geocode( float(edilizia["lat"]) , float(edilizia["lon"]) )
-            self.geocoding_retry_count = max(self.geocoding_retry_count-1, 0)
-            return g.formatted_address[:-len(g.country)-2]
-
-         else:
-            g = Geocoder.geocode( edilizia["address"] )
-            self.geocoding_retry_count = max(self.geocoding_retry_count-1, 0)
-            return g.formatted_address[:-len(g.country)-2]
-
-      except GeocoderError as error:
-         if error.status == GeocoderError.G_GEO_ZERO_RESULTS :
-            Logger.warning("Address not valid " , edilizia["address"] )
-
-         elif error.status == GeocoderError.G_GEO_OVER_QUERY_LIMIT :
-               self.geocoding_retry_count += 1
-               return DataMerger._merge_building_address(edilizia, easyroom)
+      return ""
 
    @classmethod
    def merge_floors(klass, edilizia, easyroom, dxf):

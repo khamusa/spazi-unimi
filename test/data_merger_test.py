@@ -10,7 +10,8 @@ class DataMergerTest(unittest.TestCase):
               "lat" : "45.476098",
               "l_b_id" : "5703",
               "lon" : "9.227756",
-              "address" : "Milano - Via Celoria 2_Ed 3",
+              "address" : "Via Celoria, 2, Milano",
+              "building_number": "3",
               "b_id" : "21030",
               "floors" : [
                   {
@@ -40,7 +41,7 @@ class DataMergerTest(unittest.TestCase):
 
       """ Merge without easyroom data """
       merged = DataMerger._merge_building_name(edilizia=self.db_building["edilizia"], easyroom=None)
-      self.assertEqual(merged,"Milano - Via Celoria 2_Ed 3")
+      self.assertEqual(merged, "")
 
       """ Merge with edilizia and easyroom data """
       merged = DataMerger._merge_building_name(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
@@ -54,7 +55,7 @@ class DataMergerTest(unittest.TestCase):
       if not DataMerger.skip_geocoding:
          """ Merge without easyroom data """
          merged = DataMerger._merge_building_address(edilizia=self.db_building["edilizia"])
-         self.assertEqual(merged, "Via Giovanni Celoria, 2, 20133 Milano")
+         self.assertEqual(merged, "Via Celoria, 2, Milano")
 
          """ Merge with edilizia and easyroom data """
          merged = DataMerger._merge_building_address(edilizia=self.db_building["edilizia"], easyroom=self.db_building["easyroom"])
@@ -126,10 +127,10 @@ class DataMergerTest(unittest.TestCase):
             ]
          })
       self.assertEqual(merged["l_b_id"], self.db_building["edilizia"]["l_b_id"])
-      self.assertEqual(merged["building_name"],self.db_building["edilizia"]["address"])
+      self.assertEqual(merged["building_name"], "")
 
       if not DataMerger.skip_geocoding:
-         self.assertEqual(merged["address"],"Via Giovanni Celoria, 2, 20133 Milano")
+         self.assertEqual(merged["address"],"Via Celoria, 2, Milano")
 
 
       """ Merge with easyroom and edilizia data """
