@@ -26,3 +26,6 @@ class MongoDBPersistenceManager:
 
    def remove(self, collection_name, query, options):
       return self.db[collection_name].remove(query, **options)
+
+   def get_collection_ids(self, collection_name):
+      return map(lambda o: o["_id"], self.db[collection_name].find({}, { "_id" : 1 }))
