@@ -26,7 +26,7 @@ class BuildingDataUpdaterTest(unittest.TestCase):
           "dxf" : {
             "l_b_id" : "5703",
             "floors" : [
-               { "f_id" : "-0.5", "rooms": {}, "unidentified_rooms": [] },
+               { "f_id" : "-05", "rooms": {}, "unidentified_rooms": [] },
             ]
           },
           "edilizia" : {
@@ -100,7 +100,7 @@ class BuildingDataUpdaterTest(unittest.TestCase):
       if b:
          self.assertIsNotNone(b)
          floor_mock = MagicMock()
-         floor_mock.to_serializable = MagicMock(return_value={ "b_id": "123", "f_id": "-0.5", "rooms": [] })
+         floor_mock.to_serializable = MagicMock(return_value={ "b_id": "123", "f_id": "-05", "rooms": [] })
          self.dxf_updater.save_floor( b, floor_mock )
          self.validate_single_document(["dxf", "edilizia"])
       else:
@@ -137,7 +137,7 @@ class BuildingDataUpdaterTest(unittest.TestCase):
 
       if namespaces is None or ("dxf" in namespaces):
          self.assertEqual(b.attr("dxf")["floors"], self.db_building["dxf"]["floors"])
-         self.assertEqual( b.attr("dxf")["floors"][0]["f_id"], "-0.5" )
+         self.assertEqual( b.attr("dxf")["floors"][0]["f_id"], "-05" )
 
       if namespaces is None or ("easyroom" in namespaces):
          self.assertTrue( b.has_attr("easyroom") )

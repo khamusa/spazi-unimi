@@ -94,7 +94,7 @@ class RoomDataUpdaterTest(unittest.TestCase):
       first_floor    = b["edilizia"]["floors"][0]
       second_floor   = b["edilizia"]["floors"][1]
       self.assertEqual(first_floor["f_id"], "0")
-      self.assertEqual(second_floor["f_id"], "1")
+      self.assertEqual(second_floor["f_id"], "10")
 
    def test_valid_rooms_get_saved(self):
       self.edil_up.update_rooms(self.edil_rooms)
