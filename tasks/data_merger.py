@@ -80,7 +80,10 @@ class DataMerger():
 
    @classmethod
    def _prepare_GeoJson_coordinates(self,coordinates):
-      coordinates = coordinates or { "lng" : 0 , "lat" : 0 }
+      coordinates = coordinates or { "lng" : None , "lat" : None }
+      if not coordinates["lng"] or not coordinates["lat"]:
+         return None
+
       return {
             "type"         : "Point",
             "coordinates"  : [ coordinates["lng"] , coordinates["lat"] ]
