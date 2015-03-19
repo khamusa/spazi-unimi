@@ -21,7 +21,8 @@ def around_callbacks(funz):
 
    def wrapper(self, *args, **kargs):
       context = funz.__name__
-      klass_name = self.__class__.__name__
+      klass = type(self) is type and self or self.__class__
+      klass_name = klass.__name__
       #1a - fire all CLASS before callbacks
       if klass_name in self.before_callbacks and context in self.before_callbacks[klass_name]:
          for callback in self.before_callbacks[klass_name][context]:
