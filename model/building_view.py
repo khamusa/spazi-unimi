@@ -1,4 +1,4 @@
-from .      import ODMModel
+from .      import ODMModel, Building
 from utils  import myfunctools
 
 class BuildingView(ODMModel):
@@ -34,3 +34,19 @@ class BuildingView(ODMModel):
 
       final_floor["available_services"] = list(services)
       return final_floor
+
+   @classmethod
+   def remove_deleted_buildings(klass):
+      """
+      Listener to be excuted after Building.remove_deleted_buildings. Intended to
+      ensure that BuildingView documents are also removed after Building objects.
+      """
+      valid_ids   = klass._pm.get_collection_ids(Building.collection_name())
+      options     = {"multi" : True}
+      query       = {
+         "_id" : {
+            "$nin" : list(valid_ids)
+         }
+      }
+
+      klass._pm.remove(BuildingView.collection_name(), query, options)

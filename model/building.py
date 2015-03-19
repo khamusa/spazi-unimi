@@ -1,4 +1,5 @@
 from . import ODMModel
+from .odm_model import around_callbacks
 import re
 
 class Building(ODMModel):
@@ -92,6 +93,7 @@ class Building(ODMModel):
       return (result["n"], buildings)
 
    @classmethod
+   @around_callbacks
    def remove_deleted_buildings(klass):
       """
       Performs a swipe on database, erasing buildings that are to be considered

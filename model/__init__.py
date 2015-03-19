@@ -11,3 +11,5 @@ def update_building_view(building):
    bv.save()
 
 Building.listen("after_save", update_building_view)
+
+Building.listen("after_remove_deleted_buildings", BuildingView.remove_deleted_buildings)
