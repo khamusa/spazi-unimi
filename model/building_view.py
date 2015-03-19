@@ -7,13 +7,13 @@ class BuildingView(ODMModel):
       identic_keys      = [
          "address", "building_number", "building_name", "l_b_id", "coordinates"
       ]
-      merged_key        = building.get("merged")
+      merged_key        = building.get("merged", {})
       bv_attrs          = myfunctools.filter_keys(merged_key, identic_keys)
       bv_attrs["_id"]   = building["_id"]
 
       bv_attrs["floors"] = {
          f["f_id"] : BuildingView._prepare_floor_obj(f)
-         for f in building.get_path("merged.floors")
+         for f in building.get_path("merged.floors", [])
       }
 
       return BuildingView(bv_attrs)
