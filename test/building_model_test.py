@@ -1,6 +1,6 @@
 import unittest
 from model     import Building
-from mock      import MagicMock
+from mock      import MagicMock, call
 from datetime  import datetime
 
 class BuildingModelTest(unittest.TestCase):
@@ -39,6 +39,7 @@ class BuildingModelTest(unittest.TestCase):
       self.pm.update.assert_called_once_with("building", query, action, options)
 
    def test_remove_deleted_buildings(self):
+      building_collection = Building.collection_name()
       Building.remove_deleted_buildings()
 
       query    = {
@@ -54,7 +55,18 @@ class BuildingModelTest(unittest.TestCase):
          ]
       }
       options  = {"multi" : True}
-      self.pm.remove.assert_called_once_with("building", query, options)
+      self.assertEqual(self.pm.remove.call_count, 2)
+
+      valid_ids = Building._pm.get_collection_ids(building_collection)
+      query_bv = {
+         "_id" : {
+            "$nin" : list(valid_ids)
+         }
+      }
+
+      call1 = call(building_collection, query, options)
+      call2 = call("buildingview", query_bv, options)
+      self.pm.remove.assert_has_calls([call1, call2], any_order = True)
 
    def tearDown(self):
       Building.set_pm(self.old_pm)
