@@ -4,3 +4,4 @@ mock
 pymongo
 pygeocoder==1.2.5
 colour-runner
+ipython
