@@ -96,7 +96,12 @@ class BuildingDataUpdater():
       easyroom = building.get('easyroom')
       dxf      = building.get('dxf')
 
+      floors   = building.get_path("merged.floors")
       building['merged'] = DataMerger.merge_building(edilizia, easyroom, dxf)
+
+      if floors:
+         building['merged']['floors'] = floors
+
       building.save()
 
    def _clean_unmarked_buildings(self):
