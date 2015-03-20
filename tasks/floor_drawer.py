@@ -1,7 +1,10 @@
 from model.drawable  import Polygon
 from utils.logger    import Logger
 from itertools       import chain, groupby
+
 import svgwrite, re
+import rdp
+
 
 class FloorDrawer():
 
@@ -92,7 +95,8 @@ class FloorDrawer():
       polygon     = klass._create_polygon(room.get("polygon"))
 
       if polygon:
-         klass._draw_room(svg, group, polygon.points, r_id)
+         points      = klass._simplify_points(polygon)
+         klass._draw_room(svg, group, points, r_id)
          center      = polygon.center_point
          center.y    += 10
 
@@ -134,16 +138,26 @@ class FloorDrawer():
       """
       if r_id:
          poly  = svg.polyline(
-            (klass._approximate_coordinates(p.x, p.y) for p in points),
+            (klass._approximate_coordinates(p[0], p[1]) for p in points),
             id = r_id,
             fill="rgb(255, 255, 255)"
          )
       else:
          poly  = svg.polyline(
-            (klass._approximate_coordinates(p.x, p.y) for p in points),
+            (klass._approximate_coordinates(p[0], p[1]) for p in points),
             fill="rgb(255, 255, 255)"
          )
       group.add(poly)
+
+   @classmethod
+   def _simplify_points(klass, polygon, tol=2.0):
+      """
+      Applies Ramer–Douglas–Peucker algorithm to simplify a room polygon.
+      """
+      pts         = [ tuple(p) for p in polygon.points ]
+      simplified  = rdp.rdp(pts, tol)
+
+      return simplified
 
    @classmethod
    def _get_style(klass, svg):
