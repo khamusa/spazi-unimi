@@ -37,6 +37,8 @@ class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
       RoomCategory.clean()
       for c in categories:
          if c["cat_id"] not in cat_exceptions:
+            if c["cat_id"] == "WC02":
+               c["cat_name"] = "WC"
             cat = RoomCategory(c)
             cat.attr("_id", cat.attr("_id").upper())
             cat.save()
