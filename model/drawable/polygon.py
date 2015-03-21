@@ -59,6 +59,38 @@ class Polygon(Drawable, Anchorable):
 
       return self
 
+   def simplify_close_points(self, tollerance = 0.5):
+      """
+      Simplify the polygon points by replacing consecutive points with a
+      distance smaller than tollerance into a single point.
+      If the original polygon is closed, the final one is also granted to be.
+
+      Returns self
+      """
+      to_remove   = set()
+      was_closed  = self.is_closed()
+
+      points = list(enumerate(self.points))
+      for i, p in points:
+         if i in to_remove:
+            continue
+
+         for i2, p2 in chain(points[i+1:], points[0:i]):
+            if p.distance_to(p2) < tollerance:
+               to_remove.add(i2)
+            else:
+               break
+
+      if to_remove:
+         self.points = [ p for i, p in points if i not in to_remove ]
+
+         if was_closed:
+            self.ensure_is_closed(tollerance)
+         else:
+            self._calculate_bounding_box()
+
+      return self
+
    def _prepare_points(polypoints):
       """From a list of tuples, create a list of Point"""
       return [Point(p[0], p[1]) for p in polypoints]

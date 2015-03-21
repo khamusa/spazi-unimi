@@ -15,6 +15,35 @@ class PolygonTest(unittest.TestCase):
          [ (-20, 30), (0, -10), (20, -30), (40, -10) ]
       )
 
+   def test_simplify_close_points(self):
+      p1 = Polygon.from_relative_coordinates( Point(0,0),
+         [ (-20, 30), (-20.35, 30.25), (0, -10), (-0.3, -10.36), (40, -10) ]
+      ).simplify_close_points()
+
+      self.assertEqual(p1.points, [ (-20, 30), (0, -10), (40, -10) ])
+
+      p2 = Polygon.from_relative_coordinates( Point(0,0),
+         [ (-20, 30), (-20.25, 30.15), (0, -10), (-0.13, -10.16), (15, 15), (-20, 30) ]
+      ).simplify_close_points()
+
+      self.assertEqual(p2.points, [ (0, -10), (15, 15), (-20, 30), (0, -10) ])
+
+      p3 = Polygon.from_relative_coordinates( Point(0,0),
+         [ (0, 0), (0, 0.49), (0, 0.495), (0, 0.396), (0, 0.9), (0, 1.3), (0, 1.41) ]
+      ).simplify_close_points()
+
+      self.assertEqual(p3.points, [ (0, 0), (0, 0.9), (0, 1.41) ])
+
+   def test_is_self_crossing(self):
+      l_shaped = Polygon.from_absolute_coordinates(
+         [ (0, 0), (10, 0), (10, 10), (5, 10), (5, 5), (0,5), (0,0) ] )
+      crossing = Polygon.from_absolute_coordinates(
+         [ (0, 0),          (10, 10), (5, 10), (5, 5), (0,5) ] )
+
+      self.assertFalse(l_shaped.is_self_crossing())
+      self.assertTrue(crossing.is_self_crossing())
+      print(crossing.is_self_crossing())
+
    def test_point_to_right_of_line(self):
       self.assertTrue(Polygon._compare_line_and_point( Point(10, 0), Point(0, 10), Point(9.9, 9.9)) > 0 )
       self.assertTrue(Polygon._compare_line_and_point( Point(0, 0), Point(1, 9), Point(1, 2)) > 0 )

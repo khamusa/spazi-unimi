@@ -73,6 +73,7 @@ class DxfReader():
 
             polygon = Polygon.from_absolute_coordinates(points)
             polygon.ensure_is_closed(tollerance = 0.8)
+            polygon.simplify_close_points(tollerance = 0.8)
 
             self._rooms.append(
                Room(
