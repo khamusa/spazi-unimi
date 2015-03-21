@@ -26,6 +26,12 @@ class Segment(Drawable):
    def from_coordinates(klass, x1, y1, x2, y2):
       return klass.from_tuples( (x1, y1), (x2, y2) )
 
+   def __str__(self):
+      return "Segment({} <--> {})".format(self.start, self.end)
+
+   def __repr__(self):
+      return str(self)
+
    def __eq__(self, other):
       if type(other) is not Segment:
          try:
@@ -73,6 +79,18 @@ class Segment(Drawable):
       else:
          return Point(0, y) == Point(0, (self.slope * x + self.y_intercept))
 
+   def links_with(self, other, tollerance = 0.05):
+      """
+      Returns true if current segment can be linked to other segment, i.e,
+      starting or ending points of both are close enough
+      """
+      return (
+         self.start.distance_to(other.start) < tollerance or
+         self.start.distance_to(other.end) < tollerance or
+         self.end.distance_to(other.end) < tollerance or
+         self.end.distance_to(other.start) < tollerance
+      )
+
    def intersect_with(self, other):
       """
       Tests whether or not two segments intersect.
@@ -113,6 +131,7 @@ class Segment(Drawable):
       - False if the two lines are parallel and, hence, never intersect
       - a Point object indicating the intersectino point.
       """
+
       the_slope, the_y_intercept = False, False
 
       # parallel?
@@ -131,7 +150,7 @@ class Segment(Drawable):
       else:
          x = (other.y_intercept - self.y_intercept) / (self.slope - other.slope)
 
-      if not the_slope:
+      if the_slope is None or the_slope is False:
          the_slope         = self.slope
          the_y_intercept   = self.y_intercept
 
