@@ -3,6 +3,7 @@ from itertools          import chain
 from . import Point
 from . import Drawable
 from . import Anchorable
+from .segment import Segment
 
 class Polygon(Drawable, Anchorable):
 
@@ -33,6 +34,30 @@ class Polygon(Drawable, Anchorable):
       p.points       = Polygon._prepare_points(points)
       p._calculate_bounding_box()
       return p
+
+   def is_closed(self, tollerance = 0.5):
+      """
+      True if the polygon is closed, i.e. first and last points are close enough,
+      which is determined by the tollerance parameter.
+      """
+      first = self.points[0]
+      last  = self.points[-1]
+
+      return first.distance_to(last) < tollerance
+
+   def ensure_is_closed(self, tollerance = 0.5):
+      """
+      If the first and last points of the polygon are not close enough, closes
+      the polygon by adding the first point as tail of the points list.
+      """
+      if self.is_closed():
+         return self
+
+      if len(self.points) > 2:
+         self.points.append(self.points[0].clone())
+         self._calculate_bounding_box()
+
+      return self
 
    def _prepare_points(polypoints):
       """From a list of tuples, create a list of Point"""

@@ -71,14 +71,12 @@ class DxfReader():
          if self._is_valid_room(ent):
             points = [(p[0], -p[1]) for p in ent.points]
 
-            # Controllo se il primo e l'ultimo punto non sono uguali se è così
-            # chiudo il poligono riaggiungendo il pimo punto alla fine
-            if ent.points[0] != ent.points[-1]:
-               points.append((ent.points[0][0], -ent.points[0][1]))
+            polygon = Polygon.from_absolute_coordinates(points)
+            polygon.ensure_is_closed(tollerance = 0.8)
 
             self._rooms.append(
                Room(
-                  Polygon.from_absolute_coordinates(points)
+                  polygon
                )
             )
          elif self._is_valid_text(ent):
