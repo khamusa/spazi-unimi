@@ -1,5 +1,5 @@
 from persistence.db  import *
-from config_manager  import ConfigManager
+from utils           import ConfigManager
 from mock            import MagicMock
 import unittest
 

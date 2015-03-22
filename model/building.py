@@ -1,5 +1,4 @@
-from . import ODMModel
-from .odm_model import around_callbacks
+from .odm import ODMModel, around_callbacks
 import re
 
 class Building(ODMModel):

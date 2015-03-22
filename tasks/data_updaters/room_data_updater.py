@@ -1,9 +1,8 @@
-from model                          import Building
-from utils.logger                   import Logger
-from tasks.data_merger              import DataMerger
-from tasks.dxf_room_ids_resolver    import DXFRoomIdsResolver
-from datetime                       import datetime
-from itertools                      import groupby
+from model          import Building
+from utils.logger   import Logger
+from tasks.mergers  import DataMerger, DXFRoomIdsResolver
+from datetime       import datetime
+from itertools      import groupby
 
 class RoomDataUpdater():
    """

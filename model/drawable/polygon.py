@@ -1,9 +1,6 @@
 from utils.myitertools  import circular_pairwise
 from itertools          import chain
-from . import Point
-from . import Drawable
-from . import Anchorable
-from .segment import Segment
+from . import Point, Drawable, Anchorable, Segment
 
 class Polygon(Drawable, Anchorable):
 

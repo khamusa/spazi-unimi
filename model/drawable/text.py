@@ -1,5 +1,4 @@
-from .point import Point
-from .anchorable import Anchorable
+from . import Point, Anchorable
 
 class Text(Anchorable):
    def __init__(self, txt, anchor_point):

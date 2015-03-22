@@ -1,6 +1,6 @@
-from mock                              import MagicMock, patch
-from tasks.dxf_room_cats_resolver      import DXFRoomCatsResolver
-from model                             import RoomCategory
+from mock          import MagicMock, patch
+from tasks.mergers import DXFRoomCatsResolver
+from model         import RoomCategory
 import unittest
 
 class DXFRoomCatsResolverTest(unittest.TestCase):
@@ -121,7 +121,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
       should_be_called = MagicMock(return_value = 4)
       chain_mock       = MagicMock(return_value = [1, 2, 3, 4, "A", "B", "C"])
 
-      with patch("tasks.dxf_room_cats_resolver.chain", chain_mock):
+      with patch("tasks.mergers.dxf_room_cats_resolver.chain", chain_mock):
          with patch("__main__.DXFRoomCatsResolver._resolve_categories_for_rooms", should_be_called):
 
             r = DXFRoomCatsResolver._resolve_room_categories_for_floor(

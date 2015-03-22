@@ -1,7 +1,7 @@
-from model                    import Building
-from utils.logger             import Logger
-from tasks.data_merger        import DataMerger
-from datetime                 import datetime
+from model         import Building
+from utils.logger  import Logger
+from tasks.mergers import DataMerger
+from datetime      import datetime
 
 class BuildingDataUpdater():
    """

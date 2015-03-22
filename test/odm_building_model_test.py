@@ -1,6 +1,6 @@
 import unittest
 from model              import Building
-from model              import ODMModel
+from model.odm          import ODMModel
 from persistence.db     import MongoDBPersistenceManager
 
 class ODMBuildingModelTest(unittest.TestCase):

@@ -1,8 +1,8 @@
-from config_manager                                import ConfigManager
-from tasks                                         import *
-from persistence.db.mongo_db_persistence_manager   import MongoDBPersistenceManager
-from utils.logger                                  import Logger
-from model                                         import ODMModel
+from utils          import ConfigManager
+from tasks          import CSVTask, DXFTask, SVGTask
+from persistence    import MongoDBPersistenceManager
+from utils.logger   import Logger
+from model.odm      import ODMModel
 import time
 
 class Main():
@@ -112,6 +112,7 @@ if __name__ == '__main__':
    args = parser.parse_args()
 
    # Development mode
+   from tasks.mergers import DataMerger
    DataMerger.skip_geocoding = True
 
    if(args.command in ["csv", "dxf"] and len(args.files) == 0):

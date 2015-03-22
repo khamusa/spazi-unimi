@@ -1,5 +1,4 @@
-from .db                   import DB
+from .db                   import DB, MongoDBPersistenceManager
 from .persistence_manager  import PersistenceManager
 
-
-_all__ = ["DB", "PersistenceManager"]
+mongoDB = MongoDBPersistenceManager

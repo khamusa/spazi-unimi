@@ -1,5 +1,4 @@
-from model.drawable.segment   import Segment
-from model.drawable.point     import Point
+from model.drawable import Point, Segment
 import unittest, math
 
 class DrawableSegmentTest(unittest.TestCase):

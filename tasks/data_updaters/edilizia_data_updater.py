@@ -1,12 +1,8 @@
-from model                          import RoomCategory
-from .building_data_updater         import BuildingDataUpdater
-from .room_data_updater             import RoomDataUpdater
-from .floor_inference               import FloorInference
-from model.building                 import Building
-from tasks.data_merger              import DataMerger
-from tasks.dxf_room_ids_resolver    import DXFRoomIdsResolver
-from tasks.dxf_room_cats_resolver   import DXFRoomCatsResolver
-from utils.logger                   import Logger
+from .              import BuildingDataUpdater, RoomDataUpdater
+from model          import Building, RoomCategory
+from tasks          import FloorInference
+from tasks.mergers  import DataMerger, DXFRoomIdsResolver, DXFRoomCatsResolver
+from utils.logger   import Logger
 
 import re
 

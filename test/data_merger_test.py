@@ -1,4 +1,4 @@
-from tasks.data_merger  import DataMerger
+from tasks.mergers import DataMerger
 import unittest, time
 
 class DataMergerTest(unittest.TestCase):

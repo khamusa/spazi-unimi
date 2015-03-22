@@ -1,5 +1,5 @@
 from colour_runner.runner  import ColourTextTestRunner
-from tasks.data_merger     import DataMerger
+from tasks.mergers     import DataMerger
 from utils.logger          import Logger
 from os                    import listdir
 import unittest, sys, re

@@ -1,5 +1,5 @@
 import types
-from .odm_attrs import ODMAttrs
+from . import ODMAttrs
 
 def around_callbacks(funz):
    """

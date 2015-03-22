@@ -1,4 +1,4 @@
-from .point import Point
+from . import Point
 
 class Drawable():
    """

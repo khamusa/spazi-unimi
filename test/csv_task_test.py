@@ -1,7 +1,6 @@
 import unittest
-from tasks.csv_task  import CSVTask
-from mock            import MagicMock
-from tasks.task      import FileUpdateException
+from tasks import CSVTask, FileUpdateException
+from mock  import MagicMock
 
 class CSVTaskTest(unittest.TestCase):
 

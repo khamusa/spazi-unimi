@@ -1,10 +1,11 @@
-from config_manager                                import ConfigManager
-from persistence.db.mongo_db_persistence_manager   import MongoDBPersistenceManager
-from model                                         import ODMModel, Building
-from utils.logger                                  import Logger
-from analysis.dxf_analysis                         import DXFAnalysis
-from analysis.floor_merge_analysis                 import FloorMergeAnalysis
-from analysis.building_id_analysis                 import BuildingIdAnalysis
+from config_manager import ConfigManager
+from persistence.db import MongoDBPersistenceManager
+from model.odm      import ODMModel
+from model          import Building
+from utils.logger   import Logger
+from analysis       import DXFAnalysis
+from analysis       import FloorMergeAnalysis
+from analysis       import BuildingIdAnalysis
 
 persistence = MongoDBPersistenceManager(ConfigManager("config/general.json"))
 ODMModel.set_pm( persistence )

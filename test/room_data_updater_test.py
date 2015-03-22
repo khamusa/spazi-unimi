@@ -1,9 +1,8 @@
-from persistence.db              import MongoDBPersistenceManager
-from model.odm_model             import ODMModel
-from model.building              import Building
-from itertools                   import chain
-from tasks.easyroom_data_updater import EasyroomDataUpdater
-from tasks.edilizia_data_updater import EdiliziaDataUpdater
+from persistence.db      import MongoDBPersistenceManager
+from model.odm           import ODMModel
+from model.building      import Building
+from itertools           import chain
+from tasks.data_updaters import EasyroomDataUpdater, EdiliziaDataUpdater
 import unittest
 
 class RoomDataUpdaterTest(unittest.TestCase):

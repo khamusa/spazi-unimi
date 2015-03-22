@@ -1,4 +1,4 @@
-from . import ODMModel
+from .odm import ODMModel
 import re
 
 class RoomCategory(ODMModel):

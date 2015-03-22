@@ -1,5 +1,4 @@
-from .building_data_updater   import BuildingDataUpdater
-from .room_data_updater       import RoomDataUpdater
+from . import BuildingDataUpdater, RoomDataUpdater
 
 class EasyroomDataUpdater(BuildingDataUpdater, RoomDataUpdater):
    """

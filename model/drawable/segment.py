@@ -1,5 +1,4 @@
-from .drawable import Drawable
-from .point import Point
+from . import Drawable, Point
 
 class Segment(Drawable):
 

@@ -1,5 +1,5 @@
 import unittest
-import model.odm_attrs as odm_attrs
+import model.odm as odm_attrs
 
 class ODMAttrsTest(unittest.TestCase):
 

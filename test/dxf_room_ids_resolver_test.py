@@ -1,5 +1,5 @@
-from model                          import Building
-from tasks.dxf_room_ids_resolver    import DXFRoomIdsResolver
+from model         import Building
+from tasks.mergers import DXFRoomIdsResolver
 import unittest
 
 class DXFRoomIdsResolverTest(unittest.TestCase):

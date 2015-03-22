@@ -1,5 +1,5 @@
-from tasks.data_merger  import DataMerger
-from mock               import MagicMock
+from tasks.mergers import DataMerger
+from mock          import MagicMock
 import unittest
 
 class FloorMergeTest(unittest.TestCase):

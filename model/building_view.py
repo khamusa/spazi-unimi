@@ -1,4 +1,5 @@
-from .      import ODMModel, Building
+from .odm   import ODMModel
+from .      import Building
 from utils  import myfunctools
 
 class BuildingView(ODMModel):

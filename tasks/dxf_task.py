@@ -1,6 +1,6 @@
-from tasks.dxf.dxf_reader     import DxfReader
-from tasks.task               import Task, FileUpdateException
-from tasks.dxf_data_updater   import DXFDataUpdater
+from .dxf            import DxfReader
+from .data_updaters  import DXFDataUpdater
+from .               import Task, FileUpdateException
 import os, re
 
 class DXFTask(Task):

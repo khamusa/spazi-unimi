@@ -1,6 +1,6 @@
-from model                 import Building
-from tasks.floor_drawer    import FloorDrawer
-from utils.logger          import Logger
+from .drawers     import FloorDrawer
+from model        import Building
+from utils.logger import Logger
 import os
 
 class SVGTask():

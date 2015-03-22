@@ -1,5 +1,5 @@
-from model.drawable     import Point, Text
-from utils.logger       import Logger
+from model.drawable import Point, Text
+from utils.logger   import Logger
 import re, json
 
 class FloorInference:

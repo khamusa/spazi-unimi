@@ -1,4 +1,4 @@
-from model.odm_model    import ODMModel
+from model.odm          import ODMModel
 from persistence.db     import MongoDBPersistenceManager
 from mock               import MagicMock
 import unittest

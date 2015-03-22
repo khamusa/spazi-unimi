@@ -1,9 +1,7 @@
-from tasks.data_merger              import DataMerger
-from model                          import Building
-from datetime                       import datetime
-from tasks.dxf_room_ids_resolver    import DXFRoomIdsResolver
-from tasks.dxf_room_cats_resolver   import DXFRoomCatsResolver
-from utils.logger                   import Logger
+from tasks.mergers import DataMerger, DXFRoomIdsResolver, DXFRoomCatsResolver
+from model         import Building
+from datetime      import datetime
+from utils.logger  import Logger
 
 class DXFDataUpdater:
 
