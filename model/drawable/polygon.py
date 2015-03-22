@@ -1,5 +1,5 @@
 from utils.myitertools  import circular_pairwise
-from itertools          import chain
+from itertools          import chain, product
 from . import Point, Drawable, Anchorable, Segment
 
 class Polygon(Drawable, Anchorable):
@@ -87,6 +87,25 @@ class Polygon(Drawable, Anchorable):
             self._calculate_bounding_box()
 
       return self
+
+   def is_self_crossing(self):
+      """
+      Returns True if this polygon crosses itself
+      """
+      segments = self.as_segment_list()
+
+      for s1, s2 in product(segments, segments):
+         if s1.links_with(s2, tollerance=2):
+            continue
+
+         p = s1.intersect_with(s2)
+         if p is not False and p is not True:
+            return (p, s1, s2)
+
+      return False
+
+   def as_segment_list(self):
+      return [ Segment(a, b) for a, b in circular_pairwise(self.points) ]
 
    def _prepare_points(polypoints):
       """From a list of tuples, create a list of Point"""

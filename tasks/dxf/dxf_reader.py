@@ -75,6 +75,10 @@ class DxfReader():
             polygon.ensure_is_closed(tollerance = 0.8)
             polygon.simplify_close_points(tollerance = 0.8)
 
+            if polygon.is_self_crossing():
+               Logger.warning("Self crossing room is not valid: "+str(polygon))
+               continue
+
             self._rooms.append(
                Room(
                   polygon
