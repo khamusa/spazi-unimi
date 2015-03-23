@@ -1,8 +1,12 @@
-import unittest
+import unittest, json
 from model import Building, BuildingView
 
 class BuildingViewModelTest(unittest.TestCase):
    def setUp(self):
+      config_file = "config/floor_inference.json"
+      with open(config_file) as cf:
+         self.floor_dict = json.load(cf)
+
       self.db_building  ={
          "_id"    : "33110",
          "merged" : {
@@ -180,6 +184,11 @@ class BuildingViewModelTest(unittest.TestCase):
       for f_id in merged_floors:
          self.assertTrue(f_id in b_view.get("floors").keys())
          self.assertTrue("rooms" in b_view["floors"][f_id])
+         self.assertTrue("floor_name" in b_view["floors"][f_id])
+         self.assertEqual(
+            b_view["floors"][f_id]["floor_name"],
+            self.floor_dict[f_id]["floor_name"]
+         )
 
          for room in b_view["floors"][f_id]["rooms"].values():
             self.assertTrue("polygon" not in room)

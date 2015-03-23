@@ -1,8 +1,12 @@
 from .odm   import ODMModel
 from .      import Building
 from utils  import myfunctools
+import json
 
 class BuildingView(ODMModel):
+   config_file = "config/floor_inference.json"
+   with open(config_file) as cf:
+      floor_dict = json.load(cf)
 
    def create_from_building(building):
       identic_keys      = [
@@ -22,18 +26,25 @@ class BuildingView(ODMModel):
    @classmethod
    def _prepare_floor_obj(klass, floor):
       remove_polygon = lambda r: myfunctools.remove_keys(r, ["polygon"])
-      rooms_dict = {
+      rooms_dict     = {
          r_id : remove_polygon(room)
          for r_id, room in floor.get("rooms", {}).items()
       }
-      final_floor = { "rooms" : rooms_dict }
+      final_floor    = { "rooms" : rooms_dict }
 
-      services = set()
+      services       = set()
       for r in floor.get("unidentified_rooms", []):
          if "cat_name" in r:
             services.add(r["cat_name"])
 
       final_floor["available_services"] = list(services)
+
+      f_id        = floor.get("f_id", "")
+      floor_info  = klass.floor_dict.get(f_id, None)
+
+      if floor_info:
+         final_floor["floor_name"] = floor_info["floor_name"]
+
       return final_floor
 
    @classmethod
