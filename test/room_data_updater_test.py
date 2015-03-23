@@ -68,7 +68,7 @@ class RoomDataUpdaterTest(unittest.TestCase):
             'r_id'      : '21030#1066',
             'b_id'      : '21030',
             'capacity'  : '52',
-            'l_floor'   : '1'
+            'l_floor'   : '10'
          }
       ]
 

@@ -22,7 +22,7 @@ class BuildingViewModelTest(unittest.TestCase):
                           "cat_name"      : "Aula Informatica"
                       }
                   },
-                  "f_id"               : "-0.5",
+                  "f_id"               : "-05",
                   "walls"              : [],
                   "windows"            : [],
                   "unidentified_rooms" : [
@@ -67,7 +67,7 @@ class BuildingViewModelTest(unittest.TestCase):
                           "cat_name"      : "Aula Informatica"
                       },
                   },
-                  "f_id"               : "0.3",
+                  "f_id"               : "03",
                   "walls"              : [],
                   "windows"            : [],
                   "unidentified_rooms" : [
@@ -109,7 +109,7 @@ class BuildingViewModelTest(unittest.TestCase):
                         "cat_name"  : "Aula Informatica"
                      }
                   },
-                  "f_id" : "-0.5"
+                  "f_id" : "-05"
                },
                {
                   "rooms" : {
@@ -156,7 +156,7 @@ class BuildingViewModelTest(unittest.TestCase):
                         "cat_name"  : "Aula"
                      }
                   },
-               "f_id" : "0.3"
+               "f_id" : "03"
             }
          ],
          "b_id"      : "33110",
@@ -199,8 +199,8 @@ class BuildingViewModelTest(unittest.TestCase):
 
          self.assertIn("available_services", b_view["floors"][f_id])
 
-      available_services_1 = b_view["floors"]["-0.5"]["available_services"]
-      available_services_2 = b_view["floors"]["0.3"]["available_services"]
+      available_services_1 = b_view["floors"]["-05"]["available_services"]
+      available_services_2 = b_view["floors"]["03"]["available_services"]
 
       self.assertIn("WC", available_services_1)
       self.assertIn("Ufficio", available_services_1)
