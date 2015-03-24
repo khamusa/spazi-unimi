@@ -6,5 +6,7 @@ class ApiTest(unittest.TestCase):
    def setUp(self):
       self.app = api.app.test_client()
 
-   def test_buildings(self):
-        rv = self.app.get('/buildings')
+   def test_buildings_uri(self):
+        response = self.app.get('/api/v1.0/buildings/')
+        self.assertEqual(response.status_code,200)
+
