@@ -1,4 +1,4 @@
-from flask                 import Flask, jsonify
+from flask                 import Flask, jsonify,abort
 from model.building_view   import BuildingView
 from bson.json_util        import dumps
 from utils                 import ConfigManager
@@ -28,5 +28,8 @@ def get_buildings():
 
 @app.route('/api/v1.0/buildings/<b_id>',methods=['GET'])
 def get_building_by_id(b_id):
-   return jsonify({ '1' : 'nope' })
+   building = app.buildings.find_one({"_id":b_id})
+   if not building:
+       abort(404)
+   return jsonify(building)
 
