@@ -2,11 +2,14 @@ from model.drawable  import Polygon
 from utils.logger    import Logger
 from itertools       import chain, groupby
 
+import lesscpy
 import svgwrite, re
 import rdp
 
 
 class FloorDrawer():
+
+   css_style = ""
 
    @classmethod
    def draw_floor(klass, floor):
@@ -21,18 +24,20 @@ class FloorDrawer():
       svg                  = svgwrite.Drawing()
       svg.add(klass._get_style(svg))
 
+      rooms_labels_g       = svgwrite.container.Group(id = "identified_rooms_labels")
+
       windows              = floor.get("windows", [])
       windows_group        = klass._create_group(svg,  windows, "windows")
-      svg.add(windows_group)
 
       walls                = floor.get("walls", [])
       walls_group          = klass._create_group(svg, walls, "walls")
-      svg.add(walls_group)
 
       unidentified_rooms   = floor.get("unidentified_rooms", [])
       unidentified_rooms   = ((None, room) for room in unidentified_rooms)
       rooms                = floor.get("rooms", {})
       all_rooms            = chain(rooms.items(), unidentified_rooms)
+
+      rooms_group          = svgwrite.container.Group(id = "rooms")
 
       get_cat_name         = lambda room: room[1].get("cat_name", "Sconosciuto")
       all_rooms            = sorted(all_rooms, key = get_cat_name)
@@ -43,10 +48,23 @@ class FloorDrawer():
          cat_group   = svgwrite.container.Group(id = id_cat_name)
 
          for r_id, room in cat_rooms:
-            room_group = klass._create_room_group(svg, r_id, room)
+            r_name      = room.get("room_name", "")
+            cat_name    = room.get("cat_name", "Sconosciuto")
+            polygon     = klass._create_polygon(room.get("polygon"))
+            center      = polygon.center_point
+            room_group = klass._create_room_group(svg, r_id, r_name, cat_name, polygon)
             cat_group.add(room_group)
 
-         svg.add(cat_group)
+            rooms_labels_g.add(
+               svg.text(r_name, (center.x - len(cat_name) * 4, center.y))
+            )
+
+         rooms_group.add(cat_group)
+
+      svg.add(windows_group)
+      svg.add(rooms_group)
+      svg.add(walls_group)
+      svg.add(rooms_labels_g)
 
       if len(svg.elements) <= 1:
          Logger.warning("Impossible generate csv: no room polylines founded")
@@ -66,11 +84,6 @@ class FloorDrawer():
       return g
 
    @classmethod
-   def _get_style(klass, svg):
-      with open("assets/svg.css") as fp:
-         return svg.style(fp.read())
-
-   @classmethod
    def _prepare_cat_name(klass, cat_name):
       if cat_name.strip():
          return re.sub("[^a-zA-Z]", "-", cat_name)
@@ -78,7 +91,7 @@ class FloorDrawer():
       return "Sconosciuto"
 
    @classmethod
-   def _create_room_group(klass, svg, r_id, room):
+   def _create_room_group(klass, svg, r_id, r_name, cat_name, polygon):
       """
       Create an svg Group that contains room's elements: a polyline and a text.
 
@@ -90,9 +103,7 @@ class FloorDrawer():
       Returns:
       - an svg Group.
       """
-      cat         = room.get("cat_name", "Sconosciuto")
       group       = svgwrite.container.Group(id = r_id)
-      polygon     = klass._create_polygon(room.get("polygon"))
 
       if polygon:
          points      = klass._simplify_points(polygon)
@@ -100,10 +111,9 @@ class FloorDrawer():
          center      = polygon.center_point
          center.y    += 10
 
-         if klass._is_cat_name_relevant(cat):
-            name     = room.get("room_name", "")
-            text     = svg.text(cat, (center.x - len(cat) * 4, center.y))
-            text.add(svg.tspan(name, x = [center.x - len(cat) * 4], y = [center.y + 20]))
+         if klass._is_cat_name_relevant(cat_name):
+            text     = svg.text(cat_name, (center.x - len(cat_name) * 4, center.y))
+            text.add(svg.tspan(r_name, x = [center.x - len(cat_name) * 4], y = [center.y + 20]))
             group.add(text)
 
       return group
@@ -162,8 +172,8 @@ class FloorDrawer():
    @classmethod
    def _get_style(klass, svg):
       """
-      Read the svg.css file and return an svg Style object that contains his
-      informations.
+      Compile the assets/svg.less file and return an svg Style object that
+      contains the css formatting.
 
       Arguments:
       - svg: the svg we are editing.
@@ -171,8 +181,10 @@ class FloorDrawer():
       Returns:
       - an svg Style object.
       """
-      with open("assets/svg.css") as fp:
-         return svg.style(fp.read())
+      if not klass.css_style:
+         klass.css_style = lesscpy.compile("assets/svg.less")
+
+      return svg.style(klass.css_style)
 
    @classmethod
    def _approximate_coordinates(klass, x, y):

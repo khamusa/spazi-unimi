@@ -1,0 +1,178 @@
+
+.define_group_colors(@color) {
+
+   polyline {
+      fill  : lighten(@color, 7%);
+      stroke: @color;
+      stroke-width: 5;
+   }
+
+   &:hover {
+      polyline { fill: lighten(@color, 12%); }
+   }
+
+   & > :hover {
+      polyline { fill: saturate(lighten(@color, 20%), 24%); }
+   }
+}
+
+text {
+   font-family : monospace;
+   font-weight : bold;
+   display     : none;
+   font-size   : 1.2em;
+}
+
+#identified_rooms_labels text {
+   display: block;
+}
+
+#walls line {
+   stroke: rgb(60, 60, 60);
+   stroke-width: 3;
+   stroke-linecap: round;
+}
+
+#windows line {
+   stroke: rgb(130, 130, 130);
+   stroke-width: 3;
+   stroke-linecap: round;
+}
+
+polyline {
+   fill: rgb(220, 220, 220);
+   stroke: rgb(60, 60, 60);
+   stroke-width : 1;
+   stroke-linecap: round;
+}
+
+#Aula { .define_group_colors(darken(rgb(39, 88, 107), 5%)); }
+
+#Laboratorio-Didattico,
+#Aula-Informatica {
+   .define_group_colors( lighten(rgb(39, 88, 107), 10%) );
+}
+
+#Aula-Seminari,
+#Aula-Magna,
+#Sala-Lauree,
+#Sala-Riunioni { .define_group_colors(rgb(125, 42, 104)); }
+
+#Biblioteca,
+#Sala-Informatica,
+#Mediateca,
+#Sala-Lettura,
+#Sala-Studio,
+#Videoteca,
+#Spazio-Espositivo-Museale { .define_group_colors(rgb(170, 115, 57)); }
+
+#Studio {.define_group_colors(rgb(136, 162, 54)); }
+
+#Ufficio {.define_group_colors(rgb(206, 203, 84)); }
+
+#WC,
+#Antibagno,
+#WCH {
+   .define_group_colors(rgb(122, 64, 0));
+}
+
+#Atrio,
+#Corridoio,
+#Balcone,
+#Porticato,
+#Terrazzo,
+#Parcheggio-Coperto-Garage,
+#Cortile {.define_group_colors(rgb(150, 150, 150));}
+
+#Vano-Scala {.define_group_colors(rgb(170, 57, 57));}
+
+#Ascensore {.define_group_colors(rgb(179, 37, 37)); roke-width: 5;}
+
+#Locale-Ristoro-Mensa {.define_group_colors(rgb(198, 87, 15));}
+
+#Laboratorio-di-Ricerca,
+#Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-2,
+#Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-3,
+#Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-4,
+#Laboratorio-Radioisotopi,
+#Laboratorio-Microscopia,
+#Laboratorio-NMR,
+#Laboratorio-Informatico-di-Ricerca {.define_group_colors(rgb(194, 166, 100));}
+
+#Locale-Guardiola-Informazioni,
+#Portineria-Informazioni-Reception {.define_group_colors(rgb(35, 107, 97));}
+/*
+#Locale-Fotocopie
+#Ambulatorio
+#Locale-di-Supporto
+#Deposito-Libri
+#Camera-Oscura
+#Camera-Insonorizzata
+#Camera-Termostatata
+#Camera-Fredda
+#Deposito-Materiale-di-Laboratorio
+#Locale-Supporto-Laboratori
+#Camera-Speciale
+#Cella-Magazzino-Refrigerato
+#Cella-Magazzino-Refrigerato
+#Deposito-Gabbie-Sporche
+#Deposito-Gabbie-Pulite
+#Fienile
+#Locale-Mungitura
+#Quarantena
+#Accettazione-Animali
+#Locale-Supporto-Stabulario
+#Sala-d-Attesa
+#Sala-Operatoria
+#Ambulatorio-Radiografico
+#Sala-Autoptica
+#Locale-Preparazioni-Cliniche
+#Ambulatorio-TAC
+#Sala-Terapia
+#Scuderie
+#Stabulario
+#Stalla
+#Serra
+#Locale-Supporto-Serra
+#Deposito-Solventi-Reagenti
+#Deposito-Bombole-Gas
+#Deposito-Rifiuti-Speciali
+#Deposito-Rifiuti-Radioattivi
+#Locale-Travaso
+#Officina
+#Appartamento-di-Servizio
+#Foresteria
+#Deposito-Materiale-Inerte
+#Deposito-Rifiuti-Solidi-Urbani
+#Deposito-Materiale-Cartaceo
+#Locale-Non-Utilizzato
+#Locali-Cooperative-Librarie
+#Locale-Pausa-Personale
+#Locale-Centro-Stampa
+#Sala-Regia-Televisiva
+#Sala-Server-Apparati-di-rete
+#Docce
+#Deposito-Materiale-Pulizie
+#Spogliatoio
+#Montacarichi
+#Montalibri
+#Cabina-Elettrica-di-Trasformazione
+#Locale-Gruppo-Elettrogeno
+#Locale-Gruppo-Continuit-
+#Centrale-Termica
+#Centrale-Trattamento-Aria
+#Centrale-Idrica
+#Locale-Contatori-Cabina-Elettrica
+#Centrali-Frigorifere
+#Centrale-Antincendio
+#Locale-Macchine-Ascensori
+#Locale-Impianti-Tecnologici
+#Locale-Quadri-Elettrici
+#Vasche-Diluizione-Scarichi-Radioattivi
+#Cavedio-Porta-Impianti
+#Soppalco
+#Sottotetto
+#Intercapedine
+*/
+
+
