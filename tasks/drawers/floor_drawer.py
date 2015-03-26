@@ -21,61 +21,51 @@ class FloorDrawer():
 
       Returns: None
       """
-      svg                  = svgwrite.Drawing()
-      svg.add(klass._get_style(svg))
-
-      rooms_labels_g       = svgwrite.container.Group(id = "identified_rooms_labels")
+      klass.svg             = svgwrite.Drawing()
+      klass._add_style_to_svg()
 
       windows              = floor.get("windows", [])
-      windows_group        = klass._create_group(svg,  windows, "windows")
+      windows_group        = klass._create_lines_group(windows, "windows")
 
       walls                = floor.get("walls", [])
-      walls_group          = klass._create_group(svg, walls, "walls")
+      walls_group          = klass._create_lines_group(walls, "walls")
 
-      unidentified_rooms   = floor.get("unidentified_rooms", [])
-      unidentified_rooms   = ((None, room) for room in unidentified_rooms)
-      rooms                = floor.get("rooms", {})
-      all_rooms            = chain(rooms.items(), unidentified_rooms)
+      rooms_group          = klass._create_rooms_group(floor)
+      rooms_labels_g       = klass._create_rooms_labels_group(floor)
 
-      rooms_group          = svgwrite.container.Group(id = "rooms")
+      klass.svg.add(windows_group)
+      klass.svg.add(rooms_group)
+      klass.svg.add(walls_group)
+      klass.svg.add(rooms_labels_g)
 
-      get_cat_name         = lambda room: room[1].get("cat_name", "Sconosciuto")
-      all_rooms            = sorted(all_rooms, key = get_cat_name)
-      rooms_by_cat         = groupby(all_rooms, key = get_cat_name)
-
-      for cat_name, cat_rooms in rooms_by_cat:
-         id_cat_name = klass._prepare_cat_name(cat_name)
-         cat_group   = svgwrite.container.Group(id = id_cat_name)
-
-         for r_id, room in cat_rooms:
-            r_name      = room.get("room_name", "")
-            cat_name    = room.get("cat_name", "Sconosciuto")
-            polygon     = klass._create_polygon(room.get("polygon"))
-            center      = polygon.center_point
-            room_group = klass._create_room_group(svg, r_id, r_name, cat_name, polygon)
-            cat_group.add(room_group)
-
-            rooms_labels_g.add(
-               svg.text(r_name, (center.x - len(cat_name) * 4, center.y))
-            )
-
-         rooms_group.add(cat_group)
-
-      svg.add(windows_group)
-      svg.add(rooms_group)
-      svg.add(walls_group)
-      svg.add(rooms_labels_g)
-
-      if len(svg.elements) <= 1:
+      if len(klass.svg.elements) <= 1:
          Logger.warning("Impossible generate csv: no room polylines founded")
-      return svg
+
+      return klass.svg
 
    @classmethod
-   def _create_group(klass, svg, lines, group_name):
+   def _add_style_to_svg(klass):
+      """
+      Compile the assets/svg.less file and return an svg Style object that
+      contains the css formatting.
+
+      Returns None
+      """
+      if not klass.css_style:
+         klass.css_style = lesscpy.compile("assets/svg.less")
+
+      klass.svg.add(klass.svg.style(klass.css_style))
+
+   @classmethod
+   def _create_lines_group(klass, lines, group_name):
+      """
+      Given a list of lines and a group name, creates and returns an
+      svg group object containing drawings of all lines.
+      """
       g = svgwrite.container.Group(id = group_name)
 
       for start, end in lines:
-         g.add( svg.line(
+         g.add( klass.svg.line(
             start= klass._approximate_coordinates( start["x"], start["y"] ),
             end= klass._approximate_coordinates( end["x"], end["y"] )
             )
@@ -84,19 +74,107 @@ class FloorDrawer():
       return g
 
    @classmethod
-   def _prepare_cat_name(klass, cat_name):
-      if cat_name.strip():
-         return re.sub("[^a-zA-Z]", "-", cat_name)
+   def _create_rooms_group(klass, floor):
+      """
+      Creates an svg group with id "rooms" containing all identified and non
+      identified rooms in floor, grouped by category, in the following
+      format:
 
-      return "Sconosciuto"
+      g#rooms
+         g#category_1
+            g#R009
+               <room drawing and text>
+            g#R010
+               <room drawing and text>
+            [...]
+         g#category_2
+            g#R009
+               <room drawing and text>
+            g#R010
+               <room drawing and text>
+            [...]
+         [...]
+      """
+      all_rooms            = klass._get_all_rooms(floor)
+      rooms_group          = svgwrite.container.Group(id = "rooms")
+
+
+      get_cat_name         = lambda room: room[1].get("cat_name", "Sconosciuto")
+      all_rooms            = sorted(all_rooms, key = get_cat_name)
+      rooms_by_cat         = groupby(all_roomsrooms_labels_g, key = get_cat_name)
+
+      for cat_name, cat_rooms in rooms_by_cat:
+         id_cat_name = klass._prepare_cat_name(cat_name)
+         cat_group   = svgwrite.container.Group(id = id_cat_name)
+
+         for r_id, room in cat_rooms:
+            room_group = klass._create_room_group(
+               r_id,
+               room.get("room_name", ""),
+               room.get("cat_name", "Sconosciuto"),
+               klass._create_polygon(room.get("polygon"))
+               )
+            cat_group.add(room_group)
+
+         rooms_group.add(cat_group)
+
+      return rooms_group
+
 
    @classmethod
-   def _create_room_group(klass, svg, r_id, r_name, cat_name, polygon):
+   def _create_rooms_labels_group(klass, floor):
+      """
+      Creates a group of texts where each one has the name of an identified
+      room. The text element itself has as id attribute the room id.
+      """
+      rooms_labels_g = svgwrite.container.Group(id = "identified_rooms_labels")
+
+      for r_id, room in floor["rooms"].items():
+         center = klass._create_polygon(room.get("polygon")).center_point
+         room_name = room.get("room_name", "")
+
+         rooms_labels_g.add(
+            klass._get_centered_text(
+               room_name, center.x, center.y, id_attr = "r_label_"+str(r_id)
+            )
+         )
+
+      return rooms_labels_g
+
+   @classmethod
+   def _get_centered_text(klass, text, x, y, id_attr = None, txttype = None):
+      """
+      Given a text string, x and y coordinates, returns an svg text object
+      for that text while also centering horizontally.
+
+      By defaul a text object is created, but it may also return other
+      text types, like tspan for instance.
+      """
+      txttype = txttype or klass.svg.text
+      return txttype(
+         text,
+         (x - len(text) * 4, y),
+         id = str(id_attr or "") or None
+      )
+
+   @classmethod
+   def _get_all_rooms(klass, floor):
+      """
+      Returns a view of all the floor rooms, as a generator of tuples.
+      The first element of the tuple is the room ID or None for unidentified
+      rooms, while the second element is the room object itself.
+      """
+      unidentified_rooms   = floor.get("unidentified_rooms", [])
+      unidentified_rooms   = ((None, room) for room in unidentified_rooms)
+      rooms                = floor.get("rooms", {})
+      return chain(rooms.items(), unidentified_rooms)
+
+   @classmethod
+   def _create_room_group(klass, r_id, r_name, cat_name, polygon):
       """
       Create an svg Group that contains room's elements: a polyline and a text.
 
       Arguments:
-      - svg: the svg we are editing;
       - r_id: a string representing the room id;
       - room: a dictionary representing the room's informations.
 
@@ -107,16 +185,30 @@ class FloorDrawer():
 
       if polygon:
          points      = klass._simplify_points(polygon)
-         klass._draw_room(svg, group, points, r_id)
+         klass._draw_room(group, points, r_id)
          center      = polygon.center_point
          center.y    += 10
 
          if klass._is_cat_name_relevant(cat_name):
-            text     = svg.text(cat_name, (center.x - len(cat_name) * 4, center.y))
-            text.add(svg.tspan(r_name, x = [center.x - len(cat_name) * 4], y = [center.y + 20]))
+            text = klass._get_centered_text(cat_name, center.x, center.y)
+            tspan = klass._get_centered_text(r_name, center.x, center.y + 20, txttype = klass.svg.tspan)
+            text.add(tspan)
             group.add(text)
 
       return group
+
+   @classmethod
+   def _prepare_cat_name(klass, cat_name):
+      """
+      Sanitizes a category_name and replaces special symbols/spaces with hyphens,
+      so that it can be used as an svg id attributes. If cat_name is empty,
+      the string "Sconosciuto" is returned.
+      """
+      if cat_name.strip():
+         return re.sub("[^a-zA-Z]", "-", cat_name)
+
+      return "Sconosciuto"
+
 
    @classmethod
    def _create_polygon(klass, poly):
@@ -135,25 +227,24 @@ class FloorDrawer():
          return polygon
 
    @classmethod
-   def _draw_room(klass, svg, group, points, r_id):
+   def _draw_room(klass, group, points, r_id):
       """
       Add an svg polyline from a points list to a group.
 
       Arguments:
-      - svg: the svg we are editing;
       - group: the svg Group we want update with the polyline;
       - points: a list representing the points of the polyline;
 
       Returns: None.
       """
       if r_id:
-         poly  = svg.polyline(
+         poly  = klass.svg.polyline(
             (klass._approximate_coordinates(p[0], p[1]) for p in points),
             id = r_id,
             fill="rgb(255, 255, 255)"
          )
       else:
-         poly  = svg.polyline(
+         poly  = klass.svg.polyline(
             (klass._approximate_coordinates(p[0], p[1]) for p in points),
             fill="rgb(255, 255, 255)"
          )
@@ -168,23 +259,6 @@ class FloorDrawer():
       simplified  = rdp.rdp(pts, tol)
 
       return simplified
-
-   @classmethod
-   def _get_style(klass, svg):
-      """
-      Compile the assets/svg.less file and return an svg Style object that
-      contains the css formatting.
-
-      Arguments:
-      - svg: the svg we are editing.
-
-      Returns:
-      - an svg Style object.
-      """
-      if not klass.css_style:
-         klass.css_style = lesscpy.compile("assets/svg.less")
-
-      return svg.style(klass.css_style)
 
    @classmethod
    def _approximate_coordinates(klass, x, y):
