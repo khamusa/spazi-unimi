@@ -21,7 +21,8 @@ class FloorDrawer():
 
       Returns: None
       """
-      klass.svg             = svgwrite.Drawing()
+      klass.max_x          = 0
+      klass.svg            = svgwrite.Drawing()
       klass._add_style_to_svg()
 
       window_lines         = floor.get("windows", [])
@@ -33,15 +34,49 @@ class FloorDrawer():
       rooms_group          = klass._create_rooms_group(floor)
       rooms_labels_g       = klass._create_rooms_labels_group(floor)
 
+      legend               = klass._create_legend_group(floor)
+
       klass.svg.add(windows_group)
       klass.svg.add(rooms_group)
       klass.svg.add(walls_group)
       klass.svg.add(rooms_labels_g)
+      klass.svg.add(legend)
 
       if len(klass.svg.elements) <= 1:
          Logger.warning("Impossible generate csv: no room polylines founded")
 
       return klass.svg
+
+   @classmethod
+   def _create_legend_group(klass, floor):
+      circle_radius = 7
+      line_height   = 26
+      all_rooms     = klass._get_all_rooms(floor)
+      all_cats      = set()
+
+      for r_id, room in all_rooms:
+         polygon     = klass._create_polygon(room.get("polygon"))
+         klass.max_x = max(klass.max_x, polygon.max_x())
+         all_cats.add( room.get("cat_name", "Sconosciuto") )
+
+      legend_group  = svgwrite.container.Group(id = "legend")
+      x             = klass.max_x + 25
+      y             = 25
+      for cat_name in sorted(all_cats):
+         cat_group  = svgwrite.container.Group(
+            id = "L-"+klass._prepare_cat_name(cat_name)
+         )
+         cat_group.add(
+            klass.svg.circle((x, y - circle_radius), circle_radius)
+         )
+         cat_group.add(
+            klass.svg.text(cat_name, (x + circle_radius + 3, y) )
+         )
+
+         legend_group.add(cat_group)
+         y += line_height
+
+      return legend_group
 
    @classmethod
    def _add_style_to_svg(klass):
@@ -65,6 +100,7 @@ class FloorDrawer():
       g = svgwrite.container.Group(id = group_id)
 
       for start, end in lines:
+         klass.max_x = max(klass.max_x, start["x"], end["x"])
          g.add( klass.svg.line(
             start= klass._approximate_coordinates( start["x"], start["y"] ),
             end= klass._approximate_coordinates( end["x"], end["y"] )
@@ -130,7 +166,10 @@ class FloorDrawer():
       rooms_labels_g = svgwrite.container.Group(id = "identified_rooms_labels")
 
       for r_id, room in floor["rooms"].items():
-         center = klass._create_polygon(room.get("polygon")).center_point
+         if "polygon" not in room:
+            continue
+
+         center = klass._create_polygon(room["polygon"]).center_point
          room_name = room.get("room_name", "")
 
          rooms_labels_g.add(
@@ -188,9 +227,13 @@ class FloorDrawer():
       rooms, while the second element is the room object itself.
       """
       unidentified_rooms   = floor.get("unidentified_rooms", [])
-      unidentified_rooms   = ((None, room) for room in unidentified_rooms)
+      unidentified_rooms   = (
+         (None, room) for room in unidentified_rooms )
       rooms                = floor.get("rooms", {})
-      return chain(rooms.items(), unidentified_rooms)
+      room_items           = (
+         (rid, room) for rid, room in rooms.items() if "polygon" in room
+      )
+      return chain(room_items, unidentified_rooms)
 
    @classmethod
    def _create_room_group(klass, r_id, r_name, cat_name, polygon):
@@ -207,21 +250,8 @@ class FloorDrawer():
       group       = svgwrite.container.Group(id = r_id)
 
       if polygon:
-         points      = klass._simplify_points(polygon)
+         points = klass._simplify_points(polygon)
          klass._draw_room(group, points, r_id)
-         center      = polygon.center_point
-         center.y    += 10
-
-         if klass._is_cat_name_relevant(cat_name):
-            text = klass._get_centered_text(
-               cat_name, center.x, center.y, split_lines = False
-            )
-            tspan = klass._get_centered_text(
-               r_name, center.x, center.y + 20,
-               split_lines = False, txttype = klass.svg.tspan
-            )
-            text.add(tspan)
-            group.add(text)
 
       return group
 
@@ -249,10 +279,9 @@ class FloorDrawer():
       Returns:
       - a polygon object.
       """
-      if poly:
-         polygon  = Polygon.from_serializable(poly)
-         polygon.absolutize()
-         return polygon
+      polygon  = Polygon.from_serializable(poly)
+      polygon.absolutize()
+      return polygon
 
    @classmethod
    def _draw_room(klass, group, points, r_id):
