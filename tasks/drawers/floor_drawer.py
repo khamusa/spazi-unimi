@@ -24,11 +24,11 @@ class FloorDrawer():
       klass.svg             = svgwrite.Drawing()
       klass._add_style_to_svg()
 
-      windows              = floor.get("windows", [])
-      windows_group        = klass._create_lines_group(windows, "windows")
+      window_lines         = floor.get("windows", [])
+      windows_group        = klass._create_lines_group(window_lines, group_id="windows")
 
-      walls                = floor.get("walls", [])
-      walls_group          = klass._create_lines_group(walls, "walls")
+      wall_lines           = floor.get("walls", [])
+      walls_group          = klass._create_lines_group(wall_lines, group_id="walls")
 
       rooms_group          = klass._create_rooms_group(floor)
       rooms_labels_g       = klass._create_rooms_labels_group(floor)
@@ -57,12 +57,12 @@ class FloorDrawer():
       klass.svg.add(klass.svg.style(klass.css_style))
 
    @classmethod
-   def _create_lines_group(klass, lines, group_name):
+   def _create_lines_group(klass, lines, group_id):
       """
       Given a list of lines and a group name, creates and returns an
       svg group object containing drawings of all lines.
       """
-      g = svgwrite.container.Group(id = group_name)
+      g = svgwrite.container.Group(id = group_id)
 
       for start, end in lines:
          g.add( klass.svg.line(
@@ -101,7 +101,7 @@ class FloorDrawer():
 
       get_cat_name         = lambda room: room[1].get("cat_name", "Sconosciuto")
       all_rooms            = sorted(all_rooms, key = get_cat_name)
-      rooms_by_cat         = groupby(all_roomsrooms_labels_g, key = get_cat_name)
+      rooms_by_cat         = groupby(all_rooms, key = get_cat_name)
 
       for cat_name, cat_rooms in rooms_by_cat:
          id_cat_name = klass._prepare_cat_name(cat_name)
@@ -142,7 +142,7 @@ class FloorDrawer():
       return rooms_labels_g
 
    @classmethod
-   def _get_centered_text(klass, text, x, y, id_attr = None, txttype = None):
+   def _get_centered_text(klass, text, x, y, split_lines = True, id_attr = None, txttype = None, ):
       """
       Given a text string, x and y coordinates, returns an svg text object
       for that text while also centering horizontally.
@@ -150,12 +150,35 @@ class FloorDrawer():
       By defaul a text object is created, but it may also return other
       text types, like tspan for instance.
       """
+      hor_char_offset = 5
+      ver_line_offset = 18
       txttype = txttype or klass.svg.text
-      return txttype(
-         text,
-         (x - len(text) * 4, y),
+
+      if split_lines:
+         # Espressione regolare che separa il testo in parole seguite da
+         # congiunzioni o preposizioni
+         tokens  = re.findall("(\w+(\s[a-zA-Z]{1,3}(\s|$))?)", text )
+         phrases = [ r[0].strip() for r in tokens ] or [text]
+      else:
+         phrases = [text]
+
+      # Centralizzazione verticale a seconda della quanità di righe
+      y = y - (len(phrases) - 1)* (ver_line_offset / 2.4)
+      first = txttype(
+         phrases[0],
+         (x - len(phrases[0]) * hor_char_offset, y),
          id = str(id_attr or "") or None
       )
+
+      for i, phrase in enumerate(phrases[1:]):
+         first.add(
+            klass.svg.tspan(
+               phrase,
+               (x - len(phrase) * hor_char_offset, y + (i + 1) * ver_line_offset),
+               id = str(id_attr or "") or None
+            )
+         )
+      return first
 
    @classmethod
    def _get_all_rooms(klass, floor):
@@ -190,8 +213,13 @@ class FloorDrawer():
          center.y    += 10
 
          if klass._is_cat_name_relevant(cat_name):
-            text = klass._get_centered_text(cat_name, center.x, center.y)
-            tspan = klass._get_centered_text(r_name, center.x, center.y + 20, txttype = klass.svg.tspan)
+            text = klass._get_centered_text(
+               cat_name, center.x, center.y, split_lines = False
+            )
+            tspan = klass._get_centered_text(
+               r_name, center.x, center.y + 20,
+               split_lines = False, txttype = klass.svg.tspan
+            )
             text.add(tspan)
             group.add(text)
 
