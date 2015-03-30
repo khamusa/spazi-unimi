@@ -1,12 +1,15 @@
-from flask                 import Flask, jsonify,abort,request
-from model.building_view   import BuildingView
-from bson.json_util        import dumps
 from utils                 import ConfigManager
 from persistence           import MongoDBPersistenceManager
+from model.building_view   import BuildingView
+from model.room_category   import RoomCategory
 from model.odm             import ODMModel
+from bson.json_util        import dumps
+from flask                 import Flask, jsonify,abort,request
+
+
 
 app                     = Flask(__name__)
-app.app_config          = ConfigManager("config/general.json")
+app.app_config          = ConfigManager('config/general.json')
 app.persistence         = MongoDBPersistenceManager(app.app_config)
 ODMModel.set_pm( app.persistence )
 
@@ -19,19 +22,20 @@ app.radius              = 2000
 ###########
 @app.before_request
 def prepare_buildings_collection():
-   app.buildings = BuildingView.get_collection()
-
+   app.buildings     = BuildingView.get_collection()
 
 ##########
 # ROUTES #
 ##########
+
+# Buildings
 @app.route('/api/v1.0/buildings/',methods=['GET'])
 def get_buildings():
    return jsonify({ 'buildings': list(app.buildings.find()) })
 
 @app.route('/api/v1.0/buildings/<b_id>',methods=['GET'])
 def get_building_by_id(b_id):
-   building = app.buildings.find_one({"_id":b_id})
+   building = app.buildings.find_one({'_id':b_id})
    if not building:
        abort(404)
    return jsonify(building)
@@ -43,15 +47,21 @@ def get_buildings_near_position(lat,lng):
       abort(404)
 
    geo_json_point = {
-      "$geometry" : {
-         "type"         : "Point",
-         "coordinates"  : [ lng , lat ] },
-         "$maxDistance" : int(r)
+      '$geometry' : {
+         'type'         : 'Point',
+         'coordinates'  : [ lng , lat ] },
+         '$maxDistance' : int(r)
    }
 
-   buildings   = list(app.buildings.find({ "coordinates" : { "$near" : geo_json_point } }))
+   buildings   = list(app.buildings.find({ 'coordinates' : { '$near' : geo_json_point } }))
 
    return jsonify({ 'buildings': buildings })
 
+# Categories
+@app.route('/api/v1.0/categories',methods=['GET'])
+def get_categories():
+   return app.app_config["filepaths"]["room_categories"];
+
+# Rooms
 
 
