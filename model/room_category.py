@@ -27,3 +27,16 @@ class RoomCategory():
       return { v.upper().strip() : v for _, v in cats.items() }
 
 
+   @classmethod
+   def get_cat_id_by_name(klass, name):
+      if not name:
+         return ""
+
+      cat_dict   = klass.get_cat_dict()
+      desc_to_id = {
+         v["description"].upper().strip() : k
+         for k, v in klass.get_cat_dict().items()
+      }
+
+      name = name.upper().strip()
+      return desc_to_id.get(name, "")

@@ -10,7 +10,7 @@ class FloorMergeTest(unittest.TestCase):
                "R001" : {
                   "polygon"      : {},
                   "pippo"        : False,
-                  "cat_name"     : "Aula",
+                  "cat_id"       : "AUL01",
                   "room_name"    : "Aula 01",
                   "pluto"        : [],
                   "equipments"   : [],
@@ -22,7 +22,7 @@ class FloorMergeTest(unittest.TestCase):
                {
                   "polygon"      : {},
                   "pippo"        : False,
-                  "cat_name"     : "Aula Seminari",
+                  "cat_id"       : "AUL03",
                   "pluto"        : [],
                   "texts"        : []
                }
@@ -77,7 +77,7 @@ class FloorMergeTest(unittest.TestCase):
       copy_room1  = copy_floor["rooms"]["R001"]
       self.assertFalse(room1 is copy_room1)
       self.assertEqual(room1["polygon"], copy_room1["polygon"])
-      self.assertEqual(room1["cat_name"], copy_room1["cat_name"])
+      self.assertEqual(room1["cat_id"], copy_room1["cat_id"])
       self.assertEqual(room1["room_name"], copy_room1["room_name"])
       self.assertEqual(room1["equipments"], copy_room1["equipments"])
       self.assertEqual(room1["accessibility"], copy_room1["accessibility"])
@@ -91,7 +91,7 @@ class FloorMergeTest(unittest.TestCase):
       unidentified_copy1  = copy_floor["unidentified_rooms"][0]
       self.assertFalse(unidentified1 is unidentified_copy1)
       self.assertEqual(unidentified1["polygon"], unidentified_copy1["polygon"])
-      self.assertEqual(unidentified1["cat_name"], unidentified_copy1["cat_name"])
+      self.assertEqual(unidentified1["cat_id"], unidentified_copy1["cat_id"])
       self.assertTrue("pippo" not in unidentified_copy1)
       self.assertTrue("pluto" not in unidentified_copy1)
 
@@ -143,11 +143,11 @@ class FloorMergeTest(unittest.TestCase):
          "f_id"  : "333",
          "rooms" : {
             "R001" : {
-               "cat_name"     : "Pippo",
+               "cat_id"     : "Pippo",
                "room_name"    : "Aula 777"
             },
             "R002" : {
-               "cat_name"     : "Aula Nuova",
+               "cat_id"     : "Aula Nuova",
                "capacity"     : "22"
             },
             "R003" : {}
@@ -174,10 +174,10 @@ class FloorMergeTest(unittest.TestCase):
       self.assertFalse(r02 is old_r02)
 
       # Ensure priority has been kept on a per-attribute basis
-      cat_name = unmatched_floor["rooms"]["R001"]["cat_name"]
-      self.assertEqual(r01["cat_name"], cat_name)
+      cat_id = unmatched_floor["rooms"]["R001"]["cat_id"]
+      self.assertEqual(r01["cat_id"], cat_id)
       self.assertEqual(r01["room_name"], old_r01["room_name"])
-      self.assertEqual(r02["cat_name"], "Aula Nuova")
+      self.assertEqual(r02["cat_id"], "Aula Nuova")
       self.assertEqual(r02["capacity"], "22")
 
       old_merge_room_method = DataMerger.merge_room
@@ -194,7 +194,7 @@ class FloorMergeTest(unittest.TestCase):
    def test_merge_room(self):
 
       dxf_room = {
-         "cat_name"     : "Aula",
+         "cat_id"     : "AUL02",
          "polygon"      : {
             "anchor_point" : [],
             "points"       : []
@@ -205,13 +205,13 @@ class FloorMergeTest(unittest.TestCase):
       edil_room = {
          "room_name"    : "Aula 01 ed",
          "capacity"     : "44",
-         "cat_name"     : "Aula Edil",
+         "cat_name"     : "Aula",
          "l_floor"      :"T"
       }
 
       easy_room = {
          "room_name"    : "Aula 01 easy",
-         "cat_name"     : "Aula Magna",
+         "cat_name"     : "Aula Informatica",
          "capacity"     : "45",
          "accessibility": True,
          "equipments"   : "PC/Lavagna/Wi-fi",
@@ -219,11 +219,23 @@ class FloorMergeTest(unittest.TestCase):
       }
 
       # Test del merge di una stanza dxf e di un edilizia
+      result = DataMerger.merge_room(dxf_room, {})
+
+      self.assertEqual(result["room_name"], "")
+      self.assertEqual(result["capacity"], "")
+      self.assertEqual(result["cat_id"], dxf_room["cat_id"])
+      self.assertEqual(result["accessibility"], "")
+      self.assertEqual(result["equipments"], [])
+      self.assertEqual(result["polygon"], dxf_room["polygon"])
+      self.assertFalse("texts" in result)
+      self.assertFalse("l_floor" in result)
+
+      # Test del merge di una stanza dxf e di un edilizia
       result = DataMerger.merge_room(dxf_room, edil_room)
 
       self.assertEqual(result["room_name"], edil_room["room_name"])
       self.assertEqual(result["capacity"], edil_room["capacity"])
-      self.assertEqual(result["cat_name"], edil_room["cat_name"])
+      self.assertEqual(result["cat_id"], "AUL01")
       self.assertEqual(result["accessibility"], "")
       self.assertEqual(result["equipments"], [])
       self.assertEqual(result["polygon"], dxf_room["polygon"])
@@ -235,7 +247,7 @@ class FloorMergeTest(unittest.TestCase):
 
       self.assertEqual(result["room_name"], easy_room["room_name"])
       self.assertEqual(result["capacity"], easy_room["capacity"])
-      self.assertEqual(result["cat_name"], easy_room["cat_name"])
+      self.assertEqual(result["cat_id"], "AUL03")
       self.assertEqual(result["accessibility"], easy_room["accessibility"])
       self.assertEqual(result["equipments"], easy_room["equipments"].split("/"))
       self.assertEqual(result["polygon"], dxf_room["polygon"])
@@ -247,7 +259,7 @@ class FloorMergeTest(unittest.TestCase):
 
       self.assertEqual(result["room_name"], edil_room["room_name"])
       self.assertEqual(result["capacity"], edil_room["capacity"])
-      self.assertEqual(result["cat_name"], easy_room["cat_name"])
+      self.assertEqual(result["cat_id"], "AUL03")
       self.assertEqual(result["accessibility"], easy_room["accessibility"])
       self.assertEqual(result["equipments"], easy_room["equipments"].split("/"))
       self.assertFalse("polygon" in result)
