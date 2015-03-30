@@ -31,7 +31,6 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
 
       with patch("__main__.RoomCategory.get_cat_dict", self.room_cats_dict_mock):
          self.cats        = DXFRoomCatsResolver.get_room_categories_dict()
-         self.cats_names  = DXFRoomCatsResolver.get_room_categories_names_dict()
 
    def generate_rooms_with_text(self, t):
       """
@@ -75,41 +74,36 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
 
       should_be_called  = MagicMock(return_value = True)
       cats              = MagicMock(return_value = "cats_result")
-      cats_names        = MagicMock(return_value = "cats_names")
       class_ns          = "__main__.DXFRoomCatsResolver"
 
       with patch(class_ns+".get_room_categories_dict", cats):
-         with patch(class_ns+".get_room_categories_names_dict", cats_names):
-            with patch(class_ns+"._resolve_room_categories_for_floor", should_be_called):
-               # Chiamata 1 - un solo floor, passato come parametro
-               r = DXFRoomCatsResolver.resolve_room_categories(MagicMock(), a_floor)
+         with patch(class_ns+"._resolve_room_categories_for_floor", should_be_called):
+            # Chiamata 1 - un solo floor, passato come parametro
+            r = DXFRoomCatsResolver.resolve_room_categories(MagicMock(), a_floor)
 
-               self.assertEqual(r, 1)
-               MagicMock.assert_called_once_with(cats)
-               MagicMock.assert_called_once_with(cats_names)
+            self.assertEqual(r, 1)
+            MagicMock.assert_called_once_with(cats)
 
-               MagicMock.assert_called_once_with(
+            MagicMock.assert_called_once_with(
+               should_be_called,
+               a_floor,
+               "cats_result",
+            )
+
+            MagicMock.reset_mock(should_be_called)
+            b = {
+               "dxf": { "floors": ["firstfloor", "secondfloor", "thirdfloor"] }
+            }
+            r = DXFRoomCatsResolver.resolve_room_categories(b)
+
+            for f in b["dxf"]["floors"]:
+               MagicMock.assert_any_call(
                   should_be_called,
-                  a_floor,
-                  "cats_result",
-                  "cats_names"
-               )
+                  f,
+                  "cats_result"
+            )
 
-               MagicMock.reset_mock(should_be_called)
-               b = {
-                  "dxf": { "floors": ["firstfloor", "secondfloor", "thirdfloor"] }
-               }
-               r = DXFRoomCatsResolver.resolve_room_categories(b)
-
-               for f in b["dxf"]["floors"]:
-                  MagicMock.assert_any_call(
-                     should_be_called,
-                     f,
-                     "cats_result",
-                     "cats_names"
-               )
-
-               self.assertEqual(r, 3)
+            self.assertEqual(r, 3)
 
    ######################################
    # _resolve_room_categories_for_floor #
@@ -128,15 +122,13 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
 
             r = DXFRoomCatsResolver._resolve_room_categories_for_floor(
                floor_dict,
-               "cats",
-               "cats_names"
+               "cats"
             )
 
             MagicMock.assert_called_once_with(
                should_be_called,
                [1, 2, 3, 4, "A", "B", "C"],
-               "cats",
-               "cats_names"
+               "cats"
                )
 
             self.assertEqual(r, 4)
@@ -151,8 +143,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
       with patch("__main__.DXFRoomCatsResolver._resolve_category_for_room", should_be_called):
          r = DXFRoomCatsResolver._resolve_categories_for_rooms(
             all_rooms,
-            self.cats,
-            self.cats_names
+            self.cats
          )
 
          # 3 matches
@@ -162,8 +153,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
             MagicMock.assert_any_call(
                should_be_called,
                r,
-               self.cats,
-               self.cats_names
+               self.cats
             )
 
          self.assertEqual(should_be_called.call_count, len(all_rooms))
@@ -173,8 +163,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
       with patch("__main__.DXFRoomCatsResolver._resolve_category_for_room", should_be_called):
          r = DXFRoomCatsResolver._resolve_categories_for_rooms(
             all_rooms,
-            self.cats,
-            self.cats_names
+            self.cats
          )
 
          # 1 match
@@ -188,13 +177,13 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
 
       for t in ["AUL01", "aul01", "aula", " aula", "aula ", " AULA "]:
          for r in self.generate_rooms_with_text(t):
-            m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
+            m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats)
             self.assertTrue(m)
             self.assertEqual(r["cat_id"], "AUL01")
 
       for t in ["WC01", "bAGNO", "bagno ", " wc01", " wc01", " BaGnO "]:
          for r in self.generate_rooms_with_text(t):
-            m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
+            m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats)
             self.assertTrue(m)
             self.assertEqual(r["cat_id"], "WC01")
 
@@ -206,7 +195,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
 
       for t in should_not_match:
          for r in self.generate_rooms_with_text(t):
-            m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
+            m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats)
             self.assertFalse(m)
             self.assertTrue("cat_id" not in r)
 
@@ -219,7 +208,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
             r["texts"].append({ "text": "BAgno" })
             r["texts"].insert(0, { "text": "Aula Informatica" })
 
-            m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
+            m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats)
             self.assertTrue(m)
             self.assertEqual(r["cat_id"], "AUL01")
 
@@ -229,7 +218,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
             r["texts"].append({ "text": "Aula" })
             r["texts"].insert(0, { "text": "Aula Informatica" })
 
-            m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
+            m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats)
             self.assertTrue(m)
             self.assertEqual(r["cat_id"], "WC01")
 
@@ -250,19 +239,3 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
          self.assertEqual(cats_dict["WC01"], "WC")
 
          self.assertEqual(len(cats_dict.keys()), 3)
-
-
-   def test_get_room_categories_names_dict(self):
-      with patch("__main__.RoomCategory.get_cat_dict", self.room_cats_dict_mock):
-         cats_dict   = DXFRoomCatsResolver.get_room_categories_dict()
-         cats_names  = DXFRoomCatsResolver.get_room_categories_names_dict()
-
-         self.assertTrue("AULA" in cats_names)
-         self.assertTrue("AULA INFORMATICA" in cats_names)
-         self.assertTrue("WC" in cats_names)
-
-         self.assertEqual(cats_names["AULA"], "AUL01")
-         self.assertEqual(cats_names["AULA INFORMATICA"], "AUL03")
-         self.assertEqual(cats_names["WC"], "WC01")
-
-         self.assertEqual(len(cats_names.keys()), 3)

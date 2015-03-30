@@ -42,12 +42,10 @@ class DXFRoomCatsResolver:
                )
 
       cats        = klass.get_room_categories_dict()
-      cats_names  = klass.get_room_categories_names_dict()
       for floor_dict in target_floors:
          categorized_rooms += klass._resolve_room_categories_for_floor(
             floor_dict,
-            cats,
-            cats_names
+            cats
          )
 
       if categorized_rooms:
@@ -56,7 +54,7 @@ class DXFRoomCatsResolver:
       return categorized_rooms
 
    @classmethod
-   def _resolve_room_categories_for_floor(klass, floor_dict, cats, cats_names):
+   def _resolve_room_categories_for_floor(klass, floor_dict, cats):
       """
       Analyzes all rooms on floor_dict tries associating each one with a room
       category.
@@ -66,9 +64,6 @@ class DXFRoomCatsResolver:
       - cats: a dictionary indexed by category ID. Values represents the
       category human name.
       Example: { "AUL01" : "Aula" }
-      - cats_names: Another dictionary, in which keys are a uppercase version
-      of category human names, and values is the normal version.
-      Example: { "AULA INFORMATICA" : "Aula Informatica" }
 
 
       Return value: an integer representing the amount of rooms that matched
@@ -81,12 +76,11 @@ class DXFRoomCatsResolver:
 
       return klass._resolve_categories_for_rooms(
          all_rooms,
-         cats,
-         cats_names
+         cats
       )
 
    @classmethod
-   def _resolve_categories_for_rooms(klass, all_rooms, cats, cats_names):
+   def _resolve_categories_for_rooms(klass, all_rooms, cats):
       """
       Find texts that represent a category identifier and assigns the category
       name to rooms. If no category ID is found, the algorithm tries categories
@@ -96,8 +90,6 @@ class DXFRoomCatsResolver:
       - all_rooms: list of rooms to search for categories
       - cats: a dictionary indexed by category ID. Values represents the
       category human name.
-      - cats_names: Another dictionary, in which keys are a uppercase version
-      of category human names, and values is the normal version.
 
 
       Return value: an integer representing the amount of rooms that matched
@@ -109,14 +101,13 @@ class DXFRoomCatsResolver:
       for a_room in all_rooms:
          categorized_rooms += klass._resolve_category_for_room(
             a_room,
-            cats,
-            cats_names
+            cats
          )
 
       return categorized_rooms
 
    @classmethod
-   def _resolve_category_for_room(klass, a_room, cats, cats_names):
+   def _resolve_category_for_room(klass, a_room, cats):
       """
       Looks for texts in a_room that looks like a category identifier and
       assigns the cat_name attribute to a_room. If no category ID is found,
@@ -128,9 +119,6 @@ class DXFRoomCatsResolver:
       - cats: a dictionary indexed by category ID. Values represents the
       category human name.
       Example: { "AUL01" : "Aula" }
-      - cats_names: Another dictionary, in which keys are a uppercase version
-      of category human names, and values is the normal version.
-      Example: { "AULA INFORMATICA" : "Aula Informatica" }
 
       Return value: True if a match is found, False otherwise.
       """
@@ -143,9 +131,9 @@ class DXFRoomCatsResolver:
          return True
 
       # 2 - look for category name match
-      match_name  = next((t for t in all_texts if t in cats_names), None)
+      match_name  = next((t for t in all_texts if RoomCategory.get_cat_id_by_name(t)), None)
       if match_name:
-         a_room["cat_id"] = cats_names[match_name]
+         a_room["cat_id"] = RoomCategory.get_cat_id_by_name(match_name)
          return True
 
       # 3 - look for category name exceptional cases
@@ -167,17 +155,4 @@ class DXFRoomCatsResolver:
          k: v["description"]
          for k, v in RoomCategory.get_cat_dict().items()
          if k != "VNS02"
-      }
-
-   @classmethod
-   def get_room_categories_names_dict(klass):
-      """
-      Given a dictionary of room categories obtained by a call to
-      get_room_categories_dict, returns a new dictionary in which keys
-      are an uppercase version of the human name of the categories, and values
-      are the original values.
-      """
-      return {
-         v["description"].upper().strip() : k
-         for k, v in RoomCategory.get_cat_dict().items()
       }
