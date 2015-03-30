@@ -47,7 +47,8 @@
    "LIN01" : {
       "group_name"   : "Biblioteca - Mediateca",
       "description"  : "Sala Informatica (annessa a Biblioteca)",
-      "scope"        : "didactic support"
+      "scope"        : "didactic support",
+      "synonym"      : "SALA PC"
    },
    "MED01" : {
       "group_name"   : "Biblioteca - Mediateca",
@@ -62,7 +63,8 @@
    "SGG01" : {
       "group_name"   : "Sala Studio",
       "description"  : "Sala Studio (sala per studio autonomo studenti non annessa a Biblioteca)",
-      "scope"        : "didactic support"
+      "scope"        : "didactic support",
+      "synonym"      : "SALA STUDI"
    },
    "VID01" : {
       "group_name"   : "Biblioteca - Mediateca",
@@ -97,7 +99,8 @@
    "DEP09" : {
       "group_name"   : "Deposito",
       "description"  : "Deposito Materiale di Laboratorio",
-      "scope"        : "support"
+      "scope"        : "support",
+      "synonym"      : "DEPOSITO"
    },
    "LAB02" : {
       "group_name"   : "Laboratorio di Ricerca",
@@ -324,6 +327,11 @@
       "description"  : "Locale Ristoro/Mensa",
       "scope"        : "alimentation"
    },
+   "CUC01" : {
+      "group_name"   : "",
+      "description"  : "Cucina",
+      "scope"        : "support"
+   },
    "DEP01" : {
       "group_name"   : "Deposito",
       "description"  : "Deposito Materiale Inerte",
@@ -382,12 +390,14 @@
    "SPG01" : {
       "group_name"   : "",
       "description"  : "Spogliatoio",
-      "scope"        : "support"
+      "scope"        : "support",
+      "synonym"      : "SPOGLIATOI"
    },
    "WC01" : {
       "group_name"   : "Bagno",
       "description"  : "WC",
-      "scope"        : "WC"
+      "scope"        : "WC",
+      "synonym"      : "BAGNO"
    },
    "WC02" : {
       "group_name"   : "Bagno",
@@ -402,7 +412,8 @@
    "LOC25" : {
       "group_name"   : "Informazioni",
       "description"  : "Locale Guardiola Informazioni",
-      "scope"        : "didactic support"
+      "scope"        : "didactic support",
+      "synonym"      : "GUARDIOLA"
    },
    "PTR01" : {
       "group_name"   : "Informazioni",
@@ -412,12 +423,14 @@
    "ATR01" : {
       "group_name"   : "Accesso",
       "description"  : "Atrio",
-      "scope"        : "accessibility"
+      "scope"        : "accessibility",
+      "synonym"      : "INGRESSO"
    },
    "CRR01" : {
       "group_name"   : "Accesso",
       "description"  : "Corridoio",
-      "scope"        : "accessibility"
+      "scope"        : "accessibility",
+      "synonym"      : "DISIMPEGNO"
    },
    "ASC01" : {
       "group_name"   : "",
@@ -542,7 +555,8 @@
    "TERRAZZO" : {
       "group_name"   : "",
       "description"  : "Terrazzo",
-      "scope"        : "accessibility"
+      "scope"        : "accessibility",
+      "synonym"      : "TERRAZZA"
    },
    "VNS03" : {
       "group_name"   : "",

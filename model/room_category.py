@@ -29,5 +29,14 @@ class RoomCategory():
          for k, v in klass.get_cat_dict().items()
       }
 
-      name = name.upper().strip()
-      return desc_to_id.get(name, "")
+      name   = name.upper().strip()
+      cat_id = desc_to_id.get(name, "")
+      if cat_id:
+         return cat_id
+
+      synonyms = {
+         cat["synonym"].upper() : k for k, cat in cat_dict.items()
+         if "synonym" in cat
+      }
+
+      return synonyms.get(name, "")

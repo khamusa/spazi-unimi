@@ -4,19 +4,6 @@ from utils.logger       import Logger
 
 class DXFRoomCatsResolver:
 
-   cat_names_exceptions = {
-      "TERRAZZA": "TERRAZZO",
-      "SALA PC": "LIN01",
-      "SPOGLIATOI": "SPG01",
-      "GUARDIOLA": "LOC25",
-      "DEPOSITO": "DEP09",
-      "DISIMPEGNO": "CRR01",
-      "BAGNO": "WC01",
-      "CUCINA": "CUC01",
-      "INGRESSO": "ATR01",
-      "SALA STUDI": "SGG01"
-   }
-
    @classmethod
    def resolve_room_categories(klass, building, floor_dict = None):
       """
@@ -134,12 +121,6 @@ class DXFRoomCatsResolver:
       match_name  = next((t for t in all_texts if RoomCategory.get_cat_id_by_name(t)), None)
       if match_name:
          a_room["cat_id"] = RoomCategory.get_cat_id_by_name(match_name)
-         return True
-
-      # 3 - look for category name exceptional cases
-      match_name  = next((t for t in all_texts if t in klass.cat_names_exceptions), None)
-      if match_name:
-         a_room["cat_id"] = klass.cat_names_exceptions[match_name]
          return True
 
       return False
