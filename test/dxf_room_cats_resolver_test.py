@@ -10,26 +10,28 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
    """
    def setUp(self):
 
-      self.room_categories = [
-         RoomCategory({
-            "_id": "AUL01",
-            "cat_name": "Aula"
-         }),
-         RoomCategory({
-            "_id": "AUL03",
-            "cat_name": "Aula Informatica"
-         }),
-         RoomCategory({
-            "_id": "WC01",
-            "cat_name": "Bagno"
-         })
-      ]
+      self.room_categories = {
+         "AUL01" : {
+            "group_name"   : "",
+            "description"  : "Aula",
+            "scope"        : "didactic"
+         },
+         "AUL03" : {
+            "group_name"   : "",
+            "description"  : "Aula Informatica",
+            "scope"        : "didactic"
+         },
+         "WC01" : {
+            "group_name"   : "Bagno",
+            "description"  : "WC",
+            "scope"        : "WC"
+         }
+      }
+      self.room_cats_dict_mock = MagicMock(return_value= self.room_categories)
 
-      self.room_cats_where_mock = MagicMock(return_value= self.room_categories)
-
-      with patch("__main__.RoomCategory.where", self.room_cats_where_mock):
+      with patch("__main__.RoomCategory.get_cat_dict", self.room_cats_dict_mock):
          self.cats        = DXFRoomCatsResolver.get_room_categories_dict()
-         self.cats_names  = DXFRoomCatsResolver.get_room_categories_names_dict(self.cats)
+         self.cats_names  = DXFRoomCatsResolver.get_room_categories_names_dict()
 
    def generate_rooms_with_text(self, t):
       """
@@ -84,7 +86,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
 
                self.assertEqual(r, 1)
                MagicMock.assert_called_once_with(cats)
-               MagicMock.assert_called_once_with(cats_names, "cats_result")
+               MagicMock.assert_called_once_with(cats_names)
 
                MagicMock.assert_called_once_with(
                   should_be_called,
@@ -194,7 +196,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
          for r in self.generate_rooms_with_text(t):
             m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
             self.assertTrue(m)
-            self.assertEqual(r["cat_name"], "Bagno")
+            self.assertEqual(r["cat_name"], "WC")
 
    def test_resolve_category_for_room_does_not_match(self):
       should_not_match = [
@@ -229,7 +231,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
 
             m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
             self.assertTrue(m)
-            self.assertEqual(r["cat_name"], "Bagno")
+            self.assertEqual(r["cat_name"], "WC")
 
 
    #######################
@@ -237,7 +239,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
    #######################
 
    def test_get_room_categories_dict(self):
-      with patch("__main__.RoomCategory.where", self.room_cats_where_mock):
+      with patch("__main__.RoomCategory.get_cat_dict", self.room_cats_dict_mock):
          cats_dict = DXFRoomCatsResolver.get_room_categories_dict()
          self.assertTrue("AUL01" in cats_dict)
          self.assertTrue("AUL03" in cats_dict)
@@ -245,22 +247,22 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
 
          self.assertEqual(cats_dict["AUL01"], "Aula")
          self.assertEqual(cats_dict["AUL03"], "Aula Informatica")
-         self.assertEqual(cats_dict["WC01"], "Bagno")
+         self.assertEqual(cats_dict["WC01"], "WC")
 
          self.assertEqual(len(cats_dict.keys()), 3)
 
 
    def test_get_room_categories_names_dict(self):
-      with patch("__main__.RoomCategory.where", self.room_cats_where_mock):
+      with patch("__main__.RoomCategory.get_cat_dict", self.room_cats_dict_mock):
          cats_dict   = DXFRoomCatsResolver.get_room_categories_dict()
-         cats_names  = DXFRoomCatsResolver.get_room_categories_names_dict(cats_dict)
+         cats_names  = DXFRoomCatsResolver.get_room_categories_names_dict()
 
          self.assertTrue("AULA" in cats_names)
          self.assertTrue("AULA INFORMATICA" in cats_names)
-         self.assertTrue("BAGNO" in cats_names)
+         self.assertTrue("WC" in cats_names)
 
          self.assertEqual(cats_names["AULA"], "Aula")
          self.assertEqual(cats_names["AULA INFORMATICA"], "Aula Informatica")
-         self.assertEqual(cats_names["BAGNO"], "Bagno")
+         self.assertEqual(cats_names["WC"], "WC")
 
          self.assertEqual(len(cats_names.keys()), 3)

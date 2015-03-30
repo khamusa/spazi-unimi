@@ -42,7 +42,7 @@ class DXFRoomCatsResolver:
                )
 
       cats        = klass.get_room_categories_dict()
-      cats_names  = klass.get_room_categories_names_dict(cats)
+      cats_names  = klass.get_room_categories_names_dict()
       for floor_dict in target_floors:
          categorized_rooms += klass._resolve_room_categories_for_floor(
             floor_dict,
@@ -159,18 +159,25 @@ class DXFRoomCatsResolver:
    @classmethod
    def get_room_categories_dict(klass):
       """
-      Get room categories from database and converst them into a dictionary
-      where keys are category ids and values are category names
+      Get room categories and converst them into a dictionary where keys are
+      category ids and values are category names
       """
 
-      return { cat["_id"]: cat["cat_name"] for cat in RoomCategory.where({}) }
+      return  {
+         k: v["description"]
+         for k, v in RoomCategory.get_cat_dict().items()
+         if k != "VNS02"
+      }
 
    @classmethod
-   def get_room_categories_names_dict(klass, cats):
+   def get_room_categories_names_dict(klass):
       """
       Given a dictionary of room categories obtained by a call to
       get_room_categories_dict, returns a new dictionary in which keys
       are an uppercase version of the human name of the categories, and values
       are the original values.
       """
-      return { v.upper().strip() : v for _, v in cats.items() }
+      return {
+         v["description"].upper().strip() : v["description"]
+         for _, v in RoomCategory.get_cat_dict().items()
+      }

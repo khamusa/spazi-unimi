@@ -19,29 +19,9 @@ class EdiliziaDataUpdater(BuildingDataUpdater, RoomDataUpdater):
       Returns None.
       """
       {
-         "room_categories" : self.update_room_categories,
          "buildings"       : self.update_buildings,
          "rooms"           : self.update_rooms
       }[entities_type](content)
-
-   def update_room_categories(self, categories):
-      """
-      Main method responsible for updating room categories collection on database.
-      """
-      cat_exceptions = ["VNS02"]
-
-      RoomCategory.clean()
-      for c in categories:
-         if c["cat_id"] not in cat_exceptions:
-            if c["cat_id"] == "WC02":
-               c["cat_name"] = "WC"
-            cat = RoomCategory(c)
-            cat.attr("_id", cat.attr("_id").upper())
-            cat.save()
-
-      for building in Building.where({}):
-         DXFRoomCatsResolver.resolve_room_categories(building, None)
-         building.save()
 
    def _sanitize_building(self, building):
       """

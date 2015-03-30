@@ -1,0 +1,552 @@
+{
+   "AUL01" : {
+      "group_name"   : "",
+      "description"  : "Aula",
+      "scope"        : "didactic"
+   },
+   "AUL03" : {
+      "group_name"   : "",
+      "description"  : "Aula Informatica",
+      "scope"        : "didactic"
+   },
+   "AUL04" : {
+      "group_name"   : "Aula Seminari - Magna - Lauree",
+      "description"  : "Aula Seminari",
+      "scope"        : "didactic"
+   },
+   "AUM01" : {
+      "group_name"   : "Aula Seminari - Magna - Lauree",
+      "description"  : "Aula Magna",
+      "scope"        : "didactic"
+   },
+   "LAB01" : {
+      "group_name"   : "",
+      "description"  : "Laboratorio Didattico",
+      "scope"        : "didactic"
+   },
+   "SAL04" : {
+      "group_name"   : "Aula Seminari - Magna - Lauree",
+      "description"  : "Sala Lauree",
+      "scope"        : "didactic"
+   },
+   "SPZ01" : {
+      "group_name"   : "Locale Supporto",
+      "description"  : "Locale di Supporto",
+      "scope"        : "support"
+   },
+   "BBL01" : {
+      "group_name"   : "Biblioteca - Mediateca",
+      "description"  : "Biblioteca (con presenza di libri e posti lettura)",
+      "scope"        : "didactic support"
+   },
+   "DEP17" : {
+      "group_name"   : "",
+      "description"  : "Deposito Libri",
+      "scope"        : "didactic support"
+   },
+   "LIN01" : {
+      "group_name"   : "Biblioteca - Mediateca",
+      "description"  : "Sala Informatica (annessa a Biblioteca)",
+      "scope"        : "didactic support"
+   },
+   "MED01" : {
+      "group_name"   : "Biblioteca - Mediateca",
+      "description"  : "Mediateca",
+      "scope"        : "didactic support"
+   },
+   "SAL02" : {
+      "group_name"   : "Biblioteca - Mediateca",
+      "description"  : "Sala Lettura (prevalenza posti studio)",
+      "scope"        : "didactic support"
+   },
+   "SGG01" : {
+      "group_name"   : "Biblioteca - Mediateca",
+      "description"  : "Sala Studio (sala per studio autonomo studenti non annessa a Biblioteca)",
+      "scope"        : "didactic support"
+   },
+   "VID01" : {
+      "group_name"   : "Biblioteca - Mediateca",
+      "description"  : "Videoteca",
+      "scope"        : "didactic support"
+   },
+   "STD01" : {
+      "group_name"   : "",
+      "description"  : "Studio",
+      "scope"        : "personnel"
+   },
+   "CMR01" : {
+      "group_name"   : "",
+      "description"  : "Camera Oscura",
+      "scope"        : "laboratory"
+   },
+   "CMR02" : {
+      "group_name"   : "",
+      "description"  : "Camera Insonorizzata",
+      "scope"        : "laboratory"
+   },
+   "CMR03" : {
+      "group_name"   : "",
+      "description"  : "Camera Termostatata",
+      "scope"        : "laboratory"
+   },
+   "CMR04" : {
+      "group_name"   : "",
+      "description"  : "Camera Fredda",
+      "scope"        : "laboratory"
+   },
+   "DEP09" : {
+      "group_name"   : "Deposito",
+      "description"  : "Deposito Materiale di Laboratorio",
+      "scope"        : "support"
+   },
+   "LAB02" : {
+      "group_name"   : "Laboratorio di Ricerca",
+      "description"  : "Laboratorio di Ricerca",
+      "scope"        : "laboratory"
+   },
+   "LAB03" : {
+      "group_name"   : "Laboratorio di Ricerca",
+      "description"  : "Laboratorio di Ricerca Livello Contenimento Biologico 2",
+      "scope"        : "laboratory"
+   },
+   "LAB04" : {
+      "group_name"   : "Laboratorio di Ricerca",
+      "description"  : "Laboratorio di Ricerca Livello Contenimento Biologico 3",
+      "scope"        : "laboratory"
+   },
+   "LAB05" : {
+      "group_name"   : "Laboratorio di Ricerca",
+      "description"  : "Laboratorio di Ricerca Livello Contenimento Biologico 4",
+      "scope"        : "laboratory"
+   },
+   "LAB06" : {
+      "group_name"   : "Laboratorio di Ricerca",
+      "description"  : "Laboratorio Radioisotopi",
+      "scope"        : "laboratory"
+   },
+   "LAB08" : {
+      "group_name"   : "Laboratorio di Ricerca",
+      "description"  : "Laboratorio Microscopia",
+      "scope"        : "laboratory"
+   },
+   "LAB56" : {
+      "group_name"   : "Laboratorio di Ricerca",
+      "description"  : "Laboratorio NMR",
+      "scope"        : "laboratory"
+   },
+   "LAB70" : {
+      "group_name"   : "Laboratorio di Ricerca",
+      "description"  : "Laboratorio Informatico di Ricerca",
+      "scope"        : "laboratory"
+   },
+   "LSL01" : {
+      "group_name"   : "Locale Supporto",
+      "description"  : "Locale Supporto Laboratori",
+      "scope"        : "support"
+   },
+   "MUS01" : {
+      "group_name"   : "",
+      "description"  : "Spazio Espositivo/Museale",
+      "scope"        : "didactic"
+   },
+   "AMB01" : {
+      "group_name"   : "",
+      "description"  : "Ambulatorio",
+      "scope"        : "laboratory"
+   },
+   "CLL03" : {
+      "group_name"   : "",
+      "description"  : "Camera Speciale",
+      "scope"        : "laboratory"
+   },
+   "CLL04" : {
+      "group_name"   : "",
+      "description"  : "Cella/Magazzino Refrigerato",
+      "scope"        : "support"
+   },
+   "DEP12" : {
+      "group_name"   : "",
+      "description"  : "Cella/Magazzino Refrigerato",
+      "scope"        : "support"
+   },
+   "DEP19" : {
+      "group_name"   : "Deposito",
+      "description"  : "Deposito Gabbie Sporche",
+      "scope"        : "support"
+   },
+   "DEP20" : {
+      "group_name"   : "Deposito",
+      "description"  : "Deposito Gabbie Pulite",
+      "scope"        : "support"
+   },
+   "FNL01" : {
+      "group_name"   : "",
+      "description"  : "Fienile",
+      "scope"        : "support"
+   },
+   "LOC06" : {
+      "group_name"   : "",
+      "description"  : "Locale Mungitura",
+      "scope"        : "support"
+   },
+   "LOC26" : {
+      "group_name"   : "",
+      "description"  : "Quarantena",
+      "scope"        : "support"
+   },
+   "LOC27" : {
+      "group_name"   : "",
+      "description"  : "Accettazione Animali",
+      "scope"        : "support"
+   },
+   "LSS01" : {
+      "group_name"   : "Locale Supporto",
+      "description"  : "Locale Supporto Stabulario",
+      "scope"        : "support"
+   },
+   "SAL07" : {
+      "group_name"   : "",
+      "description"  : "Sala d'Attesa",
+      "scope"        : "support"
+   },
+   "SAL14" : {
+      "group_name"   : "",
+      "description"  : "Sala Operatoria",
+      "scope"        : "support"
+   },
+   "SAL20" : {
+      "group_name"   : "",
+      "description"  : "Ambulatorio Radiografico",
+      "scope"        : "support"
+   },
+   "SAL27" : {
+      "group_name"   : "",
+      "description"  : "Sala Autoptica",
+      "scope"        : "support"
+   },
+   "SAL28" : {
+      "group_name"   : "",
+      "description"  : "Locale Preparazioni Cliniche",
+      "scope"        : "support"
+   },
+   "SAL30" : {
+      "group_name"   : "",
+      "description"  : "Ambulatorio TAC",
+      "scope"        : "support"
+   },
+   "SAL32" : {
+      "group_name"   : "",
+      "description"  : "Sala Terapia",
+      "scope"        : "support"
+   },
+   "SCD01" : {
+      "group_name"   : "",
+      "description"  : "Scuderie",
+      "scope"        : "support"
+   },
+   "STB01" : {
+      "group_name"   : "",
+      "description"  : "Stabulario",
+      "scope"        : "support"
+   },
+   "STL01" : {
+      "group_name"   : "",
+      "description"  : "Stalla",
+      "scope"        : "support"
+   },
+   "SRR01" : {
+      "group_name"   : "",
+      "description"  : "Serra",
+      "scope"        : "support"
+   },
+   "SRR02" : {
+      "group_name"   : "Locale Supporto",
+      "description"  : "Locale Supporto Serra",
+      "scope"        : "support"
+   },
+   "UFF01" : {
+      "group_name"   : "",
+      "description"  : "Ufficio",
+      "scope"        : "didactic support"
+   },
+   "LOC05" : {
+      "group_name"   : "",
+      "description"  : "Locale Fotocopie",
+      "scope"        : "support"
+   },
+   "SAL05" : {
+      "group_name"   : "",
+      "description"  : "Sala Riunioni",
+      "scope"        : "didactic support"
+   },
+   "DEP02" : {
+      "group_name"   : "Deposito",
+      "description"  : "Deposito Solventi-Reagenti",
+      "scope"        : "support"
+   },
+   "DEP03" : {
+      "group_name"   : "Deposito",
+      "description"  : "Deposito Bombole Gas",
+      "scope"        : "support"
+   },
+   "DEP05" : {
+      "group_name"   : "Deposito",
+      "description"  : "Deposito Rifiuti Speciali",
+      "scope"        : "support"
+   },
+   "DEP06" : {
+      "group_name"   : "Deposito",
+      "description"  : "Deposito Rifiuti Radioattivi",
+      "scope"        : "support"
+   },
+   "LOC36" : {
+      "group_name"   : "",
+      "description"  : "Locale Travaso",
+      "scope"        : "support"
+   },
+   "OFF01" : {
+      "group_name"   : "",
+      "description"  : "Officina",
+      "scope"        : "support"
+   },
+   "ABT01" : {
+      "group_name"   : "",
+      "description"  : "Appartamento di Servizio",
+      "scope"        : "support"
+   },
+   "ABT05" : {
+      "group_name"   : "",
+      "description"  : "Foresteria",
+      "scope"        : "support"
+   },
+   "BAR01" : {
+      "group_name"   : "",
+      "description"  : "Locale Ristoro/Mensa",
+      "scope"        : "alimentation"
+   },
+   "DEP01" : {
+      "group_name"   : "Deposito",
+      "description"  : "Deposito Materiale Inerte",
+      "scope"        : "support"
+   },
+   "DEP04" : {
+      "group_name"   : "Deposito",
+      "description"  : "Deposito Rifiuti Solidi Urbani",
+      "scope"        : "support"
+   },
+   "EP07" : {
+      "group_name"   : "Deposito",
+      "description"  : "Deposito Materiale Cartaceo",
+      "scope"        : "support"
+   },
+   "LOC03" : {
+      "group_name"   : "",
+      "description"  : "Locale Non Utilizzato",
+      "scope"        : "support"
+   },
+   "LOC09" : {
+      "group_name"   : "",
+      "description"  : "Locali Cooperative Librarie",
+      "scope"        : "support"
+   },
+   "LOC15" : {
+      "group_name"   : "",
+      "description"  : "Locale Pausa Personale",
+      "scope"        : "support"
+   },
+   "LOC31" : {
+      "group_name"   : "",
+      "description"  : "Locale Centro Stampa",
+      "scope"        : "support"
+   },
+   "SAL11" : {
+      "group_name"   : "",
+      "description"  : "Sala Regia Televisiva",
+      "scope"        : "support"
+   },
+   "SAL29" : {
+      "group_name"   : "",
+      "description"  : "Sala Server/Apparati di rete",
+      "scope"        : "support"
+   },
+   "DCC01" : {
+      "group_name"   : "",
+      "description"  : "Docce",
+      "scope"        : "support"
+   },
+   "DEP08" : {
+      "group_name"   : "Deposito",
+      "description"  : "Deposito Materiale Pulizie",
+      "scope"        : "support"
+   },
+   "SPG01" : {
+      "group_name"   : "",
+      "description"  : "Spogliatoio",
+      "scope"        : "support"
+   },
+   "WC01" : {
+      "group_name"   : "Bagno",
+      "description"  : "WC",
+      "scope"        : "WC"
+   },
+   "WC02" : {
+      "group_name"   : "Bagno",
+      "description"  : "Antibagno",
+      "scope"        : "WC"
+   },
+   "WC03" : {
+      "group_name"   : "Bagno",
+      "description"  : "WCH (Disabili)",
+      "scope"        : "WC"
+   },
+   "LOC25" : {
+      "group_name"   : "Informazioni",
+      "description"  : "Locale Guardiola Informazioni",
+      "scope"        : "didactic support"
+   },
+   "PTR01" : {
+      "group_name"   : "Informazioni",
+      "description"  : "Portineria/Informazioni/Reception",
+      "scope"        : "didactic support"
+   },
+   "ATR01" : {
+      "group_name"   : "Accesso",
+      "description"  : "Atrio",
+      "scope"        : "accessibility"
+   },
+   "CRR01" : {
+      "group_name"   : "Accesso",
+      "description"  : "Corridoio",
+      "scope"        : "accessibility"
+   },
+   "ASC01" : {
+      "group_name"   : "",
+      "description"  : "Ascensore",
+      "scope"        : "accessibility"
+   },
+   "ASC02" : {
+      "group_name"   : "Locale Supporto",
+      "description"  : "Montacarichi",
+      "scope"        : "support"
+   },
+   "ASC03" : {
+      "group_name"   : "Locale Supporto",
+      "description"  : "Montalibri",
+      "scope"        : "support"
+   },
+   "VNS01" : {
+      "group_name"   : "",
+      "description"  : "Vano Scala",
+      "scope"        : "accessibility"
+   },
+   "CBN01" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Cabina  Elettrica di Trasformazione",
+      "scope"        : "support"
+   },
+   "CBN02" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Locale Gruppo Elettrogeno",
+      "scope"        : "support"
+   },
+   "CBN05" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Locale Gruppo Continuità (UPS)",
+      "scope"        : "support"
+   },
+   "CNT01" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Centrale Termica",
+      "scope"        : "support"
+   },
+   "CNT02" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Centrale Trattamento Aria",
+      "scope"        : "support"
+   },
+   "CNT03" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Centrale Idrica",
+      "scope"        : "support"
+   },
+   "CNT04" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Locale Contatori (Energia) - Cabina Elettrica",
+      "scope"        : "support"
+   },
+   "CNT05" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Centrali Frigorifere",
+      "scope"        : "support"
+   },
+   "CNT06" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Centrale Antincendio",
+      "scope"        : "support"
+   },
+   "LOC02" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Locale Macchine Ascensori",
+      "scope"        : "support"
+   },
+   "LOC08" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Locale Impianti Tecnologici",
+      "scope"        : "support"
+   },
+   "LOC30" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Locale Quadri Elettrici",
+      "scope"        : "support"
+   },
+   "VAS02" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Vasche Diluizione Scarichi Radioattivi",
+      "scope"        : "support"
+   },
+   "VNS02" : {
+      "group_name"   : "Locale Tecnico",
+      "description"  : "Cavedio Porta Impianti",
+      "scope"        : "support"
+   },
+   "SPP01" : {
+      "group_name"   : "",
+      "description"  : "Soppalco",
+      "scope"        : "architectonic"
+   },
+   "STT02" : {
+      "group_name"   : "",
+      "description"  : "Sottotetto",
+      "scope"        : "architectonic"
+   },
+   "BALCONE" : {
+      "group_name"   : "",
+      "description"  : "Balcone",
+      "scope"        : "accessibility"
+   },
+   "CORTILE" : {
+      "group_name"   : "",
+      "description"  : "Cortile",
+      "scope"        : "accessibility"
+   },
+   "PARC" : {
+      "group_name"   : "",
+      "description"  : "Parcheggio Coperto/Garage",
+      "scope"        : "accessibility"
+   },
+   "PORTICATO" : {
+      "group_name"   : "",
+      "description"  : "Porticato",
+      "scope"        : "accessibility"
+   },
+   "TERRAZZO" : {
+      "group_name"   : "",
+      "description"  : "Terrazzo",
+      "scope"        : "accessibility"
+   },
+   "VNS03" : {
+      "group_name"   : "",
+      "description"  : "Intercapedine",
+      "scope"        : "architectonic"
+   }
+}
