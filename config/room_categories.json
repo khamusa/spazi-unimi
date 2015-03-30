@@ -55,12 +55,12 @@
       "scope"        : "didactic support"
    },
    "SAL02" : {
-      "group_name"   : "Biblioteca - Mediateca",
+      "group_name"   : "Sala Studio",
       "description"  : "Sala Lettura (prevalenza posti studio)",
       "scope"        : "didactic support"
    },
    "SGG01" : {
-      "group_name"   : "Biblioteca - Mediateca",
+      "group_name"   : "Sala Studio",
       "description"  : "Sala Studio (sala per studio autonomo studenti non annessa a Biblioteca)",
       "scope"        : "didactic support"
    },

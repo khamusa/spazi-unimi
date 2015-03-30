@@ -190,13 +190,13 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
          for r in self.generate_rooms_with_text(t):
             m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
             self.assertTrue(m)
-            self.assertEqual(r["cat_name"], "Aula")
+            self.assertEqual(r["cat_id"], "AUL01")
 
       for t in ["WC01", "bAGNO", "bagno ", " wc01", " wc01", " BaGnO "]:
          for r in self.generate_rooms_with_text(t):
             m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
             self.assertTrue(m)
-            self.assertEqual(r["cat_name"], "WC")
+            self.assertEqual(r["cat_id"], "WC01")
 
    def test_resolve_category_for_room_does_not_match(self):
       should_not_match = [
@@ -208,7 +208,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
          for r in self.generate_rooms_with_text(t):
             m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
             self.assertFalse(m)
-            self.assertTrue("cat_name" not in r)
+            self.assertTrue("cat_id" not in r)
 
 
    def test_cat_id_has_higher_priority_on_resolution(self):
@@ -221,7 +221,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
 
             m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
             self.assertTrue(m)
-            self.assertEqual(r["cat_name"], "Aula")
+            self.assertEqual(r["cat_id"], "AUL01")
 
       # Dovrà matchare "Bagno" anche se le stanze contengono "Aula" e "Aula Informatica"
       for t in ["WC01", " wc01 ", "  wC01  "]:
@@ -231,7 +231,7 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
 
             m = DXFRoomCatsResolver._resolve_category_for_room(r, self.cats, self.cats_names)
             self.assertTrue(m)
-            self.assertEqual(r["cat_name"], "WC")
+            self.assertEqual(r["cat_id"], "WC01")
 
 
    #######################
@@ -261,8 +261,8 @@ class DXFRoomCatsResolverTest(unittest.TestCase):
          self.assertTrue("AULA INFORMATICA" in cats_names)
          self.assertTrue("WC" in cats_names)
 
-         self.assertEqual(cats_names["AULA"], "Aula")
-         self.assertEqual(cats_names["AULA INFORMATICA"], "Aula Informatica")
-         self.assertEqual(cats_names["WC"], "WC")
+         self.assertEqual(cats_names["AULA"], "AUL01")
+         self.assertEqual(cats_names["AULA INFORMATICA"], "AUL03")
+         self.assertEqual(cats_names["WC"], "WC01")
 
          self.assertEqual(len(cats_names.keys()), 3)

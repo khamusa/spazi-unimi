@@ -5,16 +5,16 @@ from utils.logger       import Logger
 class DXFRoomCatsResolver:
 
    cat_names_exceptions = {
-      "TERRAZZA": "Terrazzo",
-      "SALA PC": "Sala PC",
-      "SPOGLIATOI": "Spogliatoio",
-      "GUARDIOLA": "Locale Guardiola Informazioni",
-      "DEPOSITO": "Deposito",
-      "DISIMPEGNO": "Corridoio",
-      "BAGNO": "WC",
-      "CUCINA": "Cucina",
-      "INGRESSO": "Ingresso",
-      "SALA STUDI": "Sala Studio"
+      "TERRAZZA": "TERRAZZO",
+      "SALA PC": "LIN01",
+      "SPOGLIATOI": "SPG01",
+      "GUARDIOLA": "LOC25",
+      "DEPOSITO": "DEP09",
+      "DISIMPEGNO": "CRR01",
+      "BAGNO": "WC01",
+      "CUCINA": "CUC01",
+      "INGRESSO": "ATR01",
+      "SALA STUDI": "SGG01"
    }
 
    @classmethod
@@ -139,19 +139,19 @@ class DXFRoomCatsResolver:
       # 1 - Look for exact category ids
       match_id  = next((t for t in all_texts if t in cats), None)
       if match_id:
-         a_room["cat_name"] = cats[match_id]
+         a_room["cat_id"] = match_id
          return True
 
       # 2 - look for category name match
       match_name  = next((t for t in all_texts if t in cats_names), None)
       if match_name:
-         a_room["cat_name"] = cats_names[match_name]
+         a_room["cat_id"] = cats_names[match_name]
          return True
 
       # 3 - look for category name exceptional cases
       match_name  = next((t for t in all_texts if t in klass.cat_names_exceptions), None)
       if match_name:
-         a_room["cat_name"] = klass.cat_names_exceptions[match_name]
+         a_room["cat_id"] = klass.cat_names_exceptions[match_name]
          return True
 
       return False
@@ -178,6 +178,6 @@ class DXFRoomCatsResolver:
       are the original values.
       """
       return {
-         v["description"].upper().strip() : v["description"]
-         for _, v in RoomCategory.get_cat_dict().items()
+         v["description"].upper().strip() : k
+         for k, v in RoomCategory.get_cat_dict().items()
       }
