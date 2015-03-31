@@ -1,4 +1,4 @@
-from config_manager import ConfigManager
+from utils.config_manager import ConfigManager
 from persistence.db import MongoDBPersistenceManager
 from model.odm      import ODMModel
 from model          import Building
