@@ -44,18 +44,18 @@ def get_buildings():
 
    return jsonify({ 'buildings': buildings })
 
-@app.route( base_url_for_endpoint('buildings/<b_id>'),methods=['GET'] )
+@app.route( url_for_endpoint('buildings/<b_id>'),methods=['GET'] )
 def get_building_by_id(b_id):
    building = app.buildings.find_one({'_id':b_id})
    if not building:
        building = []
    return jsonify({ 'buildings': building })
 
-@app.route( base_url_for_endpoint('buildings/near/<float:lat>/<float:lng>'),methods=['GET'])
+@app.route( url_for_endpoint('buildings/near/<float:lat>/<float:lng>'),methods=['GET'])
 def get_buildings_near_position(lat,lng):
    r = request.args.get('radius') or app.radius
    if (not lat) or (not lng):
-      abort(404)
+      abort(400)
 
    geo_json_point = {
       '$geometry' : {
@@ -69,7 +69,7 @@ def get_buildings_near_position(lat,lng):
    return jsonify({ 'buildings': buildings })
 
 # Categories
-@app.route( base_url_for_endpoint('categories'),methods=['GET'])
+@app.route( url_for_endpoint('categories'),methods=['GET'])
 def get_categories():
    return 0
 

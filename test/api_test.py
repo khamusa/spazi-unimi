@@ -19,3 +19,11 @@ class ApiTest(unittest.TestCase):
    def test_buildings_by_id(self):
       response = self.app.get('/api/v1.0/buildings/1245/')
       self.assertEqual(response.status_code,200)
+
+   def test_buildings_near_with_params(self):
+      response = self.app.get('/api/v1.0/buildings/near/2.342141/2.443/')
+      self.assertEqual(response.status_code,200)
+
+   def test_buildings_near_with_bad_request(self):
+      response = self.app.get('/api/v1.0/buildings/near/pippo/pluto/')
+      self.assertEqual(response.status_code,404)
