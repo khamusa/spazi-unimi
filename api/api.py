@@ -1,7 +1,6 @@
 from utils                 import ConfigManager
 from persistence           import MongoDBPersistenceManager
-from model.building_view   import BuildingView
-from model.room_category   import RoomCategory
+from model                 import RoomCategory,Building,BuildingView
 from model.odm             import ODMModel
 from bson.json_util        import dumps
 from flask                 import Flask, jsonify,abort,request,send_from_directory
@@ -46,6 +45,10 @@ def get_buildings():
 
 @app.route( url_for_endpoint('buildings/<b_id>'),methods=['GET'] )
 def get_building_by_id(b_id):
+
+   if not Building.is_valid_bid(b_id):
+      abort(400)
+
    building = app.buildings.find_one({'_id':b_id})
    if not building:
        building = []
