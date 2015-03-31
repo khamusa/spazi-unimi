@@ -7,3 +7,4 @@ colour-runner
 ipython
 rdp
 numpy
+lesscpy
