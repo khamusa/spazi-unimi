@@ -1,0 +1,130 @@
+
+.define_group_colors(@color) {
+
+   polyline {
+      fill  : lighten(@color, 7%);
+      stroke: @color;
+      stroke-width: 5;
+   }
+
+   circle {
+      fill : lighten(@color, 7%);
+   }
+
+   &:hover {
+      polyline { fill: lighten(@color, 16%); }
+   }
+
+   & > :hover {
+      polyline { fill: saturate(lighten(@color, 20%), 24%); }
+   }
+}
+
+#legend circle {
+   stroke: #333;
+   stroke-width: 1;
+}
+
+text {
+   font-family : monospace;
+   font-weight : bold;
+   font-size   : 1.2em;
+}
+
+#walls line {
+   stroke: rgb(60, 60, 60);
+   stroke-width: 3;
+   stroke-linecap: round;
+}
+
+#windows line {
+   stroke: rgb(130, 130, 130);
+   stroke-width: 3;
+   stroke-linecap: round;
+}
+
+circle {
+   fill: rgb(220, 220, 220);
+}
+
+#Sconosciuto,
+#L-Sconosciuto {
+   .define_group_colors(rgb(220, 220, 220) );
+}
+
+#Aula,
+#L-Aula { .define_group_colors(darken(rgb(39, 88, 107), 5%)); }
+
+#Aula-Informatica,
+#L-Aula-Informatica {
+   .define_group_colors( lighten(rgb(39, 88, 107), 10%) );
+}
+
+#Laboratorio-Didattico,
+#L-Laboratorio-Didattico { .define_group_colors( lighten(rgb(39, 88, 107), 25%) );}
+
+#Aula-Seminari-Magna-Lauree,
+#L-Aula-Seminari-Magna-Lauree { .define_group_colors(rgb(125, 42, 104)); }
+
+#Sala-Riunioni,
+#L-Sala-Riunioni { .define_group_colors(lighten(rgb(125, 42, 104), 22%)); }
+
+#Deposito-Libri,
+#L-Deposito-Libri { .define_group_colors(darken(rgb(170, 115, 57), 16%)); }
+
+#Biblioteca-Mediateca,
+#L-Biblioteca-Mediateca { .define_group_colors(rgb(170, 115, 57)); }
+
+#Spazio-EspositivoMuseale,
+#L-Spazio-EspositivoMuseale {
+   .define_group_colors(lighten(rgb(170, 57, 57), 15%));
+}
+
+#Sala-Studio,
+#L-Sala-Studio { .define_group_colors(lighten(rgb(170, 115, 57), 22%)); }
+
+#Laboratorio-di-Ricerca,
+#L-Laboratorio-di-Ricerca { .define_group_colors(#44de92); }
+
+#Ambulatorio,
+#L-Ambulatorio { .define_group_colors(lighten(#44de92, 22%)) }
+
+#Camera-Oscura,
+#L-Camera-Oscura,
+#Camera-Insonorizzata,
+#L-Camera-Insonorizzata,
+#Camera-Termostatata,
+#L-Camera-Termostatata,
+#Camera-Fredda,
+#L-Camera-Fredda,
+#Camera-Speciale,
+#L-Camera-Speciale { .define_group_colors(darken(rgb(122, 64, 0), 20%)); }
+
+#Studio,
+#L-Studio {.define_group_colors(rgb(136, 162, 54)); }
+
+#Ufficio,
+#L-Ufficio {.define_group_colors(rgb(206, 203, 84  )); }
+
+#Bagno,
+#L-Bagno {
+   .define_group_colors(rgb(122, 64, 0));
+}
+
+#Accesso,
+#L-Accesso {.define_group_colors(rgb(150, 150, 150));}
+
+#Parcheggio-CopertoGarage,
+#L-Parcheggio-CopertoGarage { .define_group_colors(rgb(100, 100, 100)); }
+
+#Vano-Scala,
+#L-Vano-Scala {.define_group_colors(rgb(170, 57, 57));}
+
+#Ascensore,
+#L-Ascensore {.define_group_colors(rgb(179, 37, 37)); }
+
+#Locale-Ristoro-Mensa,
+#L-Locale-Ristoro-Mensa {.define_group_colors(rgb(198, 87, 15));}
+
+#Informazioni,
+#L-Informazioni {.define_group_colors(rgb(35, 107, 97));}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+
+<title>Spazi UNIMI - SVG Demo</title>
+
+   <style>
+      html, body { height: 100%; }
+      #svg {
+         width: 100%;
+         height: 100%;
+      }
+
+      #legenda {
+         position : fixed;
+         top      : 10px;
+         right    : 10px;
+         list-style-type: none;
+      }
+
+      #legenda li {
+         padding  : 3px;
+         color    : #999;
+      }
+
+      #legenda span {
+         display  : inline-block;
+         width    : 15px;
+         height   : 15px;
+         margin   : 0 5px;
+      }
+
+      #legenda .hover {
+         background-color: #eee;
+      }
+
+   </style>
+</head>
+
+<body>
+
+<object id="svg" type="image/svg+xml" data="../data/svg/preprocessed/33110/33110_03.svg" width="100%" height="100%"></object>
+
+   <script type="text/javascript">
+
+      var generate_legenda = function() {
+         var $svg       = $("#svg");
+         var svg_root   = $svg[0].contentDocument.children[0];
+
+         var $legenda = $('<ul id="legenda"></ul>');
+
+         $("#rooms > g", svg_root).each(function() {
+             var $cat_group  = $(this);
+             var $polyline   = $cat_group.find("polyline");
+             var $txt        = $cat_group.find("text").first();
+             var $tspan      = $txt.find("tspan").remove();
+             var cat_name    = $txt.text();
+             var color       = $polyline.css('fill');
+
+             if(cat_name.trim() === "") {
+               return;
+             }
+
+             if (color === "rgb(220, 220, 220)") {
+               return;
+             }
+
+             var new_cat = "<li>";
+             new_cat += "<span class='leg_color' style='background-color:"+color+"'></span>";
+             new_cat += cat_name;
+             new_cat += "</li>";
+             var $new_cat = $(new_cat);
+
+             $cat_group.on("mouseenter mouseleave", function () {
+               $new_cat.toggleClass("hover");
+             });
+
+             $legenda.append($new_cat);
+         });
+
+         $("body").append($legenda);
+      };
+
+      setTimeout(function() {
+        generate_legenda();
+      }, 500);
+
+
+   </script>
+</body>
+
+</html>

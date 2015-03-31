@@ -2,6 +2,7 @@ from pygeocoder         import Geocoder, GeocoderError
 from utils.logger       import Logger
 from itertools          import chain
 from utils.myfunctools  import filter_keys
+from model              import RoomCategory
 import time
 
 class DataMerger():
@@ -270,12 +271,19 @@ class DataMerger():
       if getattr(eq, "split", None):
          eq = eq.split("/")
 
+      cat_id = (
+         room2.get("cat_id") or
+         RoomCategory.get_cat_id_by_name(room2.get("cat_name", None)) or
+         room1.get("cat_id") or
+         RoomCategory.get_cat_id_by_name(room1.get("cat_name", None))
+         )
+
       result = {
          "room_name"    : room1.get("room_name")     or room2.get("room_name", ""),
          "capacity"     : room1.get("capacity")      or room2.get("capacity", ""),
          # per la categoria riteniamo più affidabili i dati provenienti dal CSV
          # rispetto a quelli ricevuti dal DXF
-         "cat_name"     : room2.get("cat_name")      or room1.get("cat_name", ""),
+         "cat_id"       : cat_id,
          "accessibility": room1.get("accessibility") or room2.get("accessibility", ""),
          "polygon"      : room1.get("polygon")       or room2.get("polygon", False),
          "equipments"   : eq                         or []
@@ -314,7 +322,7 @@ class DataMerger():
       #     chiavi necessarie per il merging.
       final_room_keys   = [
             "polygon",
-            "cat_name",
+            "cat_id",
             "room_name",
             "equipments",
             "accessibility",
