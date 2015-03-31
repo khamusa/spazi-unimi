@@ -105,7 +105,7 @@ class Polygon(Drawable, Anchorable):
       return False
 
    def as_segment_list(self):
-      return [ Segment(a, b) for a, b in circular_pairwise(self.points) ]
+      return [ Segment(a.clone(), b.clone()) for a, b in circular_pairwise(self.points) ]
 
    def _prepare_points(polypoints):
       """From a list of tuples, create a list of Point"""

@@ -14,6 +14,7 @@ class DxfReader():
    # Todo: extract to external config file
    valid_poly_layers = ["RM$"]
    valid_text_layers = ["NLOCALI", "RM$TXT"]
+   valid_wall_layers = ["MURI", "GROS$"]
 
    def __init__(self, filename):
       """
@@ -96,6 +97,14 @@ class DxfReader():
             line  = Segment(start, end)
             self._wall_lines.append( line )
 
+         elif self._is_valid_wall_polyline(ent):
+            points = [(p[0], -p[1]) for p in ent.points]
+            polygon = Polygon.from_relative_coordinates((0,0), points)
+            polygon.ensure_is_closed(tollerance = 1)
+            polygon.simplify_close_points(tollerance = 1)
+
+            self._wall_lines.extend( polygon.as_segment_list() )
+
          elif self._is_valid_window_line(ent):
             start = Point(ent.start[0], -ent.start[1])
             end   = Point(ent.end[0], -ent.end[1])
@@ -146,7 +155,10 @@ class DxfReader():
       return True
 
    def _is_valid_wall_line(self, ent):
-      return ent.layer.upper() == "MURI" and type(ent) is dxfgrabber.entities.Line
+      return ent.layer.upper() in self.valid_wall_layers and type(ent) is dxfgrabber.entities.Line
+
+   def _is_valid_wall_polyline(self, ent):
+      return ent.layer.upper() in self.valid_wall_layers and type(ent) in [LWPolyline, Polyline]
 
    def _is_valid_window_line(self, ent):
       return ent.layer.upper() == "FINESTRE" and type(ent) is dxfgrabber.entities.Line
