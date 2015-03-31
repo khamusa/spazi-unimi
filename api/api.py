@@ -23,7 +23,7 @@ app.radius              = 2000
 # HELPERS #
 ###########
 
-def base_url_for_endpoint(url_endpoint):
+def url_for_endpoint(url_endpoint):
    return '/'.join( [app.api_namespace,app.api_version,url_endpoint] )+'/'
 
 @app.before_request
