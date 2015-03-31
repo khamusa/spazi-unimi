@@ -1,4 +1,4 @@
-from model          import Building
+from model          import Building, RoomCategory
 from utils.logger   import Logger
 from tasks.mergers  import DataMerger, DXFRoomIdsResolver
 from datetime       import datetime
@@ -144,6 +144,8 @@ class RoomDataUpdater():
             discarded_rooms.add(r["r_id"])
             continue
 
+         r["cat_id"] = RoomCategory.get_cat_id_by_name(r.get("cat_name", ""))
+         del r["cat_name"]
          r_id = r["r_id"]
          del r["r_id"]
          result[r_id] = r

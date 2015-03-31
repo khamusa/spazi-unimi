@@ -205,13 +205,13 @@ class FloorMergeTest(unittest.TestCase):
       edil_room = {
          "room_name"    : "Aula 01 ed",
          "capacity"     : "44",
-         "cat_name"     : "Aula",
+         "cat_id"       : "AUL01",
          "l_floor"      :"T"
       }
 
       easy_room = {
          "room_name"    : "Aula 01 easy",
-         "cat_name"     : "Aula Informatica",
+         "cat_id"       : "AUL03",
          "capacity"     : "45",
          "accessibility": True,
          "equipments"   : "PC/Lavagna/Wi-fi",

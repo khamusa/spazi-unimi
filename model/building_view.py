@@ -1,5 +1,5 @@
 from .odm   import ODMModel
-from .      import Building
+from .      import Building, RoomCategory
 from utils  import myfunctools
 import json
 
@@ -25,19 +25,20 @@ class BuildingView(ODMModel):
 
    @classmethod
    def _prepare_floor_obj(klass, floor):
-      remove_polygon = lambda r: myfunctools.remove_keys(r, ["polygon"])
-      rooms_dict     = {
-         r_id : remove_polygon(room)
-         for r_id, room in floor.get("rooms", {}).items()
-      }
-      final_floor    = { "f_id": floor["f_id"], "rooms" : rooms_dict }
-
       services       = set()
-      for r in floor.get("unidentified_rooms", []):
-         if "cat_name" in r:
-            services.add(r["cat_name"])
 
-      final_floor["available_services"] = list(services)
+      for room in floor.get("rooms", {}).values():
+         services.add(room["cat_id"])
+
+      final_floor    = { "f_id": floor["f_id"], "rooms" : klass._prepare_rooms_dict(floor) }
+
+      for r in floor.get("unidentified_rooms", []):
+         if "cat_id" in r:
+            services.add(r["cat_id"])
+
+      final_floor["available_services"] = [
+         RoomCategory.get_group_name_by_id(cat_id) for cat_id in services
+      ]
 
       f_id        = floor.get("f_id", "")
       floor_info  = klass.floor_dict.get(f_id, None)
@@ -62,3 +63,18 @@ class BuildingView(ODMModel):
       }
 
       klass._pm.remove(BuildingView.collection_name(), query, options)
+
+   @classmethod
+   def _prepare_rooms_dict(klass, floor):
+      remove_polygon = lambda r: myfunctools.remove_keys(r, ["polygon"])
+
+      def _replace_cat_id(room):
+         room["cat_name"] = RoomCategory.get_cat_by_id(room["cat_id"])["description"]
+         del room["cat_id"]
+         return room
+
+      return {
+         r_id : _replace_cat_id(remove_polygon(room))
+
+         for r_id, room in floor.get("rooms", {}).items()
+      }
