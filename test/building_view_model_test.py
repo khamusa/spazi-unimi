@@ -19,7 +19,7 @@ class BuildingViewModelTest(unittest.TestCase):
                           "polygon"       : {},
                           "room_name"     : "Aula Gamma",
                           "accessibility" : "",
-                          "cat_name"      : "Aula Informatica"
+                          "cat_id"        : "AUL03"
                       }
                   },
                   "f_id"               : "-05",
@@ -27,15 +27,15 @@ class BuildingViewModelTest(unittest.TestCase):
                   "windows"            : [],
                   "unidentified_rooms" : [
                      {
-                        "cat_name"  : "WC",
+                        "cat_id"    : "WC01",
                         "polygon"   : {}
                      },
                      {
-                        "cat_name"  : "WC",
+                        "cat_id"    : "WC01",
                         "polygon"   : {}
                      },
                      {
-                        "cat_name"  : "Ufficio",
+                        "cat_id"    : "UFF01",
                         "polygon"   : {}
                      }
                   ]
@@ -48,7 +48,7 @@ class BuildingViewModelTest(unittest.TestCase):
                           "polygon"       : {},
                           "room_name"     : "Aula Alfa",
                           "accessibility" : "",
-                          "cat_name"      : "Aula"
+                          "cat_id"        : "AUL01"
                       },
                       "R107" : {
                           "capacity"      : "12",
@@ -56,7 +56,7 @@ class BuildingViewModelTest(unittest.TestCase):
                           "polygon"       : {},
                           "room_name"     : "Aula 6",
                           "accessibility" : "",
-                          "cat_name"      : "Aula"
+                          "cat_id"        : "AUL01"
                       },
                       "R013" : {
                           "capacity"      : "26",
@@ -64,7 +64,7 @@ class BuildingViewModelTest(unittest.TestCase):
                           "polygon"       : {},
                           "room_name"     : "Aula Delta",
                           "accessibility" : "",
-                          "cat_name"      : "Aula Informatica"
+                          "cat_id"        : "AUL03"
                       },
                   },
                   "f_id"               : "03",
@@ -72,15 +72,15 @@ class BuildingViewModelTest(unittest.TestCase):
                   "windows"            : [],
                   "unidentified_rooms" : [
                      {
-                        "cat_name"  : "WC",
+                        "cat_id"    : "WC01",
                         "polygon"   : {}
                      },
                      {
-                        "cat_name"  : "Studio",
+                        "cat_id"    : "STD01",
                         "polygon"   : {}
                      },
                      {
-                        "cat_name"  : "Ufficio",
+                        "cat_id"    : "UFF01",
                         "polygon"   : {}
                      }
                   ]
@@ -106,7 +106,7 @@ class BuildingViewModelTest(unittest.TestCase):
                         "capacity"  : "20",
                         "room_name" : "Aula Gamma",
                         "l_floor"   : "S",
-                        "cat_name"  : "Aula Informatica"
+                        "cat_id"    : "AUL03"
                      }
                   },
                   "f_id" : "-05"
@@ -117,43 +117,43 @@ class BuildingViewModelTest(unittest.TestCase):
                         "capacity"  : "128",
                         "room_name" : "Aula Alfa",
                         "l_floor"   : "R",
-                        "cat_name"  : "Aula"
+                        "cat_id"    : "AUL01"
                      },
                      "R008" : {
                         "capacity"  : "208",
                         "room_name" : "Aula Sigma e Omega",
                         "l_floor"   : "R",
-                        "cat_name"  : "Aula Informatica"
+                        "cat_id"    : "AUL03"
                      },
                      "R013" : {
                         "capacity"  : "26",
                         "room_name" : "Aula Delta",
                         "l_floor"   : "R",
-                        "cat_name"  : "Aula Informatica"
+                        "cat_id"    : "AUL03"
                      },
                      "R100" : {
                         "capacity"  : "12",
                         "room_name" : "Aula 4",
                         "l_floor"   : "R",
-                        "cat_name"  : "Aula"
+                        "cat_id"    : "AUL01"
                      },
                      "R048" : {
                         "capacity"  : "192",
                         "room_name" : "Aula Beta",
                         "l_floor"   : "R",
-                        "cat_name"  : "Aula"
+                        "cat_id"    : "AUL01"
                      },
                      "R099" : {
                         "capacity"  : "16",
                         "room_name" : "Aula 5",
                         "l_floor"   : "R",
-                        "cat_name"  : "Aula"
+                        "cat_id"    : "AUL01"
                      },
                      "R107" : {
                         "capacity"  : "12",
                         "room_name" : "Aula 6",
                         "l_floor"   : "R",
-                        "cat_name"  : "Aula"
+                        "cat_id"    : "AUL01"
                      }
                   },
                "f_id" : "03"
@@ -179,32 +179,31 @@ class BuildingViewModelTest(unittest.TestCase):
       for attr in identic_keys:
          self.assertEqual(b_view.get_path(attr), b.get_path("merged." + attr))
 
-      merged_floors = (f["f_id"] for f in b.get_path("merged.floors"))
+      for i, floor in enumerate(b_view.get_path("floors")):
+         self.assertIn("rooms", floor)
+         self.assertIn("floor_name", floor)
 
-      for f_id in merged_floors:
-         self.assertTrue(f_id in b_view.get("floors").keys())
-         self.assertTrue("rooms" in b_view["floors"][f_id])
-         self.assertTrue("floor_name" in b_view["floors"][f_id])
          self.assertEqual(
-            b_view["floors"][f_id]["floor_name"],
-            self.floor_dict[f_id]["floor_name"]
+            floor["floor_name"],
+            self.floor_dict[floor["f_id"]]["floor_name"]
          )
 
-         for room in b_view["floors"][f_id]["rooms"].values():
+         for room in floor["rooms"].values():
             self.assertTrue("polygon" not in room)
             self.assertTrue("capacity" in room)
             self.assertTrue("equipments" in room)
             self.assertTrue("room_name" in room)
             self.assertTrue("cat_name" in room)
+            self.assertTrue("cat_id" not in room)
 
-         self.assertIn("available_services", b_view["floors"][f_id])
+         self.assertIn("available_services", floor)
 
-      available_services_1 = b_view["floors"]["-05"]["available_services"]
-      available_services_2 = b_view["floors"]["03"]["available_services"]
+      available_services_1 = b_view["floors"][0]["available_services"]
+      available_services_2 = b_view["floors"][1]["available_services"]
 
-      self.assertIn("WC", available_services_1)
+      self.assertIn("Bagno", available_services_1)
       self.assertIn("Ufficio", available_services_1)
-      self.assertIn("WC", available_services_2)
+      self.assertIn("Bagno", available_services_2)
       self.assertIn("Studio", available_services_2)
       self.assertIn("Ufficio", available_services_2)
 
