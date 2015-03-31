@@ -35,7 +35,7 @@ def prepare_buildings_collection():
 ##########
 
 # Buildings
-@app.route( base_url_for_endpoint('buildings'),methods=['GET'] )
+@app.route( url_for_endpoint('buildings'),methods=['GET'] )
 def get_buildings():
    buildings = list(app.buildings.find())
    for b in buildings:
