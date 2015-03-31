@@ -11,6 +11,8 @@ from flask                 import Flask, jsonify,abort,request,send_from_directo
 app                     = Flask(__name__,static_url_path='')
 app.app_config          = ConfigManager('config/general.json')
 app.persistence         = MongoDBPersistenceManager(app.app_config)
+app.api_namespace       = '/api'
+app.api_version         = 'v1.0'
 ODMModel.set_pm( app.persistence )
 
 # radius used with GeoSpatial Query (meters)
@@ -20,6 +22,10 @@ app.radius              = 2000
 ###########
 # HELPERS #
 ###########
+
+def base_api_url(url_endpoint):
+   return '/'.join( [app.api_namespace,app.api_version,url_endpoint] )+'/'
+
 @app.before_request
 def prepare_buildings_collection():
    app.buildings     = BuildingView.get_collection()
@@ -67,6 +73,6 @@ def get_buildings_near_position(lat,lng):
 def get_categories():
    return 0
 
-# Rooms
+
 
 
