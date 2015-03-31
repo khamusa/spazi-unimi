@@ -20,6 +20,11 @@
    }
 }
 
+#legend circle {
+   stroke: #333;
+   stroke-width: 1;
+}
+
 text {
    font-family : monospace;
    font-weight : bold;
@@ -52,66 +57,67 @@ polyline {
 #Aula,
 #L-Aula { .define_group_colors(darken(rgb(39, 88, 107), 5%)); }
 
-#Laboratorio-Didattico,
-#L-Laboratorio-Didattico,
 #Aula-Informatica,
 #L-Aula-Informatica {
    .define_group_colors( lighten(rgb(39, 88, 107), 10%) );
 }
 
-#Aula-Seminari,
-#L-Aula-Seminari,
-#Aula-Magna,
-#L-Aula-Magna,
-#Sala-Lauree,
-#L-Sala-Lauree,
-#Sala-Riunioni,
-#L-Sala-Riunioni { .define_group_colors(rgb(125, 42, 104)); }
+#Laboratorio-Didattico,
+#L-Laboratorio-Didattico { .define_group_colors( lighten(rgb(39, 88, 107), 25%) );}
 
-#Biblioteca,
-#L-Biblioteca,
-#Sala-Informatica,
-#L-Sala-Informatica,
-#Mediateca,
-#L-Mediateca,
-#Sala-Lettura,
-#L-Sala-Lettura,
+#Aula-Seminari-Magna-Lauree,
+#L-Aula-Seminari-Magna-Lauree { .define_group_colors(rgb(125, 42, 104)); }
+
+#Sala-Riunioni,
+#L-Sala-Riunioni { .define_group_colors(lighten(rgb(125, 42, 104), 22%)); }
+
+#Deposito-Libri,
+#L-Deposito-Libri { .define_group_colors(darken(rgb(170, 115, 57), 16%)); }
+
+#Biblioteca-Mediateca,
+#L-Biblioteca-Mediateca { .define_group_colors(rgb(170, 115, 57)); }
+
+#Spazio-EspositivoMuseale,
+#L-Spazio-EspositivoMuseale {
+   .define_group_colors(lighten(rgb(170, 57, 57), 15%));
+}
+
 #Sala-Studio,
-#L-Sala-Studio,
-#Videoteca,
-#L-Videoteca,
-#Spazio-Espositivo-Museale,
-#L-Spazio-Espositivo-Museale { .define_group_colors(rgb(170, 115, 57)); }
+#L-Sala-Studio { .define_group_colors(lighten(rgb(170, 115, 57), 22%)); }
+
+#Laboratorio-di-Ricerca,
+#L-Laboratorio-di-Ricerca { .define_group_colors(#44de92); }
+
+#Ambulatorio,
+#L-Ambulatorio { .define_group_colors(lighten(#44de92, 22%)) }
+
+#Camera-Oscura,
+#L-Camera-Oscura,
+#Camera-Insonorizzata,
+#L-Camera-Insonorizzata,
+#Camera-Termostatata,
+#L-Camera-Termostatata,
+#Camera-Fredda,
+#L-Camera-Fredda,
+#Camera-Speciale,
+#L-Camera-Speciale { .define_group_colors(darken(rgb(122, 64, 0), 20%)); }
 
 #Studio,
 #L-Studio {.define_group_colors(rgb(136, 162, 54)); }
 
 #Ufficio,
-#L-Ufficio {.define_group_colors(rgb(206, 203, 84)); }
+#L-Ufficio {.define_group_colors(rgb(206, 203, 84  )); }
 
-#WC,
-#L-WC,
-#Antibagno,
-#L-Antibagno,
-#WCH,
-#L-WCH {
+#Bagno,
+#L-Bagno {
    .define_group_colors(rgb(122, 64, 0));
 }
 
-#Atrio,
-#L-Atrio,
-#Corridoio,
-#L-Corridoio,
-#Balcone,
-#L-Balcone,
-#Porticato,
-#L-Porticato,
-#Terrazzo,
-#L-Terrazzo,
-#Parcheggio-Coperto-Garage,
-#L-Parcheggio-Coperto-Garage,
-#Cortile,
-#L-Cortile {.define_group_colors(rgb(150, 150, 150));}
+#Accesso,
+#L-Accesso {.define_group_colors(rgb(150, 150, 150));}
+
+#Parcheggio-CopertoGarage,
+#L-Parcheggio-CopertoGarage { .define_group_colors(rgb(100, 100, 100)); }
 
 #Vano-Scala,
 #L-Vano-Scala {.define_group_colors(rgb(170, 57, 57));}
@@ -122,99 +128,5 @@ polyline {
 #Locale-Ristoro-Mensa,
 #L-Locale-Ristoro-Mensa {.define_group_colors(rgb(198, 87, 15));}
 
-#Laboratorio-di-Ricerca,
-#L-Laboratorio-di-Ricerca,
-#Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-2,
-#L-Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-2,
-#Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-3,
-#L-Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-3,
-#Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-4,
-#L-Laboratorio-di-Ricerca-Livello-Contenimento-Biologico-4,
-#Laboratorio-Radioisotopi,
-#L-Laboratorio-Radioisotopi,
-#Laboratorio-Microscopia,
-#L-Laboratorio-Microscopia,
-#Laboratorio-NMR,
-#L-Laboratorio-NMR,
-#Laboratorio-Informatico-di-Ricerca,
-#L-Laboratorio-Informatico-di-Ricerca {.define_group_colors(rgb(194, 166, 100));}
-
-#Locale-Guardiola-Informazioni,
-#L-Locale-Guardiola-Informazioni,
-#Portineria-Informazioni-Reception,
-#L-Portineria-Informazioni-Reception {.define_group_colors(rgb(35, 107, 97));}
-/*
-#Locale-Fotocopie
-#Ambulatorio
-#Locale-di-Supporto
-#Deposito-Libri
-#Camera-Oscura
-#Camera-Insonorizzata
-#Camera-Termostatata
-#Camera-Fredda
-#Deposito-Materiale-di-Laboratorio
-#Locale-Supporto-Laboratori
-#Camera-Speciale
-#Cella-Magazzino-Refrigerato
-#Cella-Magazzino-Refrigerato
-#Deposito-Gabbie-Sporche
-#Deposito-Gabbie-Pulite
-#Fienile
-#Locale-Mungitura
-#Quarantena
-#Accettazione-Animali
-#Locale-Supporto-Stabulario
-#Sala-d-Attesa
-#Sala-Operatoria
-#Ambulatorio-Radiografico
-#Sala-Autoptica
-#Locale-Preparazioni-Cliniche
-#Ambulatorio-TAC
-#Sala-Terapia
-#Scuderie
-#Stabulario
-#Stalla
-#Serra
-#Locale-Supporto-Serra
-#Deposito-Solventi-Reagenti
-#Deposito-Bombole-Gas
-#Deposito-Rifiuti-Speciali
-#Deposito-Rifiuti-Radioattivi
-#Locale-Travaso
-#Officina
-#Appartamento-di-Servizio
-#Foresteria
-#Deposito-Materiale-Inerte
-#Deposito-Rifiuti-Solidi-Urbani
-#Deposito-Materiale-Cartaceo
-#Locale-Non-Utilizzato
-#Locali-Cooperative-Librarie
-#Locale-Pausa-Personale
-#Locale-Centro-Stampa
-#Sala-Regia-Televisiva
-#Sala-Server-Apparati-di-rete
-#Docce
-#Deposito-Materiale-Pulizie
-#Spogliatoio
-#Montacarichi
-#Montalibri
-#Cabina-Elettrica-di-Trasformazione
-#Locale-Gruppo-Elettrogeno
-#Locale-Gruppo-Continuit-
-#Centrale-Termica
-#Centrale-Trattamento-Aria
-#Centrale-Idrica
-#Locale-Contatori-Cabina-Elettrica
-#Centrali-Frigorifere
-#Centrale-Antincendio
-#Locale-Macchine-Ascensori
-#Locale-Impianti-Tecnologici
-#Locale-Quadri-Elettrici
-#Vasche-Diluizione-Scarichi-Radioattivi
-#Cavedio-Porta-Impianti
-#Soppalco
-#Sottotetto
-#Intercapedine
-*/
-
-
+#Informazioni,
+#L-Informazioni {.define_group_colors(rgb(35, 107, 97));}

@@ -1,4 +1,5 @@
 from model.drawable  import Polygon
+from model           import RoomCategory
 from utils.logger    import Logger
 from itertools       import chain, groupby
 
@@ -51,13 +52,13 @@ class FloorDrawer():
    def _create_legend_group(klass, floor):
       circle_radius = 7
       line_height   = 26
-      all_rooms     = klass._get_all_rooms(floor)
       all_cats      = set()
 
-      for r_id, room in all_rooms:
-         polygon     = klass._create_polygon(room.get("polygon"))
-         klass.max_x = max(klass.max_x, polygon.max_x())
-         all_cats.add( room.get("cat_name", "Sconosciuto") )
+      for cat_name, cat_rooms in klass.get_grouped_rooms(floor):
+         for r_id, room in cat_rooms:
+            polygon       = klass._create_polygon(room.get("polygon"))
+            klass.max_x   = max(klass.max_x, polygon.max_x())
+            all_cats.add( cat_name )
 
       legend_group  = svgwrite.container.Group(id = "legend")
       x             = klass.max_x + 25
@@ -131,23 +132,16 @@ class FloorDrawer():
             [...]
          [...]
       """
-      all_rooms            = klass._get_all_rooms(floor)
       rooms_group          = svgwrite.container.Group(id = "rooms")
+      rooms_by_cat         = klass.get_grouped_rooms(floor)
 
-
-      get_cat_name         = lambda room: room[1].get("cat_name", "Sconosciuto")
-      all_rooms            = sorted(all_rooms, key = get_cat_name)
-      rooms_by_cat         = groupby(all_rooms, key = get_cat_name)
-
-      for cat_name, cat_rooms in rooms_by_cat:
-         id_cat_name = klass._prepare_cat_name(cat_name)
-         cat_group   = svgwrite.container.Group(id = id_cat_name)
+      for category_name, cat_rooms in rooms_by_cat:
+         group_cat_name = klass._prepare_cat_name(category_name)
+         cat_group      = svgwrite.container.Group(id = group_cat_name)
 
          for r_id, room in cat_rooms:
             room_group = klass._create_room_group(
                r_id,
-               room.get("room_name", ""),
-               room.get("cat_name", "Sconosciuto"),
                klass._create_polygon(room.get("polygon"))
                )
             cat_group.add(room_group)
@@ -155,6 +149,34 @@ class FloorDrawer():
          rooms_group.add(cat_group)
 
       return rooms_group
+
+   @classmethod
+   def get_grouped_rooms(klass, floor):
+      all_rooms    = klass._get_all_rooms(floor)
+
+      def map_category(room):
+         cat_id    = room[1].get("cat_id", "")
+         scope     = RoomCategory.get_scope_by_id(cat_id)
+         cat_name  = RoomCategory.get_group_name_by_id(cat_id)
+
+         valid_scopes = {
+            "didactic",
+            "didactic support",
+            "laboratory",
+            "WC",
+            "personnel",
+            "accessibility"
+            }
+
+         if scope not in valid_scopes:
+            cat_name = "Sconosciuto"
+
+         return cat_name
+
+      all_rooms    = sorted(all_rooms, key = map_category)
+      rooms_by_cat = groupby(all_rooms, key = map_category)
+
+      return rooms_by_cat
 
 
    @classmethod
@@ -236,7 +258,7 @@ class FloorDrawer():
       return chain(room_items, unidentified_rooms)
 
    @classmethod
-   def _create_room_group(klass, r_id, r_name, cat_name, polygon):
+   def _create_room_group(klass, r_id, polygon):
       """
       Create an svg Group that contains room's elements: a polyline and a text.
 
@@ -263,7 +285,9 @@ class FloorDrawer():
       the string "Sconosciuto" is returned.
       """
       if cat_name.strip():
-         return re.sub("[^a-zA-Z]", "-", cat_name)
+         cat = re.sub("-", "", cat_name.strip())
+         cat = re.sub("\s+", "-", cat)
+         return re.sub("[^a-zA-Z\-]", "", cat)
 
       return "Sconosciuto"
 
@@ -320,20 +344,6 @@ class FloorDrawer():
    @classmethod
    def _approximate_coordinates(klass, x, y):
       return ("{:.0f}".format(x), "{:.0f}".format(y))
-
-   @classmethod
-   def _prepare_cat_name(klass, cat_name):
-      """
-      Prepare a cat name to be used as svg's id.
-
-      Arguments:
-      - cat_name: a string representing a room category name.
-
-      Returns: a string representing a cat_name usable as svg's id.
-      """
-      if cat_name.strip():
-         return re.sub("[^a-zA-Z]", "-", cat_name)
-      return "Sconosciuto"
 
    @classmethod
    def _is_cat_name_relevant(klass, cat_name):

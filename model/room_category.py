@@ -40,3 +40,17 @@ class RoomCategory():
       }
 
       return synonyms.get(name, "")
+
+   @classmethod
+   def get_cat_by_id(klass, cat_id):
+      return klass.get_cat_dict().get(cat_id, {})
+
+   @classmethod
+   def get_scope_by_id(klass, cat_id):
+      return klass.get_cat_dict().get(cat_id, {}).get("scope", "")
+
+   @classmethod
+   def get_group_name_by_id(klass, cat_id):
+      cat_info   = klass.get_cat_dict().get(cat_id, {})
+      group_name = cat_info.get("group_name", None)
+      return group_name or cat_info.get("description", "Sconosciuto")

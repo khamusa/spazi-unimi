@@ -533,12 +533,12 @@
       "scope"        : "architectonic"
    },
    "BALCONE" : {
-      "group_name"   : "",
+      "group_name"   : "Accesso",
       "description"  : "Balcone",
       "scope"        : "accessibility"
    },
    "CORTILE" : {
-      "group_name"   : "",
+      "group_name"   : "Accesso",
       "description"  : "Cortile",
       "scope"        : "accessibility"
    },
@@ -548,12 +548,12 @@
       "scope"        : "accessibility"
    },
    "PORTICATO" : {
-      "group_name"   : "",
+      "group_name"   : "Accesso",
       "description"  : "Porticato",
       "scope"        : "accessibility"
    },
    "TERRAZZO" : {
-      "group_name"   : "",
+      "group_name"   : "Accesso",
       "description"  : "Terrazzo",
       "scope"        : "accessibility",
       "synonym"      : "TERRAZZA"
