@@ -4,11 +4,11 @@ from model.building_view   import BuildingView
 from model.room_category   import RoomCategory
 from model.odm             import ODMModel
 from bson.json_util        import dumps
-from flask                 import Flask, jsonify,abort,request
+from flask                 import Flask, jsonify,abort,request,send_from_directory
 
 
 
-app                     = Flask(__name__)
+app                     = Flask(__name__,static_url_path='')
 app.app_config          = ConfigManager('config/general.json')
 app.persistence         = MongoDBPersistenceManager(app.app_config)
 ODMModel.set_pm( app.persistence )
@@ -31,7 +31,12 @@ def prepare_buildings_collection():
 # Buildings
 @app.route('/api/v1.0/buildings/',methods=['GET'])
 def get_buildings():
-   return jsonify({ 'buildings': list(app.buildings.find()) })
+   buildings = list(app.buildings.find())
+   for b in buildings:
+      for f_id in b['floors']:
+         del b['floors'][f_id]['rooms']
+
+   return jsonify({ 'buildings': buildings })
 
 @app.route('/api/v1.0/buildings/<b_id>',methods=['GET'])
 def get_building_by_id(b_id):
@@ -58,9 +63,9 @@ def get_buildings_near_position(lat,lng):
    return jsonify({ 'buildings': buildings })
 
 # Categories
-@app.route('/api/v1.0/categories',methods=['GET'])
+@app.route('/api/v1.0/categories/',methods=['GET'])
 def get_categories():
-   return app.app_config["filepaths"]["room_categories"];
+   return 0
 
 # Rooms
 
