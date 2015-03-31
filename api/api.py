@@ -13,7 +13,7 @@ app.persistence         = MongoDBPersistenceManager(app.app_config)
 app.api_namespace       = '/api'
 app.api_version         = 'v1.0'
 ODMModel.set_pm( app.persistence )
-
+BuildingView.setup_collection()
 # radius used with GeoSpatial Query (meters)
 app.radius              = 2000
 

@@ -1,7 +1,7 @@
 from .odm   import ODMModel
 from .      import Building, RoomCategory
 from utils  import myfunctools
-import json
+import json, pymongo
 
 class BuildingView(ODMModel):
    config_file = "config/floor_inference.json"
@@ -78,3 +78,7 @@ class BuildingView(ODMModel):
 
          for r_id, room in floor.get("rooms", {}).items()
       }
+
+   @classmethod
+   def setup_collection(klass):
+      klass.get_collection().create_index([("coordinates", pymongo.GEOSPHERE)])
