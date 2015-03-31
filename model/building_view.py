@@ -16,10 +16,10 @@ class BuildingView(ODMModel):
       bv_attrs          = myfunctools.filter_keys(merged_key, identic_keys)
       bv_attrs["_id"]   = building["_id"]
 
-      bv_attrs["floors"] = {
-         f["f_id"] : BuildingView._prepare_floor_obj(f)
+      bv_attrs["floors"] = [
+         BuildingView._prepare_floor_obj(f)
          for f in building.get_path("merged.floors", [])
-      }
+      ]
 
       return BuildingView(bv_attrs)
 
@@ -30,7 +30,7 @@ class BuildingView(ODMModel):
          r_id : remove_polygon(room)
          for r_id, room in floor.get("rooms", {}).items()
       }
-      final_floor    = { "rooms" : rooms_dict }
+      final_floor    = { "f_id": floor["f_id"], "rooms" : rooms_dict }
 
       services       = set()
       for r in floor.get("unidentified_rooms", []):
