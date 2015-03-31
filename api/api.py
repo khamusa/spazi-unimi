@@ -23,7 +23,7 @@ app.radius              = 2000
 # HELPERS #
 ###########
 
-def base_api_url(url_endpoint):
+def base_url_for_endpoint(url_endpoint):
    return '/'.join( [app.api_namespace,app.api_version,url_endpoint] )+'/'
 
 @app.before_request
@@ -35,7 +35,7 @@ def prepare_buildings_collection():
 ##########
 
 # Buildings
-@app.route('/api/v1.0/buildings/',methods=['GET'])
+@app.route( base_url_for_endpoint('buildings'),methods=['GET'] )
 def get_buildings():
    buildings = list(app.buildings.find())
    for b in buildings:
@@ -44,14 +44,14 @@ def get_buildings():
 
    return jsonify({ 'buildings': buildings })
 
-@app.route('/api/v1.0/buildings/<b_id>',methods=['GET'])
+@app.route( base_url_for_endpoint('buildings/<b_id>'),methods=['GET'] )
 def get_building_by_id(b_id):
    building = app.buildings.find_one({'_id':b_id})
    if not building:
-       abort(404)
-   return jsonify(building)
+       building = []
+   return jsonify({ 'buildings': building })
 
-@app.route('/api/v1.0/buildings/near/<float:lat>/<float:lng>',methods=['GET'])
+@app.route( base_url_for_endpoint('buildings/near/<float:lat>/<float:lng>'),methods=['GET'])
 def get_buildings_near_position(lat,lng):
    r = request.args.get('radius') or app.radius
    if (not lat) or (not lng):
@@ -69,7 +69,7 @@ def get_buildings_near_position(lat,lng):
    return jsonify({ 'buildings': buildings })
 
 # Categories
-@app.route('/api/v1.0/categories/',methods=['GET'])
+@app.route( base_url_for_endpoint('categories'),methods=['GET'])
 def get_categories():
    return 0
 

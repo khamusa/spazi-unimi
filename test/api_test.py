@@ -7,7 +7,10 @@ class ApiTest(unittest.TestCase):
       self.app = api.app.test_client()
 
    def test_base_api_url(self):
-      self.assertEqual( api.base_api_url('pippo') , '/api/v1.0/pippo/' )
+      self.assertEqual( api.base_url_for_endpoint('pippo') , '/api/v1.0/pippo/' )
+
+   def test_base_api_url_with_params(self):
+      self.assertEqual( api.base_url_for_endpoint('pippo/<float:age>') , '/api/v1.0/pippo/<float:age>/' )
 
    def test_buildings_uri(self):
       response = self.app.get('/api/v1.0/buildings/')
