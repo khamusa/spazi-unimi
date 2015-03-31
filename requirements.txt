@@ -8,3 +8,4 @@ ipython
 rdp
 numpy
 lesscpy
+flask==0.10.1
