@@ -28,7 +28,7 @@ class BuildingView(ODMModel):
       services       = set()
 
       for room in floor.get("rooms", {}).values():
-         services.add(room["cat_id"])
+         services.add(room.get("cat_id", ""))
 
       final_floor    = { "f_id": floor["f_id"], "rooms" : klass._prepare_rooms_dict(floor) }
 
@@ -69,9 +69,10 @@ class BuildingView(ODMModel):
       remove_polygon = lambda r: myfunctools.remove_keys(r, ["polygon"])
 
       def _replace_cat_id(room):
-         room["cat_name"] = RoomCategory.get_cat_by_id(room["cat_id"])["description"]
-         del room["cat_id"]
-         return room
+         if "cat_id" in room:
+            room["cat_name"] = RoomCategory.get_cat_by_id(room["cat_id"]).get("description", "")
+            del room["cat_id"]
+            return room
 
       return {
          r_id : _replace_cat_id(remove_polygon(room))
