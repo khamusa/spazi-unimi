@@ -45,7 +45,7 @@ class DXFAnalysis():
       count.update({"windows"          : len(floor.get("windows", []))})
 
       for room in floor.get("unidentified_rooms", []):
-         if "cat_name" in room:
+         if "cat_id" in room:
             count.update({"categorized_rooms" : 1})
          else:
             count.update({"no_info_rooms" : 1})
