@@ -42,7 +42,6 @@ def get_buildings():
          del floor['rooms']
 
    service = request.args.get('service') or None
-   print(service)
    if service:
       buildings = [ b for b in buildings if len([ f for f in b['floors'] if service in f['available_services'] ])>0  ]
 
@@ -81,6 +80,26 @@ def get_buildings_near_position(lat,lng):
 def get_categories():
    return 0
 
+
+# Rooms lookup table
+@app.route( url_for_endpoint('rooms'),methods=['GET'] )
+def get_rooms():
+   buildings   = list(app.buildings.find({'building_name':{'$exists':True}}))
+   rooms       = []
+
+   for building in buildings:
+      for floor in building['floors']:
+         for room_id in floor['rooms']:
+            data = {
+               'b_id'            : building['_id'],
+               'building_name'   : building['building_name'],
+               'floor'           : floor['floor_name'],
+               'r_id'            : room_id,
+               'room_name'       : floor['rooms'][room_id]['room_name']
+            }
+            rooms.append(data)
+
+   return jsonify({ 'rooms': rooms })
 
 
 
