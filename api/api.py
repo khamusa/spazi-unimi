@@ -36,7 +36,7 @@ def prepare_buildings_collection():
 # Buildings
 @app.route( url_for_endpoint('buildings'),methods=['GET'] )
 def get_buildings():
-   buildings = list(app.buildings.find())
+   buildings = list(app.buildings.find({'building_name':{'$exists':True}}))
    for b in buildings:
       for floor in b['floors']:
          del floor['rooms']
