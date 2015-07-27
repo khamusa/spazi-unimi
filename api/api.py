@@ -38,8 +38,8 @@ def prepare_buildings_collection():
 def get_buildings():
    buildings = list(app.buildings.find())
    for b in buildings:
-      for f_id in b['floors']:
-         del b['floors'][f_id]['rooms']
+      for floor in b['floors']:
+         del floor['rooms']
 
    return jsonify({ 'buildings': buildings })
 
