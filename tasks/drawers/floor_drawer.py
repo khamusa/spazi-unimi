@@ -41,7 +41,7 @@ class FloorDrawer():
       klass.svg.add(rooms_group)
       klass.svg.add(walls_group)
       klass.svg.add(rooms_labels_g)
-      klass.svg.add(legend)
+      #klass.svg.add(legend)
 
       if len(klass.svg.elements) <= 1:
          Logger.warning("Impossible generate csv: no room polylines founded")
