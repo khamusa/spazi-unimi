@@ -41,6 +41,11 @@ def get_buildings():
       for floor in b['floors']:
          del floor['rooms']
 
+   service = request.args.get('service') or None
+   print(service)
+   if service:
+      buildings = [ b for b in buildings if len([ f for f in b['floors'] if service in f['available_services'] ])>0  ]
+
    return jsonify({ 'buildings': buildings })
 
 @app.route( url_for_endpoint('buildings/<b_id>'),methods=['GET'] )
