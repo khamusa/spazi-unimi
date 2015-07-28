@@ -16,7 +16,7 @@ ODMModel.set_pm( app.persistence )
 BuildingView.setup_collection()
 # radius used with GeoSpatial Query (meters)
 app.radius              = 2000
-
+app.maps_folder         = 'data/svg/preprocessed'
 
 ###########
 # HELPERS #
@@ -28,9 +28,14 @@ def url_for_endpoint(url_endpoint):
 def filter_buildings_by_service(buildings,service):
    return [ b for b in buildings if len([ f for f in b['floors'] if service in f['available_services'] ])>0  ]
 
+def maps_url(res):
+   return '{0}://{1}/{2}/{3}'.format(app.protocol,app.domain,app.maps_folder,res)
+
 @app.before_request
 def prepare_buildings_collection():
    app.buildings     = BuildingView.get_collection()
+   app.protocol      = 'http'
+   app.domain        = request.headers['Host']
 
 
 ##########
@@ -60,6 +65,10 @@ def get_building_by_id(b_id):
    building = app.buildings.find_one({'_id':b_id})
    if not building:
        building = []
+
+   maps = [ maps_url( '{0}/{0}_{1}.svg'.format(b_id,f['f_id']) ) for f in building['floors'] ]
+
+   building['maps'] = maps
    return jsonify({ 'buildings': building })
 
 @app.route( url_for_endpoint('buildings/near/<float:lat>/<float:lng>'),methods=['GET'])
