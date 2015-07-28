@@ -25,9 +25,13 @@ app.radius              = 2000
 def url_for_endpoint(url_endpoint):
    return '/'.join( [app.api_namespace,app.api_version,url_endpoint] )+'/'
 
+def filter_buildings_by_service(buildings,service):
+   return [ b for b in buildings if len([ f for f in b['floors'] if service in f['available_services'] ])>0  ]
+
 @app.before_request
 def prepare_buildings_collection():
    app.buildings     = BuildingView.get_collection()
+
 
 ##########
 # ROUTES #
@@ -43,7 +47,7 @@ def get_buildings():
 
    service = request.args.get('service') or None
    if service:
-      buildings = [ b for b in buildings if len([ f for f in b['floors'] if service in f['available_services'] ])>0  ]
+      buildings = filter_buildings_by_service(buildings,service)
 
    return jsonify({ 'buildings': buildings })
 
@@ -73,6 +77,10 @@ def get_buildings_near_position(lat,lng):
 
    buildings   = list(app.buildings.find({ 'coordinates' : { '$near' : geo_json_point } }))
 
+   service = request.args.get('service') or None
+   if service:
+      buildings = filter_buildings_by_service(buildings,service)
+
    return jsonify({ 'buildings': buildings })
 
 # Categories
@@ -100,6 +108,27 @@ def get_rooms():
             rooms.append(data)
 
    return jsonify({ 'rooms': rooms })
+
+@app.route( url_for_endpoint('rooms/<b_id>/<r_id>'),methods=['GET'] )
+def get_room_by_id(b_id,r_id):
+   building = app.buildings.find_one({'_id':b_id})
+   if not building:
+      abort(404)
+
+   for floor in building['floors']:
+      room        = floor['rooms'].get(r_id,None)
+      coordinates = building['coordinates']['coordinates']
+      if room:
+         room['b_id']                  = b_id
+         room['building_name']         = building['building_name']
+         room['building_address']      = building['address']
+         room['building_coordinates']  = { 'lng' : coordinates[0], 'lat' : coordinates[1] }
+         room['floor']                 = floor['floor_name']
+         return jsonify({'room':room})
+
+   abort(404)
+
+
 
 
 
