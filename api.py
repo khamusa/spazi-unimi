@@ -1,4 +1,4 @@
-from api import api
+from api.app import app as application
 
 if __name__ == '__main__':
    import argparse
@@ -8,5 +8,5 @@ if __name__ == '__main__':
    args = parser.parse_args()
 
    if args.debug:
-      api.app.debug = True
-   api.app.run()
+      application.debug = True
+   application.run()
