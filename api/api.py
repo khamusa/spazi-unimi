@@ -3,7 +3,7 @@ from persistence           import MongoDBPersistenceManager
 from model                 import RoomCategory,Building,BuildingView
 from model.odm             import ODMModel
 from bson.json_util        import dumps
-from flask                 import Flask, jsonify,abort,request,send_from_directory
+from flask                 import Flask, jsonify,abort,request,send_from_directory,render_template,Markup
 
 
 
@@ -44,7 +44,14 @@ def prepare_buildings_collection():
 
 # Buildings
 @app.route( url_for_endpoint('buildings'),methods=['GET'] )
-def get_buildings():
+def api_get_buildings():
+   """
+      <h3>/buildings/<em>?service=XXX</em></h3>
+      <p>Returns a list of the all available buildings.</p>
+      <h5>Parameters</h6>
+      <p><em>service[string]</em> : could be one of the available services, if provided returns only those buildings with the specified service</p>
+
+   """
    buildings = list(app.buildings.find({'building_name':{'$exists':True}}))
    for b in buildings:
       for floor in b['floors']:
@@ -57,8 +64,14 @@ def get_buildings():
    return jsonify({ 'buildings': buildings })
 
 @app.route( url_for_endpoint('buildings/<b_id>'),methods=['GET'] )
-def get_building_by_id(b_id):
+def api_get_building_by_id(b_id):
+   """
+      <h3>/buildings/<em>b_id</em></h3>
+      <p>Returns the building with the specified b_id .</p>
+      <h5>Parameters</h6>
+      <p><em>b_id[string]</em> : a valid b_id</p>
 
+   """
    if not Building.is_valid_bid(b_id):
       abort(400)
 
@@ -72,7 +85,17 @@ def get_building_by_id(b_id):
    return jsonify({ 'buildings': building })
 
 @app.route( url_for_endpoint('buildings/near/<float:lat>/<float:lng>'),methods=['GET'])
-def get_buildings_near_position(lat,lng):
+def api_get_buildings_near_position(lat,lng):
+   """
+      <h3>/buildings/near/<em>lat</em>/<em>lng</em><em>?radius=X</em></h3>
+      <p>Returns a list of the all available buildings near the coordinate with latitude and longitued passed by params</p>
+      <h5>Parameters</h6>
+      <p><em>lat[float]</em> : latitude</p>
+      <p><em>lng[float]</em> : longitude</p>
+      <p><em>radius[float]</em> : radius in meters, default 2000m</p>
+
+   """
+
    r = request.args.get('radius') or app.radius
    if (not lat) or (not lng):
       abort(400)
@@ -94,13 +117,17 @@ def get_buildings_near_position(lat,lng):
 
 # Categories
 @app.route( url_for_endpoint('categories'),methods=['GET'])
-def get_categories():
+def api_get_categories():
    return 0
 
 
 # Rooms lookup table
 @app.route( url_for_endpoint('rooms'),methods=['GET'] )
-def get_rooms():
+def api_get_rooms():
+   """
+      <h3>/rooms/</h3>
+      <p>Rooms lookup table</p>
+   """
    buildings   = list(app.buildings.find({'building_name':{'$exists':True}}))
    rooms       = []
 
@@ -119,7 +146,16 @@ def get_rooms():
    return jsonify({ 'rooms': rooms })
 
 @app.route( url_for_endpoint('rooms/<b_id>/<r_id>'),methods=['GET'] )
-def get_room_by_id(b_id,r_id):
+def api_get_room_by_id(b_id,r_id):
+   """
+      <h3>/rooms/<em>b_id</em>/<em>r_id</em></h3>
+      <p>Returns the room with r_id within the bulding with b_id .</p>
+      <h5>Parameters</h6>
+      <p><em>b_id[string]</em> : a valid b_id</p>
+      <p><em>b_id[string]</em> : a valid r_id</p>
+
+   """
+
    building = app.buildings.find_one({'_id':b_id})
    if not building:
       abort(404)
@@ -138,7 +174,11 @@ def get_room_by_id(b_id,r_id):
    abort(404)
 
 @app.route( url_for_endpoint('available-services/'),methods=['GET'] )
-def get_available_services():
+def api_get_available_services():
+   """
+      <h3>/available-services/</h3>
+      <p>Returns the complete list of the all available services</p>
+   """
    buildings   = list(app.buildings.find({'building_name':{'$exists':True}}))
    services    = set()
 
@@ -150,6 +190,20 @@ def get_available_services():
    services = { k:v for k,v in enumerate(services) }
 
    return jsonify({'services':services})
+
+
+@app.route( url_for_endpoint('docs/'),methods=['GET'] )
+def get_docs():
+   html = '<ul>'
+   endpoints = [ val for name,val in globals().items() if name.count('api_')>0 ]
+
+   for endpoint in endpoints:
+      html += '<li>{}</li>'.format(endpoint.__doc__)
+
+   html +='</ul>'
+   return render_template('docs.html',content=Markup(html))
+
+
 
 
 
