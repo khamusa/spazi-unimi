@@ -76,7 +76,7 @@ class Floor:
    def transform(self, scale_amount=1, traslate_x=0, traslate_y=0):
       for r in self.rooms:
          # L'ordine di queste operazioni di transformazione
-         # è rilevante.
+         # e' rilevante.
          r.traslate(traslate_x, traslate_y)
          r.scale(scale_amount)
 
