@@ -128,6 +128,20 @@ def get_room_by_id(b_id,r_id):
 
    abort(404)
 
+@app.route( url_for_endpoint('available-services/'),methods=['GET'] )
+def get_available_services():
+   buildings   = list(app.buildings.find({'building_name':{'$exists':True}}))
+   services    = set()
+
+   for building in buildings:
+      for floor in building['floors']:
+         for s in floor['available_services']:
+            services.add(s)
+
+   services = { k:v for k,v in enumerate(services) }
+
+   return jsonify({'services':services})
+
 
 
 
