@@ -204,6 +204,10 @@ def get_docs():
    return render_template('docs.html',content=Markup(html))
 
 
+if __name__ == "__main__":
+    app.run()
+
+
 
 
 
