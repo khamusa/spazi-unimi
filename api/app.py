@@ -16,7 +16,7 @@ ODMModel.set_pm( app.persistence )
 BuildingView.setup_collection()
 # radius used with GeoSpatial Query (meters)
 app.radius              = 2000
-app.maps_folder         = 'data/svg/preprocessed'
+app.maps_folder         = 'static-maps'
 
 ###########
 # HELPERS #
