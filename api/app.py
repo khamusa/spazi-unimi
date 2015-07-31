@@ -28,8 +28,8 @@ def url_for_endpoint(url_endpoint):
 def filter_buildings_by_service(buildings,service):
    return [ b for b in buildings if len([ f for f in b['floors'] if service in f['available_services'] ])>0  ]
 
-def maps_url(res):
-   return '{0}://{1}/{2}/{3}'.format(app.protocol,app.domain,app.maps_folder,res)
+def maps_url(b_id,f_id):
+   return '{0}://{1}/{2}/{3}/{3}_{4}.svg'.format(app.protocol,app.domain,app.maps_folder,b_id,f_id)
 
 @app.before_request
 def prepare_buildings_collection():
@@ -79,7 +79,7 @@ def api_get_building_by_id(b_id):
    if not building:
        building = []
 
-   maps = [ maps_url( '{0}/{0}_{1}.svg'.format(b_id,f['f_id']) ) for f in building['floors'] ]
+   maps = [ maps_url( b_id,f['f_id'] ) for f in building['floors'] ]
 
    building['maps'] = maps
    return jsonify({ 'buildings': building })
@@ -132,11 +132,12 @@ def api_get_rooms():
    rooms       = []
 
    for building in buildings:
-      for floor in building['floors']:
+      for f_id,floor in enumerate(building['floors']):
          for room_id in floor['rooms']:
             data = {
                'b_id'            : building['_id'],
                'building_name'   : building['building_name'],
+               'f_id'            : floor['f_id'],
                'floor'           : floor['floor_name'],
                'r_id'            : room_id,
                'room_name'       : floor['rooms'][room_id]['room_name']
@@ -184,7 +185,9 @@ def api_get_room_by_id(b_id,r_id):
          room['building_name']         = building['building_name']
          room['building_address']      = building['address']
          room['building_coordinates']  = { 'lng' : coordinates[0], 'lat' : coordinates[1] }
+         room['f_id']                  = floor['f_id']
          room['floor']                 = floor['floor_name']
+         room['map']                   = maps_url(b_id,floor['f_id'])
          return jsonify({'room':room})
 
    abort(404)
