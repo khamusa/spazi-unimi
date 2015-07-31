@@ -84,7 +84,7 @@ def api_get_building_by_id(b_id):
    building['maps'] = maps
    return jsonify({ 'buildings': building })
 
-@app.route( url_for_endpoint('buildings/near/<float:lat>/<float:lng>'),methods=['GET'])
+@app.route( url_for_endpoint('buildings/near/<float:lat>/<float:lng>?service=srv_name'),methods=['GET'])
 def api_get_buildings_near_position(lat,lng):
    """
       <h3>/buildings/near/<em>lat</em>/<em>lng</em><em>?radius=X</em></h3>
@@ -93,6 +93,7 @@ def api_get_buildings_near_position(lat,lng):
       <p><em>lat[float]</em> : latitude</p>
       <p><em>lng[float]</em> : longitude</p>
       <p><em>radius[float]</em> : radius in meters, default 2000m</p>
+      <p><em>srv_name[string]</em> : one of the valid available-services</p>
 
    """
 
