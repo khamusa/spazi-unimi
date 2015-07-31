@@ -23,6 +23,7 @@ class FloorDrawer():
       Returns: None
       """
       klass.max_x          = 0
+      klass.max_y          = 0
       klass.svg            = svgwrite.Drawing()
       klass._add_style_to_svg()
 
@@ -46,6 +47,9 @@ class FloorDrawer():
       if len(klass.svg.elements) <= 1:
          Logger.warning("Impossible generate csv: no room polylines founded")
 
+      # set viewBox for a correct rendering
+      klass.svg.viewbox(0,0,klass.max_x,klass.max_y)
+
       return klass.svg
 
    @classmethod
@@ -58,6 +62,7 @@ class FloorDrawer():
          for r_id, room in cat_rooms:
             polygon       = klass._create_polygon(room.get("polygon"))
             klass.max_x   = max(klass.max_x, polygon.max_x())
+            klass.max_y   = max(klass.max_y, polygon.max_y())
             all_cats.add( cat_name )
 
       legend_group  = svgwrite.container.Group(id = "legend")
