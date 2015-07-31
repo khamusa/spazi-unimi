@@ -27,12 +27,11 @@
             <h4>{{ building_address }}</h4>
             <h4>{{ floor_name }}</h4>
             <h4>{{ room_name }}</h4>
+            <div id="svg-map"></div>
          </div>
-         <div class="room-info" id="map-canvas">
-
-         </div>
+         <div class="room-info" id="map-canvas"></div>
       </main>
-      <div id="svg-map"></div>
+
     </body>
     <script type="text/javascript">
       function initGMap(){
@@ -50,9 +49,18 @@
          xhr.onload = function(e){
             if( xhr.status === 200 ){
                document.getElementById('svg-map').innerHTML = xhr.responseText;
+               selectRoom(room_id);
             }
          }
          xhr.send();
+      }
+
+      function selectRoom(r_id){
+         var polylines = document.querySelectorAll('polyline');
+         for(var i=0;i<polylines.length;i++){
+            polylines[i].style.opacity = 0.4;
+         }
+         document.querySelector('#'+r_id+' polyline').style.opacity = 1;
       }
 
       var
