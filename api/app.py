@@ -145,6 +145,22 @@ def api_get_rooms():
 
    return jsonify({ 'rooms': rooms })
 
+@app.route( url_for_endpoint('rooms/<b_id>'),methods=['GET'] )
+def api_get_rooms_in_building(b_id):
+   """
+      <h3>/rooms/<em>b_id</em></h3>
+      <p>Returns all the rooms within the bulding with b_id grouped by floor.</p>
+      <h5>Parameters</h6>
+      <p><em>b_id[string]</em> : a valid b_id</p>
+
+   """
+
+   building = app.buildings.find_one({'_id':b_id})
+   if not building:
+      abort(404)
+
+   return jsonify({'floors':building['floors']})
+
 @app.route( url_for_endpoint('rooms/<b_id>/<r_id>'),methods=['GET'] )
 def api_get_room_by_id(b_id,r_id):
    """
@@ -152,7 +168,7 @@ def api_get_room_by_id(b_id,r_id):
       <p>Returns the room with r_id within the bulding with b_id .</p>
       <h5>Parameters</h6>
       <p><em>b_id[string]</em> : a valid b_id</p>
-      <p><em>b_id[string]</em> : a valid r_id</p>
+      <p><em>r_id[string]</em> : a valid r_id</p>
 
    """
 
