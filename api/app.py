@@ -192,6 +192,45 @@ def api_get_room_by_id(b_id,r_id):
 
    abort(404)
 
+@app.route( url_for_endpoint('room-viewer/<b_id>/<r_id>'),methods=['GET'] )
+def api_show_room_by_id(b_id,r_id):
+   """
+      <h3>/rooms/<em>b_id</em>/<em>r_id</em></h3>
+      <p>Show the room with r_id within the bulding with b_id</p>
+      <h5>Parameters</h6>
+      <p><em>b_id[string]</em> : a valid b_id</p>
+      <p><em>r_id[string]</em> : a valid r_id</p>
+
+   """
+
+   building = app.buildings.find_one({'_id':b_id})
+   if not building:
+      abort(404)
+
+   for floor in building['floors']:
+      room        = floor['rooms'].get(r_id,None)
+      coordinates = building['coordinates']['coordinates']
+      if room:
+         room['b_id']                  = b_id
+         room['building_name']         = building['building_name']
+         room['building_address']      = building['address']
+         room['building_coordinates']  = { 'lng' : coordinates[0], 'lat' : coordinates[1] }
+         room['f_id']                  = floor['f_id']
+         room['floor']                 = floor['floor_name']
+         room['map']                   = maps_url(b_id,floor['f_id'])
+
+         building_name        = building['building_name']
+         building_address     = room['building_address']
+         building_coordinates = { 'lng' : coordinates[0], 'lat' : coordinates[1] }
+         floor_name           = floor['floor_name']
+         map_url              = maps_url(b_id,floor['f_id'])
+         room_name            = room['room_name']
+         room_id              = r_id
+
+         return render_template('map_show.html',**locals())
+
+   abort(404)
+
 @app.route( url_for_endpoint('available-services/'),methods=['GET'] )
 def api_get_available_services():
    """
