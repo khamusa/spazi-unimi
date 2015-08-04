@@ -56,11 +56,15 @@
       }
 
       function selectRoom(r_id){
-         var polylines = document.querySelectorAll('polyline');
+         var polylines = document.querySelectorAll('polyline'),
+            selector = '';
          for(var i=0;i<polylines.length;i++){
             polylines[i].style.opacity = 0.4;
          }
-         document.querySelector('#'+r_id+' polyline').style.opacity = 1;
+
+         // check if the id contains only digits string
+         selector = ( /^\d+$/.test(r_id) )? "[id='"+r_id+"'] polyline" : '#'+r_id+' polyline';
+         document.querySelector(selector).style.opacity = 1;
       }
 
       var
