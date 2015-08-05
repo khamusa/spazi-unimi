@@ -131,9 +131,9 @@ def get_categories():
 @app.route( url_for_endpoint('client-lookup-table'),methods=['GET'] )
 def api_get_lookup_table():
    """
-      <h3>/client-lookup-table/?local_update=</h3>
+      <h3>/client-lookup-table/?local_update=date</h3>
       <p>Rooms lookup table</p>
-      <p><em>local_update[string]</em> : a date with format yyy/mm/dd</p>
+      <p><em>date[string]</em> : a date with format yyy/mm/dd</p>
       <p>Return an object with a boolean <em>update</em> attribute and the URL of the sqlite database.</p>
       <p>If the <em>update</em> attribute is true, the client should update its local db.</p>
    """
