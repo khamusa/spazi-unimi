@@ -16,6 +16,7 @@
       "data_svg_base_data"             : "data/svg",
       "data_svg_sources"               : "data/svg/sources",
       "data_svg_preprocessed_output"   : "data/svg/preprocessed",
+      "data_lookup_table"              : "data/sqlite",
       "tests"                          : "test",
       "assets"                         : "assets",
       "tmp"                            : "tmp"
