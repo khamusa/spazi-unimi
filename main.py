@@ -55,6 +55,8 @@ class Main():
       task              = DXFTask(self._config)
       task.perform_updates_on_files(files)
 
+      self.run_lookup()
+
    def run_csv(self, files):
       """
       Process csv files.
@@ -72,6 +74,8 @@ class Main():
 
       task              = CSVTask(self._config)
       task.perform_updates_on_files(files)
+
+      self.run_lookup()
 
    def run_svg(self, b_ids):
       """
