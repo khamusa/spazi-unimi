@@ -1,10 +1,11 @@
 from utils                 import ConfigManager
 from persistence           import MongoDBPersistenceManager
 from model                 import RoomCategory,Building,BuildingView
+from tasks                 import LookupTableTask
 from model.odm             import ODMModel
 from bson.json_util        import dumps
 from flask                 import Flask, jsonify,abort,request,send_from_directory,render_template,Markup
-
+from datetime              import datetime
 
 
 app                     = Flask(__name__,static_url_path='')
@@ -17,6 +18,7 @@ BuildingView.setup_collection()
 # radius used with GeoSpatial Query (meters)
 app.radius              = 2000
 app.maps_folder         = 'static-maps'
+app.lookup_table_folder = 'static-table'
 
 ###########
 # HELPERS #
@@ -30,6 +32,9 @@ def filter_buildings_by_service(buildings,service):
 
 def maps_url(b_id,f_id):
    return '{0}://{1}/{2}/{3}/{3}_{4}.svg'.format(app.protocol,app.domain,app.maps_folder,b_id,f_id)
+
+def lookup_table_url(db_name):
+   return '{0}://{1}/{2}/{3}'.format(app.protocol, app.domain, app.lookup_table_folder, db_name)
 
 @app.before_request
 def prepare_buildings_collection():
@@ -123,29 +128,27 @@ def get_categories():
 
 
 # Rooms lookup table
-@app.route( url_for_endpoint('rooms'),methods=['GET'] )
-def api_get_rooms():
+@app.route( url_for_endpoint('client-lookup-table'),methods=['GET'] )
+def api_get_lookup_table():
    """
-      <h3>/rooms/</h3>
+      <h3>/client-lookup-table/?local_update=</h3>
       <p>Rooms lookup table</p>
+      <p><em>local_update[string]</em> : a date with format yyy/mm/dd</p>
+      <p>Return an object with a boolean <em>update</em> attribute and the URL of the sqlite database.</p>
+      <p>If the <em>update</em> attribute is true, the client should update its local db.</p>
    """
-   buildings   = list(app.buildings.find({'building_name':{'$exists':True}}))
-   rooms       = []
+   date = request.args.get('local_update') or ""
+   print(date)
 
-   for building in buildings:
-      for f_id,floor in enumerate(building['floors']):
-         for room_id in floor['rooms']:
-            data = {
-               'b_id'            : building['_id'],
-               'building_name'   : building['building_name'],
-               'f_id'            : floor['f_id'],
-               'floor'           : floor['floor_name'],
-               'r_id'            : room_id,
-               'room_name'       : floor['rooms'][room_id]['room_name']
-            }
-            rooms.append(data)
+   try:
+      date_obj = datetime.strptime(date,"%Y/%m/%d")
+   except ValueError:
+      abort(400)
 
-   return jsonify({ 'rooms': rooms })
+   task              = LookupTableTask()
+   to_update         = task.client_should_update_db(date_obj.timestamp())
+
+   return jsonify({ 'update': to_update , 'url':lookup_table_url(task.db_name()) })
 
 @app.route( url_for_endpoint('rooms/<b_id>'),methods=['GET'] )
 def api_get_rooms_in_building(b_id):
