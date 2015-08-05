@@ -1,5 +1,5 @@
 from utils          import ConfigManager
-from tasks          import CSVTask, DXFTask, SVGTask
+from tasks          import CSVTask, DXFTask, SVGTask, LookupTableTask
 from persistence    import MongoDBPersistenceManager
 from utils.logger   import Logger
 from model.odm      import ODMModel
@@ -93,6 +93,14 @@ class Main():
       task              = SVGTask(self._config)
       task.perform_svg_update(b_ids)
 
+   def run_lookup(self, files):
+      """
+      Create a new sqlite db filled with a lookup table, useful for client applications
+      to not overload the API server and to provide a better UX.
+      """
+      task = LookupTableTask()
+      task.perform_update()
+
 if __name__ == '__main__':
    """
    Main procedure of the application, parse the arguments and call the
@@ -103,8 +111,8 @@ if __name__ == '__main__':
 
    parser = argparse.ArgumentParser(description = "Programma per l'aggiornamento dati del server Spazi Unimi.")
 
-   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "svg", "cow"],
-                      help="Il commando da eseguire: dxf, csv, svg")
+   parser.add_argument('command', metavar='op', type=str, choices=["csv", "dxf", "svg", "lookup", "cow"],
+                      help="Il commando da eseguire: dxf, csv, svg, lookup")
 
    parser.add_argument('files', metavar='file', type=str, nargs='*',
                       help='I file su cui lavorare, a seconda del comando scelto.')
