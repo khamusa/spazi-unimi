@@ -79,10 +79,10 @@ def api_get_building_by_id(b_id):
    if not building:
        building = []
 
-   maps = [ maps_url( b_id,f['f_id'] ) for f in building['floors'] ]
+   for i in range(0,len(building['floors'])):
+      building['floors'][i]['map'] = maps_url( b_id,building['floors'][i]['f_id'] )
 
-   building['maps'] = maps
-   return jsonify({ 'buildings': building })
+   return jsonify(building)
 
 @app.route( url_for_endpoint('buildings/near/<float:lat>/<float:lng>?service=srv_name'),methods=['GET'])
 def api_get_buildings_near_position(lat,lng):
