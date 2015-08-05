@@ -84,7 +84,7 @@ def api_get_building_by_id(b_id):
 
    return jsonify(building)
 
-@app.route( url_for_endpoint('buildings/near/<float:lat>/<float:lng>?service=srv_name'),methods=['GET'])
+@app.route( url_for_endpoint('buildings/near/<float:lat>/<float:lng>'),methods=['GET'])
 def api_get_buildings_near_position(lat,lng):
    """
       <h3>/buildings/near/<em>lat</em>/<em>lng</em><em>?radius=X</em></h3>
