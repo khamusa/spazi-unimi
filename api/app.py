@@ -98,7 +98,7 @@ def api_get_buildings_near_position(lat,lng):
       <p><em>lat[float]</em> : latitude</p>
       <p><em>lng[float]</em> : longitude</p>
       <p><em>radius[float]</em> : radius in meters, default 2000m</p>
-      <p><em>srv_name[string]</em> : one of the valid available-services</p>
+      <p><em>service[string]</em> : one of the valid available-services</p>
 
    """
 
