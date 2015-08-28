@@ -61,6 +61,10 @@ def api_get_buildings():
    for b in buildings:
       b['b_id'] = b['_id']
       del b['_id']
+
+      # remove unnecessary nested object used in GeoJson coordinates structure
+      b['coordinates'] = b['coordinates']['coordinates']
+
       for floor in b['floors']:
          del floor['rooms']
 
