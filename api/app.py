@@ -59,6 +59,8 @@ def api_get_buildings():
    """
    buildings = list(app.buildings.find({'building_name':{'$exists':True}}))
    for b in buildings:
+      b['b_id'] = b['_id']
+      del b['_id']
       for floor in b['floors']:
          del floor['rooms']
 
