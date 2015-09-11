@@ -97,7 +97,7 @@ class Main():
       task              = SVGTask(self._config)
       task.perform_svg_update(b_ids)
 
-   def run_lookup(self, files):
+   def run_lookup(self, files=None):
       """
       Create a new sqlite db filled with a lookup table, useful for client applications
       to not overload the API server and to provide a better UX.

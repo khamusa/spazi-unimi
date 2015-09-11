@@ -56,12 +56,12 @@ def api_get_buildings():
       <p>Returns a list of the all available buildings.</p>
       <h5>Parameters</h6>
       <p><em>service[string]</em> : could be one of the available services, if provided returns only those buildings with the specified service</p>
-      <p><em>show_floors[boolean] default True</em>: show every building with its floors detailed or return for every building its details and a collapsed list of available services</p>
+      <p><em>show_floors[boolean] default false</em>: show every building with its floors detailed or return for every building its details and a collapsed list of available services</p>
 
    """
    buildings = list(app.buildings.find({'building_name':{'$exists':True}}))
 
-   show_floors = request.args.get('show_floors') or True
+   show_floors = request.args.get('show_floors') or False
 
    for b in buildings:
       b['b_id'] = b['_id']
