@@ -27,8 +27,9 @@ app.lookup_table_folder = 'static-table'
 def url_for_endpoint(url_endpoint):
    return '/'.join( [app.api_namespace,app.api_version,url_endpoint] )+'/'
 
-def filter_buildings_by_service(buildings,service):
-   return [ b for b in buildings if len([ f for f in b['floors'] if service in f['available_services'] ])>0  ]
+def filter_buildings_by_service(buildings,service,remove_floor_details=False):
+  return [ b for b in buildings if len([ f for f in b['floors'] if service in f['available_services'] ])>0  ]
+
 
 def maps_url(b_id,f_id):
    return '{0}://{1}/{2}/{3}/{3}_{4}.svg'.format(app.protocol,app.domain,app.maps_folder,b_id,f_id)
@@ -55,9 +56,13 @@ def api_get_buildings():
       <p>Returns a list of the all available buildings.</p>
       <h5>Parameters</h6>
       <p><em>service[string]</em> : could be one of the available services, if provided returns only those buildings with the specified service</p>
+      <p><em>show_floors[boolean] default false</em>: show every building with its floors detailed or return for every building its details and a collapsed list of available services</p>
 
    """
-   buildings = list(app.buildings.find({'building_name':{'$exists':True}}))
+   buildings = list(app.buildings.find({'coordinates':{'$exists':True}}))
+
+   show_floors = request.args.get('show_floors') or False
+
    for b in buildings:
       b['b_id'] = b['_id']
       del b['_id']
@@ -65,12 +70,24 @@ def api_get_buildings():
       # remove unnecessary nested object used in GeoJson coordinates structure
       b['coordinates'] = b['coordinates']['coordinates']
 
-      for floor in b['floors']:
-         del floor['rooms']
+      # collapse available services
+      if not show_floors:
+         services = set()
+         for f in b['floors']:
+            del f['rooms']
+            for s in f['available_services']:
+               services.add(s)
 
+         b['available_services'] = list(services)
+
+   # filter by available service
    service = request.args.get('service') or None
    if service:
       buildings = filter_buildings_by_service(buildings,service)
+
+   if not show_floors:
+      for b in buildings:
+         del b['floors']
 
    return jsonify({ 'buildings': buildings })
 
