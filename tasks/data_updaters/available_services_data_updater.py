@@ -1,5 +1,9 @@
+from model import AvailableService
+
 class AvailableServicesDataUpdater:
-   def clean(self): pass
+
    def perform_update(self,entities_type, content):
-      print(entities_type)
-      print(content)
+      AvailableService.clean()
+      for s in content:
+         service = AvailableService(s)
+         service.save()
