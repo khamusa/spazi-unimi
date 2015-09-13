@@ -1,8 +1,9 @@
-from .room           import Room
-from .floor          import Floor
-from .building       import Building
-from .room_category  import RoomCategory
-from .building_view  import BuildingView
+from .room              import Room
+from .floor             import Floor
+from .building          import Building
+from .room_category     import RoomCategory
+from .building_view     import BuildingView
+from .available_service import AvailableService
 
 def update_building_view(building):
    bv = BuildingView.create_from_building(building)
