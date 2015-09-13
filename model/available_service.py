@@ -1,4 +1,5 @@
-from .odm import ODMModel, around_callbacks
+from .odm            import ODMModel
+from persistence     import MongoDBPersistenceManager
 import re
 
 class AvailableService(ODMModel):
