@@ -1,6 +1,6 @@
 from utils                 import ConfigManager
 from persistence           import MongoDBPersistenceManager
-from model                 import RoomCategory,Building,BuildingView
+from model                 import RoomCategory,Building,BuildingView,AvailableService
 from tasks                 import LookupTableTask
 from model.odm             import ODMModel
 from bson.json_util        import dumps
@@ -258,23 +258,20 @@ def api_show_room_by_id(b_id,r_id):
 
    abort(404)
 
-@app.route( url_for_endpoint('available-services/'),methods=['GET'] )
-def api_get_available_services():
+@app.route( url_for_endpoint('available-services/<lang>'),methods=['GET'] )
+def api_get_available_services(lang):
    """
       <h3>/available-services/</h3>
       <p>Returns the complete list of the all available services</p>
+      <h5>Parameters</h6>
+      <p><em>lang[string]</em> : language</p>
    """
-   buildings   = list(app.buildings.find({'building_name':{'$exists':True}}))
-   services    = set()
+   services = AvailableService.services()
 
-   for building in buildings:
-      for floor in building['floors']:
-         for s in floor['available_services']:
-            services.add(s)
+   if lang not in services[0].langs:
+      abort(404)
+   return jsonify({'services':[ {'key':s.key,'label':s[lang]} for s in services ]})
 
-   services = [ v for v in services ]
-
-   return jsonify({'services':services})
 
 
 @app.route( url_for_endpoint('docs/'),methods=['GET'] )

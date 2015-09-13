@@ -12,3 +12,14 @@ class AvailableService(ODMModel):
       super().__init__(new_attrs)
       self.key    = new_attrs['key']
       self.langs  = {l for l in new_attrs if l!='key'}
+
+
+   @classmethod
+   def services(klass):
+      collection  = list(klass.get_collection().find())
+      services    = []
+
+      for s in collection:
+         services.append( AvailableService(s) )
+
+      return services
