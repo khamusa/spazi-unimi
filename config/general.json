@@ -37,6 +37,9 @@
       "easyroom":{
          "buildings"          : ["b_id", "address", "building_name", "n_floors"],
          "rooms"              : ["r_id", "b_id", "room_name", "capacity", "l_floor", "accessibility", "equipments" ]
+      },
+      "available_services":{
+         "services"           : ["key","it","en"]
       }
 
    }

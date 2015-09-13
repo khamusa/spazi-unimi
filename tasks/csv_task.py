@@ -1,6 +1,6 @@
 from utils.csv_reader import CSVReader
 from .                import Task, FileUpdateException
-from .data_updaters   import EdiliziaDataUpdater, EasyroomDataUpdater
+from .data_updaters   import EdiliziaDataUpdater, EasyroomDataUpdater, AvailableServicesDataUpdater
 import os, re
 
 class CSVTask(Task):
@@ -87,6 +87,8 @@ class CSVTask(Task):
          updater = EdiliziaDataUpdater()
       elif (service == "easyroom"):
          updater = EasyroomDataUpdater()
+      elif (service == "available_services"):
+         updater = AvailableServicesDataUpdater()
       else:
          raise FileUpdateException("Unknown service type: "+str(service))
 
