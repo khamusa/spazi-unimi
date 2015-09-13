@@ -2,8 +2,8 @@ from model import AvailableService
 
 class AvailableServicesDataUpdater:
    """
-   The AvailableServicesDataUpdater class implements the interface
-   for query the available services used for filter buildings and floors
+   The AvailableServicesDataUpdater class implements the operations
+   for updating the available service collection
    """
 
    def perform_update(self,entities_type, content):

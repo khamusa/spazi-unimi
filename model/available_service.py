@@ -3,6 +3,11 @@ from persistence     import MongoDBPersistenceManager
 import re
 
 class AvailableService(ODMModel):
+   """
+   The AvailableService class implements a single service used
+   for filter buildings and floors
+   """
+
    def __init__(self, new_attrs = None):
       super().__init__(new_attrs)
       self.key    = new_attrs['key']
