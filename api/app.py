@@ -110,6 +110,9 @@ def api_get_building_by_id(b_id):
    for i in range(0,len(building['floors'])):
       building['floors'][i]['map'] = maps_url( b_id,building['floors'][i]['f_id'] )
 
+   # remove unnecessary nested object used in GeoJson coordinates structure
+   building['coordinates'] = building['coordinates']['coordinates']
+
    return jsonify(building)
 
 @app.route( url_for_endpoint('buildings/near/<float:lat>/<float:lng>'),methods=['GET'])
