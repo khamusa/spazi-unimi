@@ -37,6 +37,27 @@ def maps_url(b_id,f_id):
 def lookup_table_url(db_name):
    return '{0}://{1}/{2}/{3}'.format(app.protocol, app.domain, app.lookup_table_folder, db_name)
 
+def prepare_floor_for_api(floor):
+   rooms = []
+   for r_id in floor['rooms']:
+      room           = floor['rooms'][r_id]
+      room['r_id']   = r_id
+      rooms.append(room)
+   floor['rooms'] = rooms;
+   return floor
+
+def prepare_building_for_api(building):
+   building['b_id'] = building['_id']
+   del building['_id']
+
+   # remove unnecessary nested object used in GeoJson coordinates structure
+   building['coordinates'] = building['coordinates']['coordinates']
+
+   #normalize floors
+   building['floors'] = [ prepare_floor_for_api(f) for f in building['floors'] ]
+
+   return building
+
 @app.before_request
 def prepare_buildings_collection():
    app.buildings     = BuildingView.get_collection()
@@ -64,11 +85,7 @@ def api_get_buildings():
    show_floors = request.args.get('show_floors') or False
 
    for b in buildings:
-      b['b_id'] = b['_id']
-      del b['_id']
-
-      # remove unnecessary nested object used in GeoJson coordinates structure
-      b['coordinates'] = b['coordinates']['coordinates']
+      b = prepare_building_for_api(b)
 
       # collapse available services
       if not show_floors:
@@ -110,8 +127,7 @@ def api_get_building_by_id(b_id):
    for i in range(0,len(building['floors'])):
       building['floors'][i]['map'] = maps_url( b_id,building['floors'][i]['f_id'] )
 
-   # remove unnecessary nested object used in GeoJson coordinates structure
-   building['coordinates'] = building['coordinates']['coordinates']
+   building = prepare_building_for_api(building)
 
    return jsonify(building)
 
@@ -145,6 +161,7 @@ def api_get_buildings_near_position(lat,lng):
    if service:
       buildings = filter_buildings_by_service(buildings,service)
 
+   buildings = [ prepare_building_for_api(b) for b in buildings ]
    return jsonify({ 'buildings': buildings })
 
 # Categories
@@ -218,7 +235,8 @@ def api_get_room_by_id(b_id,r_id):
          room['f_id']                  = floor['f_id']
          room['floor']                 = floor['floor_name']
          room['map']                   = maps_url(b_id,floor['f_id'])
-         return jsonify({'room':room})
+         room['r_id']                  = r_id
+         return jsonify(room)
 
    abort(404)
 
