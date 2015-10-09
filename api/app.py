@@ -231,7 +231,7 @@ def api_get_room_by_id(b_id,r_id):
          room['b_id']                  = b_id
          room['building_name']         = building['building_name']
          room['building_address']      = building['address']
-         room['building_coordinates']  = { 'lng' : coordinates[0], 'lat' : coordinates[1] }
+         room['building_coordinates']  = [coordinates[0],coordinates[1]]
          room['f_id']                  = floor['f_id']
          room['floor']                 = floor['floor_name']
          room['map']                   = maps_url(b_id,floor['f_id'])
@@ -262,14 +262,14 @@ def api_show_room_by_id(b_id,r_id):
          room['b_id']                  = b_id
          room['building_name']         = building['building_name']
          room['building_address']      = building['address']
-         room['building_coordinates']  = { 'lng' : coordinates[0], 'lat' : coordinates[1] }
+         room['building_coordinates']  = [coordinates[0],coordinates[1]]
          room['f_id']                  = floor['f_id']
          room['floor']                 = floor['floor_name']
          room['map']                   = maps_url(b_id,floor['f_id'])
 
          building_name        = building['building_name']
          building_address     = room['building_address']
-         building_coordinates = { 'lng' : coordinates[0], 'lat' : coordinates[1] }
+         building_coordinates = [coordinates[0],coordinates[1]]
          floor_name           = floor['floor_name']
          map_url              = maps_url(b_id,floor['f_id'])
          room_name            = room['room_name']
