@@ -6,6 +6,7 @@ from model.odm             import ODMModel
 from bson.json_util        import dumps
 from flask                 import Flask, jsonify,abort,request,send_from_directory,render_template,Markup
 from datetime              import datetime
+from api.model             import RoomTimeTable
 
 
 app                     = Flask(__name__,static_url_path='')
@@ -239,6 +240,24 @@ def api_get_room_by_id(b_id,r_id):
          return jsonify(room)
 
    abort(404)
+
+@app.route( url_for_endpoint('rooms/timetable/<b_id>/<r_id>'),methods=['GET'] )
+def api_get_room_timetable(b_id,r_id):
+   """
+      <h3>/rooms/timetable/<em>b_id</em>/<em>r_id</em></h3>
+      <p>if exists returns the weekly timetable for room with r_id within the bulding with b_id .</p>
+      <h5>Parameters</h6>
+      <p><em>b_id[string]</em> : a valid b_id</p>
+      <p><em>r_id[string]</em> : a valid r_id</p>
+
+   """
+   timetable = RoomTimeTable(b_id,r_id)
+
+   if not timetable:
+      abort(404)
+
+   return jsonify({"events":timetable.events})
+
 
 @app.route( url_for_endpoint('room-viewer/<b_id>/<r_id>'),methods=['GET'] )
 def api_show_room_by_id(b_id,r_id):
