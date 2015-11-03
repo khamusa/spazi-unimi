@@ -286,9 +286,11 @@ def api_show_room_by_id(b_id,r_id):
          room['floor']                 = floor['floor_name']
          room['map']                   = maps_url(b_id,floor['f_id'])
 
+         building_id          = b_id
          building_name        = building['building_name']
          building_address     = room['building_address']
-         building_coordinates = [coordinates[0],coordinates[1]]
+         lat                  = coordinates[1]
+         lng                  = coordinates[0]
          floor_name           = floor['floor_name']
          map_url              = maps_url(b_id,floor['f_id'])
          room_name            = room['room_name']

@@ -16,8 +16,10 @@
          main{
             padding: 2% 4%;
          }
-         .room-info{ float: left; width: 50%; }
+         .room-info{ float: left; width: 49%; }
+         .room-info+.room-info{margin-left: 1%;}
          #map-canvas img{ width: 100%; }
+         #qrcode{ display: block; width: 200px; height: 200px; margin-top: 2%; }
 
    </style>
     <body>
@@ -28,11 +30,15 @@
             <h4>{{ floor_name }}</h4>
             <h4>{{ room_name }}</h4>
             <div id="svg-map"></div>
+            <div id="qrcode"></div>
          </div>
          <div class="room-info" id="map-canvas"></div>
       </main>
 
     </body>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+
     <script type="text/javascript">
       function initGMap(){
             var map = document.createElement('img'),
@@ -68,15 +74,17 @@
       }
 
       var
-         room_id     = '{{ room_id }}'
-         lat         = {{ building_coordinates.lat }},
-         lng         = {{ building_coordinates.lng }},
+         building_id = '{{ building_id }}',
+         room_id     = '{{ room_id }}',
+         lat         = {{ lat }},
+         lng         = {{ lng }},
          svgUrl      = '{{ map_url }}',
          gmapAddress = 'https://maps.googleapis.com/maps/api/staticmap?';
 
          window.onload = function(){
                initGMap();
                initSVGMap(svgUrl);
+               $('#qrcode').qrcode({ "text" : "unimiplaces://room/"+building_id+"/"+room_id+"/" , "size" : 200 })
          }
 
    </script>
